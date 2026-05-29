@@ -1,7 +1,11 @@
 package com.barbershop.backend.domain.model;
 
 import com.barbershop.backend.domain.model.enums.Role;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.UUID;
+
+import java.time.LocalDateTime;
 
 public abstract class User {
 
@@ -12,6 +16,10 @@ public abstract class User {
     String phoneNumber;
     Role role;
     boolean active;
+    @CreationTimestamp
+    LocalDateTime createdAt;
+    @UpdateTimestamp
+    LocalDateTime updateAt;
 
     public User(String fullName, String email, String password, String phoneNumber, boolean active, Role role) {
         this.fullName = fullName;

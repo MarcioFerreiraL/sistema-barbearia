@@ -1,7 +1,11 @@
 package com.barbershop.backend.domain.model;
 
 import com.barbershop.backend.domain.model.enums.AppointmentStatus;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Version;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.UUID;
 
 import java.time.LocalDateTime;
@@ -14,9 +18,14 @@ public class Appointment {
     ServiceItem serviceItem;
     LocalDateTime startTime;
     LocalDateTime endTime;
+    @Enumerated(EnumType.STRING)
     AppointmentStatus status;
     @Version
     Long version;
+    @CreationTimestamp
+    LocalDateTime createdAt;
+    @UpdateTimestamp
+    LocalDateTime updateAt;
 
     public Appointment(Customer customer, Barber barber, ServiceItem serviceItem, LocalDateTime startTime, AppointmentStatus status, Long version) {
         this.customer = customer;

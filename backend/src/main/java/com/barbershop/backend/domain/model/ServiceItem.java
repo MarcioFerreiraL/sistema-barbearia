@@ -1,8 +1,11 @@
 package com.barbershop.backend.domain.model;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.UUID;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class ServiceItem {
 
@@ -12,6 +15,10 @@ public class ServiceItem {
     BigDecimal price;
     int durationInMinutes;
     boolean active;
+    @CreationTimestamp
+    LocalDateTime createdAt;
+    @UpdateTimestamp
+    LocalDateTime updateAt;
 
     public ServiceItem(String name, String description, BigDecimal price, Integer durationInMinutes, boolean active) {
         this.name = name;

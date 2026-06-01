@@ -1,7 +1,6 @@
 package com.barbershop.backend.service;
 
 import com.barbershop.backend.domain.model.Customer;
-import com.barbershop.backend.domain.model.enums.Role;
 import org.springframework.stereotype.Service;
 import com.barbershop.backend.domain.repository.CustomerRepository;
 import java.util.List;
@@ -37,24 +36,37 @@ public class CustomerService {
     }
 
     public Customer createCustomer(Customer customer) {
-        Customer newCustomer = new Customer(customer);
-        newCustomer.setRole(Role.ROLE_CUSTOMER);
-        if (getAllCustomers().contains(newCustomer)) {
+
+        Customer newCustomer = new Customer(
+                customer.getFullName(),
+                customer.getEmail(),
+                customer.getPassword(),
+                customer.getPhoneNumber());
+
+        verifyIfExists(newCustomer);
+        return customerRepository.save(customer);
+    }
+
+    public Customer updateCustomer(Customer customer) {
+        if (getAllCustomers().contains(customer)) {
             throw new IllegalArgumentException("Cliente já existe");
         }
         return customerRepository.save(customer);
     }
 
-    public Customer updateCustomer(Customer customer) {
-        return customerRepository.save(customer);
+    public void deleteCustomer(UUID id) {
+        Optional<Customer> customer = customerRepository.getCustomerById(id);
+        if (customer.isPresent()) {
+            customerRepository.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("Não foi possivel deletar o barbeiro.");
+        }
     }
 
-    public void deleteCustomer(String email) {
-        customerRepository.deleteCustomerByEmail(email);
-    }
-
-    public boolean verifyCustomer(Customer customer) {
-        return getCustomerById(customer.getId()).isPresent();
+    public void verifyIfExists(Customer customer) {
+        if (getAllCustomers().contains(customer)) {
+            throw new IllegalArgumentException("Cliente já existe");
+        }
     }
 
 }

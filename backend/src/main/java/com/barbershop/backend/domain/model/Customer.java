@@ -12,8 +12,11 @@ public class Customer extends User{
         super(fullName, email, password, phoneNumber, active, role);
     }
 
-    public Customer() {}
+    public Customer() {super();}
 
-    public Customer(Customer customer) {
+    public Customer(String fullName, String email, String password, String phoneNumber) {
+        Role role = Role.ROLE_CUSTOMER;
+        boolean active = true;
+        new Customer(fullName, email, password, phoneNumber, active, role);
     }
 }

@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/customers")
+@RequestMapping("api/customers/")
 public class CustomerController {
 
     private final CustomerService customerService;
@@ -47,22 +47,13 @@ public class CustomerController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Customer> updateCustomer(@PathVariable UUID id, @RequestBody Customer customer) {
-        if (customerService.verifyCustomer(customer)) {
-            Customer updatedCustomer = customerService.updateCustomer(customer);
-            return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        Customer updatedCustomer = customerService.updateCustomer(customer);
+        return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Customer> deleteCustomer(@PathVariable UUID id) {
-        Optional<Customer> customer = customerService.getCustomerById(id);
-        if (customer.isPresent()) {
-            customerService.deleteCustomer(customer.get().getEmail());
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        customerService.deleteCustomer(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

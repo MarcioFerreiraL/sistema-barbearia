@@ -1,20 +1,34 @@
 package com.barbershop.backend.domain.model;
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.UUID;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+@Entity
+@Table(name = "tb_service_item")
+public class ServiceItem implements AutoCloseable {
 
-public class ServiceItem {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
 
-    UUID id;
+    @Column(nullable = false)
     String name;
+
+    @Column(nullable = false)
     String description;
+
+    @Column(nullable = false)
     BigDecimal price;
+
+    @Column(nullable = false)
     int durationInMinutes;
-    boolean active;
+
+    boolean active = true;
+
     @CreationTimestamp
     LocalDateTime createdAt;
     @UpdateTimestamp
@@ -28,6 +42,8 @@ public class ServiceItem {
         this.active = active;
     }
 
+    public ServiceItem() {}
+
     public String getName() {
         return name;
     }
@@ -36,7 +52,7 @@ public class ServiceItem {
         this.name = name;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
@@ -71,5 +87,10 @@ public class ServiceItem {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    @Override
+    public void close() throws Exception {
+
     }
 }

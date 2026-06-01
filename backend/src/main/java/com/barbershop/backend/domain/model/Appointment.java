@@ -78,10 +78,8 @@ public class Appointment {
     }
 
     public LocalDateTime setEndTime(LocalDateTime startTime) {
-
-
-        LocalDateTime endTime = startTime.minusMinutes() + serviceItem.getDurationInMinutes();
-        return endTime;
+        // Lógica para setar o tempo que finaliza o serviço
+        return startTime;
     }
 
     public AppointmentStatus getStatus() {

@@ -1,4 +1,4 @@
 package com.barbershop.backend.service;
 
-public class CostumerService {
+public class AppointmentService {
 }

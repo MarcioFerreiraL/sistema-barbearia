@@ -1,4 +1,8 @@
 package com.barbershop.backend.domain.repository;
 
-public class ServiceItemRepository {
+import com.barbershop.backend.domain.model.ServiceItem;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ServiceItemRepository extends JpaRepository<ServiceItem, Long> {
+
 }

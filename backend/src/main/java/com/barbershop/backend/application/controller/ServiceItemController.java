@@ -32,7 +32,7 @@ public class ServiceItemController {
     @PostMapping
     public ResponseEntity<ServiceItem> createServiceItem(@RequestBody ServiceItem serviceItem) {
         ServiceItem createdServiceItem = serviceItemService.createServiceItem(serviceItem);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdServiceItem);
+        return new ResponseEntity<>(createdServiceItem, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -41,11 +41,11 @@ public class ServiceItemController {
             ServiceItem updatedServiceItem = serviceItemService.updateServiceItem(serviceItem);
             return ResponseEntity.status(HttpStatus.OK).body(updatedServiceItem);
         } else {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @DeleteMapping("/api/services/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ServiceItem> deleteServiceItem(@PathVariable Long id) {
         serviceItemService.deleteServiceItem(id);
 

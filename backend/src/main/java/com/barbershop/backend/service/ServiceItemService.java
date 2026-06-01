@@ -42,10 +42,7 @@ public class ServiceItemService {
     }
 
     public boolean verifyServiceItem(ServiceItem serviceItem) {
-        if ((getServiceItemById(serviceItem.getId()).isEmpty()){
-            return false;
-         }
-        return true;
-        }
+        return getServiceItemById(serviceItem.getId()).isPresent();
     }
 }
+

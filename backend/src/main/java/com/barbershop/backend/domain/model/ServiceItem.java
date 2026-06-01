@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 @Entity
 @Table(name = "tb_service_item")
-public class ServiceItem implements AutoCloseable {
+public class ServiceItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,7 +56,6 @@ public class ServiceItem implements AutoCloseable {
         return id;
     }
 
-
     public String getDescription() {
         return description;
     }
@@ -89,8 +88,4 @@ public class ServiceItem implements AutoCloseable {
         this.active = active;
     }
 
-    @Override
-    public void close() throws Exception {
-
-    }
 }

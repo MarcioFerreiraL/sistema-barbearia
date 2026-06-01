@@ -15,37 +15,40 @@ public class ServiceItemController {
 
     private ServiceItemService serviceItemService;
 
-    public ServiceItemController(ServiceItemService serviceItemService) {}
+    public ServiceItemController(ServiceItemService serviceItemService) {
+        this.serviceItemService = serviceItemService;
+    }
 
     @GetMapping()
     public ResponseEntity<List<ServiceItem>> getAllServiceItems() {
         return new ResponseEntity<>(serviceItemService.getAll(), HttpStatus.OK);
     }
 
-    @GetMapping("/api/services/{id}")
-    public ResponseEntity<Optional<ServiceItem>> getAllServiceItemsByServiceId(ServiceItem serviceItem) {
-        return new ResponseEntity<>(serviceItemService.getServiceItemById(serviceItem.getId()), HttpStatus.OK);
+    @GetMapping("/{id}")
+    public ResponseEntity<ServiceItem> getServiceItemById(@PathVariable Long id) {
+        Optional<ServiceItem> serviceItem = serviceItemService.getServiceItemById(id);
+        return serviceItem.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
-    @PostMapping("apt/services/{id}")
-    public ResponseEntity<ServiceItem> createServiceItem(@PathVariable Long id, @RequestBody ServiceItem serviceItem) {
-        ServiceItem createdServiceItem = serviceItemService.createSerivceItem(serviceItem);
+    @PostMapping
+    public ResponseEntity<ServiceItem> createServiceItem(@RequestBody ServiceItem serviceItem) {
+        ServiceItem createdServiceItem = serviceItemService.createServiceItem(serviceItem);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdServiceItem);
     }
 
-    @PutMapping("/api/services/{id}")
-    public ResponseEntity<ServiceItem> updateServiceItem(@PathVariable Long id, @RequestBody ServiceItem serviceItem) {
-        ServiceItem updatedServiceItem = serviceItemService.updateServiceItem(serviceItem);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedServiceItem);
+    @PutMapping("/{id}")
+    public ResponseEntity<ServiceItem> updateServiceItem(@RequestBody ServiceItem serviceItem) {
+        if (serviceItemService.verifyServiceItem(serviceItem)) {
+            ServiceItem updatedServiceItem = serviceItemService.updateServiceItem(serviceItem);
+            return ResponseEntity.status(HttpStatus.OK).body(updatedServiceItem);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/api/services/{id}")
     public ResponseEntity<ServiceItem> deleteServiceItem(@PathVariable Long id) {
-        try (ServiceItem deletedItemService = serviceItemService.deleteServiceItem(id)) {
-            return ResponseEntity.status(HttpStatus.OK).body(deletedItemService);
+        serviceItemService.deleteServiceItem(id);
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
+        return ResponseEntity.noContent().build();
     }
 }

@@ -12,7 +12,9 @@ public class ServiceItemService {
 
     private ServiceItemRepository serviceItemRepository;
 
-    public ServiceItemService (ServiceItemRepository serviceItemRepository) {}
+    public ServiceItemService (ServiceItemRepository serviceItemRepository) {
+        this.serviceItemRepository = serviceItemRepository;
+    }
 
     public Optional<ServiceItem> getServiceItemById(Long id) {
         return serviceItemRepository.findById(id);
@@ -22,7 +24,7 @@ public class ServiceItemService {
         return serviceItemRepository.findAll();
     }
 
-    public ServiceItem createSerivceItem(ServiceItem serviceItem) {
+    public ServiceItem createServiceItem(ServiceItem serviceItem) {
         // Implementar regra de negocio
         if (serviceItem.getPrice().signum() < 0) {
             throw new IllegalArgumentException("Preço não pode ser negativo");
@@ -34,8 +36,16 @@ public class ServiceItemService {
         return serviceItemRepository.save(serviceItem);
     }
 
-    public ServiceItem deleteServiceItem(Long id) {
-        return serviceItemRepository.deleteById(id);
+    public void deleteServiceItem(Long id) {
+        serviceItemRepository.deleteById(id);
 
+    }
+
+    public boolean verifyServiceItem(ServiceItem serviceItem) {
+        if ((getServiceItemById(serviceItem.getId()).isEmpty()){
+            return false;
+         }
+        return true;
+        }
     }
 }

@@ -1,4 +1,24 @@
 package com.barbershop.backend.domain.repository;
 
-public class AppointmentRepository {
+import com.barbershop.backend.domain.model.Appointment;
+import com.barbershop.backend.domain.model.Barber;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
+
+public interface AppointmentRepository extends JpaRepository<Appointment, UUID> {
+    // Verifica se o barbeiro já está ocupado naquele intervalo de tempo
+    @Query("SELECT COUNT(a) > 0 FROM Appointment a WHERE a.barber = :barber AND a.status != 'CANCELLED' AND " +
+            "(a.startTime < :endTime AND a.endTime > :startTime)")
+    boolean existsOverlappingAppointment(@Param("barber") Barber barber,
+                                         @Param("startTime") LocalDateTime startTime,
+                                         @Param("endTime") LocalDateTime endTime);
+
+    Optional<Appointment> getAppointmentByBarberId(UUID barberId);
+    Optional<Appointment> getAppointmentByServiceItemId(UUID serviceItemId);
+
 }

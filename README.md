@@ -24,15 +24,19 @@ A plataforma permite que clientes realizem cadastros, visualizem o catálogo, es
 ### Diagrama de casos de uso
 
 ![diagrama de casos de uso](docs/diagram_use_case.png)
+
+### Diagrama de classes
+
+![diagrama de casos de uso](docs/diagram_classes.png)
 ## 💻 Tecnologias Utilizadas
 
 **Front-end:**
 - Next.js
 - React.js
-- Tailwind CSS + shadcn/ui
+- Tailwind CSS
 
 **Back-end & API REST:**
-- Java (JDK 21 ou superior)
+- Java 
 - Spring Boot 4 (Spring Web, Spring Data JPA, Spring Security)
 - Autenticação JSON Web Tokens (JWT)
 

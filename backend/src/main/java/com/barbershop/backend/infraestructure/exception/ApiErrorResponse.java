@@ -1,4 +1,11 @@
 package com.barbershop.backend.infraestructure.exception;
 
-public class ApiErrorResponse {
-}
+import java.time.LocalDateTime;
+
+public record ApiErrorResponse(
+        LocalDateTime timestamp,
+        Integer status,
+        String error,
+        String message,
+        String path
+) {}

@@ -2,15 +2,12 @@ package com.barbershop.backend.application.controller;
 
 import com.barbershop.backend.application.dto.request.AppointmentRequest;
 import com.barbershop.backend.application.dto.response.AppointmentResponse;
-import com.barbershop.backend.domain.model.Appointment;
-import com.barbershop.backend.infraestructure.exception.ApiErrorResponse;
 import com.barbershop.backend.service.AppointmentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController

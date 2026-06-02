@@ -1,0 +1,73 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+abstract class User {
+  - UUID id
+  - String fullName
+  - String email
+  - String password
+  - String phoneNumber
+  - Role role
+  - boolean active
+  - LocalDateTime createdAt
+  - LocalDateTime updateAt
+}
+
+class Customer {
+  + Customer()
+}
+
+class Barber {
+  + Barber()
+}
+
+class Admin {
+  + Admin()
+}
+
+class ServiceItem {
+  - Long id
+  - String name
+  - String description
+  - BigDecimal price
+  - Integer durationInMinutes
+  - boolean active
+  - LocalDateTime createdAt
+  - LocalDateTime updateAt
+}
+
+class Appointment {
+  - UUID id
+  - Customer customer
+  - Barber barber
+  - ServiceItem serviceItem
+  - LocalDateTime startTime
+  - LocalDateTime endTime
+  - AppointmentStatus status
+  - LocalDateTime createdAt
+  - LocalDateTime updateAt
+}
+
+enum Role {
+  ROLE_ADMIN
+  ROLE_CUSTOMER
+  ROLE_BARBER
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  RUNNING
+}
+
+User <|-- Customer
+User <|-- Barber
+User <|-- Admin
+User -right-> Role
+Appointment --> Customer
+Appointment --> Barber
+Appointment --> ServiceItem
+Appointment --> AppointmentStatus
+@enduml

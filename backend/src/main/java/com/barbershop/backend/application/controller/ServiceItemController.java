@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/services")
@@ -26,8 +25,8 @@ public class ServiceItemController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ServiceItem> getServiceItemById(@PathVariable Long id) {
-        Optional<ServiceItem> serviceItem = serviceItemService.getServiceItemById(id);
-        return serviceItem.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        ServiceItem serviceItem = serviceItemService.getServiceItemById(id);
+        return ResponseEntity.ok(serviceItem);
     }
     @PostMapping
     public ResponseEntity<ServiceItem> createServiceItem(@RequestBody ServiceItem serviceItem) {

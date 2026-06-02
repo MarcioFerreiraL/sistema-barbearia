@@ -1,6 +1,7 @@
 package com.barbershop.backend.service;
 
 import com.barbershop.backend.domain.model.Barber;
+import com.barbershop.backend.domain.model.enums.Role;
 import com.barbershop.backend.domain.repository.BarberRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +34,8 @@ public class BarberService {
         return barberRepository.getBarberByPhoneNumber(phone);
     }
 
-    public Optional<Barber> getBarberByName(String name) {
-        return barberRepository.getBarberByName(name);
+    public Optional<Barber> getBarberByName(String fullname) {
+        return barberRepository.getBarberByFullName(fullname);
     }
 
     public Barber createBarber(Barber barber) {
@@ -43,7 +44,11 @@ public class BarberService {
                 barber.getFullName(),
                 barber.getEmail(),
                 barber.getPassword(),
-                barber.getPhoneNumber());
+                barber.getPhoneNumber()
+        );
+        newBarber.setActive(true);
+        newBarber.setRole(Role.ROLE_BARBER);
+
 
         verifyIfExists(newBarber);
         return barberRepository.save(newBarber);

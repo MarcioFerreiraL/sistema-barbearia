@@ -1,12 +1,15 @@
 package com.barbershop.backend.service;
 
 import com.barbershop.backend.domain.model.Admin;
+import com.barbershop.backend.domain.model.enums.Role;
 import com.barbershop.backend.domain.repository.AdminRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class AdminService {
     private final AdminRepository adminRepository;
 
@@ -29,8 +32,10 @@ public class AdminService {
                 admin.getFullName(),
                 admin.getEmail(),
                 admin.getPassword(),
-                admin.getPhoneNumber());
-
+                admin.getPhoneNumber()
+        );
+        newAdmin.setActive(true);
+        newAdmin.setRole(Role.ROLE_ADMIN);
         verifyIfExists(newAdmin);
         return adminRepository.save(newAdmin);
     }

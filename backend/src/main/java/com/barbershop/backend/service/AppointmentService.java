@@ -6,15 +6,19 @@ import com.barbershop.backend.domain.model.Appointment;
 import com.barbershop.backend.domain.model.Barber;
 import com.barbershop.backend.domain.model.Customer;
 import com.barbershop.backend.domain.model.ServiceItem;
+import com.barbershop.backend.domain.model.enums.AppointmentStatus;
 import com.barbershop.backend.domain.repository.AppointmentRepository;
 import com.barbershop.backend.domain.repository.BarberRepository;
 import com.barbershop.backend.domain.repository.CustomerRepository;
 import com.barbershop.backend.domain.repository.ServiceItemRepository;
+import com.barbershop.backend.service.exception.BusinessRuleException;
+import com.barbershop.backend.service.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -40,9 +44,8 @@ public class AppointmentService {
     public AppointmentResponse createAppointment(AppointmentRequest request) {
 
         Appointment appointment = requestToAppointment(request);
-
+        businessRules(appointment);
         Appointment savedAppointment = appointmentRepository.save(appointment);
-
         return convertToResponse(savedAppointment);
     }
 
@@ -51,6 +54,7 @@ public class AppointmentService {
 
         Appointment appointment = requestToAppointment(request);
         if (getAllAppointments().contains(appointment)) {
+            businessRules(appointment);
             Appointment savedAppointment = appointmentRepository.save(appointment);
             return convertToResponse(savedAppointment);
         } else {
@@ -66,6 +70,23 @@ public class AppointmentService {
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Agendamento não encontrado");
         }
+    }
+
+    @Transactional
+    public void cancelAppointment(UUID appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Agendamento não encontrado."));
+
+        // Máquina de Estados: Só cancela se estiver agendado
+        if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
+            throw new BusinessRuleException("Este agendamento já se encontra cancelado.");
+        }
+        if (appointment.getStatus() == AppointmentStatus.COMPLETED) {
+            throw new BusinessRuleException("Não é possível cancelar um agendamento que já foi finalizado.");
+        }
+
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+        appointmentRepository.save(appointment);
     }
 
     public Optional<Appointment> getAppointmentById(UUID id) {
@@ -127,6 +148,51 @@ public class AppointmentService {
 
         if (appointmentRepository.existsOverlappingAppointment(appointment.getBarber(), appointment.getStartTime(), endTime)) {
             throw new IllegalArgumentException("O barbeiro não está disponivel nesse horário");
+        }
+
+        return appointment;
+    }
+
+    private Appointment businessRules(Appointment appointment) {
+        // --- 1. VALIDAÇÕES DE DATA E HORA DA BARBEARIA ---
+        LocalDateTime startTime = appointment.getStartTime();
+
+        // Regra: Não pode agendar no passado
+        if (startTime.isBefore(LocalDateTime.now())) {
+            throw new BusinessRuleException("Não é possível agendar um horário no passado.");
+        }
+
+        // Regra: Não funciona aos domingos
+        if (startTime.getDayOfWeek() == DayOfWeek.SUNDAY || startTime.getDayOfWeek() == DayOfWeek.SATURDAY) {
+            throw new BusinessRuleException("A barbearia BarberPro não funciona aos domingos.");
+        }
+
+        // Regra: Horário comercial
+        int hour = startTime.getHour();
+        if (hour < 8 || hour >= 18) {
+            throw new BusinessRuleException("O horário selecionado está fora do horário de funcionamento (09:00 às 20:00).");
+        }
+
+        // --- 2. BUSCA E VALIDAÇÃO DE REGISTROS INATIVOS ---
+        Customer customer = customerRepository.findById(appointment.getCustomer().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado."));
+
+        Barber barber = barberRepository.findById(appointment.getBarber().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Barbeiro não encontrado."));
+        if (!barber.isActive()) {
+            throw new BusinessRuleException("Este barbeiro não está mais ativo na empresa.");
+        }
+
+        ServiceItem serviceItem = serviceItemRepository.findById(appointment.getServiceItem().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Serviço não encontrado."));
+        if (!serviceItem.isActive()) {
+            throw new BusinessRuleException("Este serviço não está mais disponível no catálogo.");
+        }
+
+        // --- 3. VALIDAÇÃO DE CONFLITO DE AGENDA ---
+        LocalDateTime endTime = startTime.plusMinutes(serviceItem.getDurationInMinutes());
+        if (appointmentRepository.existsOverlappingAppointment(barber, startTime, endTime)) {
+            throw new BusinessRuleException("O barbeiro selecionado já possui um agendamento neste horário.");
         }
 
         return appointment;

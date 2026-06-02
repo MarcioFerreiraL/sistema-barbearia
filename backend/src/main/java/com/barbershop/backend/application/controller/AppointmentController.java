@@ -39,16 +39,16 @@ public class AppointmentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/update")
     public ResponseEntity<AppointmentResponse> updateAppointment(@RequestBody AppointmentRequest request) {
         AppointmentResponse response = appointmentService.updateAppointment(request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<AppointmentResponse> deleteAppointmentById(@RequestBody AppointmentRequest request) {
-        appointmentService.deleteAppointment(request);
-        return ResponseEntity.ok().build();
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelAppointment(@PathVariable UUID id) {
+        appointmentService.cancelAppointment(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

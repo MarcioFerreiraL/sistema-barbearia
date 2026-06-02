@@ -2,10 +2,10 @@ package com.barbershop.backend.service;
 
 import com.barbershop.backend.domain.model.ServiceItem;
 import com.barbershop.backend.domain.repository.ServiceItemRepository;
+import com.barbershop.backend.service.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ServiceItemService {
@@ -16,8 +16,9 @@ public class ServiceItemService {
         this.serviceItemRepository = serviceItemRepository;
     }
 
-    public Optional<ServiceItem> getServiceItemById(Long id) {
-        return serviceItemRepository.findById(id);
+    public ServiceItem getServiceItemById(Long id) {
+        return serviceItemRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Serviço não encontrado."));
     }
 
     public List<ServiceItem> getAll() {
@@ -42,7 +43,7 @@ public class ServiceItemService {
     }
 
     public boolean verifyServiceItem(ServiceItem serviceItem) {
-        return getServiceItemById(serviceItem.getId()).isPresent();
+        return getServiceItemById(serviceItem.getId()) != null;
     }
 }
 

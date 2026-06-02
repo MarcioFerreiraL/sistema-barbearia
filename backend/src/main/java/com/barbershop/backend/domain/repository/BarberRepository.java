@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface BarberRepository extends JpaRepository<Barber, UUID> {
     public Optional<Barber> getBarberByEmail(String email);
     public Optional<Barber> getBarberById(UUID id);
-    public Optional<Barber> getBarberByName(String username);
+    public Optional<Barber> getBarberByFullName(String fullname);
     public Optional<Barber> getBarberByPhoneNumber(String phoneNumber);
     public void deleteBarberByEmail(String email);
 }

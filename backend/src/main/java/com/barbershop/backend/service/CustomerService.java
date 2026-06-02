@@ -1,6 +1,7 @@
 package com.barbershop.backend.service;
 
 import com.barbershop.backend.domain.model.Customer;
+import com.barbershop.backend.domain.model.enums.Role;
 import org.springframework.stereotype.Service;
 import com.barbershop.backend.domain.repository.CustomerRepository;
 import java.util.List;
@@ -31,8 +32,8 @@ public class CustomerService {
         return customerRepository.getCustomerByPhoneNumber(phone);
     }
 
-    public Optional<Customer> getCustomerByName(String name) {
-        return customerRepository.getCustomerByName(name);
+    public Optional<Customer> getCustomerByName(String fullname) {
+        return customerRepository.getCustomerByFullName(fullname);
     }
 
     public Customer createCustomer(Customer customer) {
@@ -41,7 +42,10 @@ public class CustomerService {
                 customer.getFullName(),
                 customer.getEmail(),
                 customer.getPassword(),
-                customer.getPhoneNumber());
+                customer.getPhoneNumber()
+        );
+        newCustomer.setRole(Role.ROLE_CUSTOMER);
+        newCustomer.setActive(true);
 
         verifyIfExists(newCustomer);
         return customerRepository.save(customer);

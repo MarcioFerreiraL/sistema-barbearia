@@ -14,9 +14,4 @@ public class Barber extends User{
 
     public Barber(){super();}
 
-    public Barber(String fullName, String email, String password, String phoneNumber) {
-        Role role = Role.ROLE_BARBER;
-        boolean active = true;
-        new Customer(fullName, email, password, phoneNumber, active, role);
-    }
 }

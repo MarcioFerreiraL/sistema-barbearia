@@ -36,7 +36,7 @@ public class AppointmentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping("/{id}/update")
+    @PatchMapping("/{id}/update")
     public ResponseEntity<AppointmentResponse> updateAppointment(@RequestBody AppointmentRequest request) {
         AppointmentResponse response = appointmentService.updateAppointment(request);
         return ResponseEntity.status(HttpStatus.OK).body(response);

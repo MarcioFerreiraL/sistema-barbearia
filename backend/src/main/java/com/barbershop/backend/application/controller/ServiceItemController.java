@@ -1,6 +1,7 @@
 package com.barbershop.backend.application.controller;
 
-import com.barbershop.backend.domain.model.ServiceItem;
+import com.barbershop.backend.application.dto.request.ServiceItemRequest;
+import com.barbershop.backend.application.dto.response.ServiceItemResponse;
 import com.barbershop.backend.service.ServiceItemService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,33 +20,29 @@ public class ServiceItemController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<ServiceItem>> getAllServiceItems() {
-        return new ResponseEntity<>(serviceItemService.getAll(), HttpStatus.OK);
+    public ResponseEntity<List<ServiceItemResponse>> getAllServiceItems() {
+        return new ResponseEntity<>(serviceItemService.getAllServicesItens(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ServiceItem> getServiceItemById(@PathVariable Long id) {
-        ServiceItem serviceItem = serviceItemService.getServiceItemById(id);
+    public ResponseEntity<ServiceItemResponse> getServiceItemById(@PathVariable Long id) {
+        ServiceItemResponse serviceItem = serviceItemService.getServiceItemById(id);
         return ResponseEntity.ok(serviceItem);
     }
     @PostMapping
-    public ResponseEntity<ServiceItem> createServiceItem(@RequestBody ServiceItem serviceItem) {
-        ServiceItem createdServiceItem = serviceItemService.createServiceItem(serviceItem);
+    public ResponseEntity<ServiceItemResponse> createServiceItem(@RequestBody ServiceItemRequest request) {
+        ServiceItemResponse createdServiceItem = serviceItemService.createServiceItem(request);
         return new ResponseEntity<>(createdServiceItem, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ServiceItem> updateServiceItem(@RequestBody ServiceItem serviceItem) {
-        if (serviceItemService.verifyServiceItem(serviceItem)) {
-            ServiceItem updatedServiceItem = serviceItemService.updateServiceItem(serviceItem);
-            return ResponseEntity.status(HttpStatus.OK).body(updatedServiceItem);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    @PatchMapping("/{id}")
+    public ResponseEntity<ServiceItemResponse> updateServiceItem(@RequestBody ServiceItemRequest request) {
+        ServiceItemResponse updatedServiceItem = serviceItemService.updateServiceItem(request);
+        return new ResponseEntity<>(updatedServiceItem, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ServiceItem> deleteServiceItem(@PathVariable Long id) {
+    public ResponseEntity<ServiceItemResponse> deleteServiceItem(@PathVariable Long id) {
         serviceItemService.deleteServiceItem(id);
 
         return ResponseEntity.noContent().build();

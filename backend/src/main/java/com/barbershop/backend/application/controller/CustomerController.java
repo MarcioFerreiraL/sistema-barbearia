@@ -24,19 +24,9 @@ public class CustomerController {
         return new ResponseEntity<>(customerService.getAllCustomers(), HttpStatus.OK);
     }
 
-    @GetMapping("{email}")
-    public ResponseEntity<CustomerResponse> getCustomerByEmail(@PathVariable String email) {
-        return new ResponseEntity<>(customerService.getCustomerByEmail(email), HttpStatus.OK);
-    }
-
-    @GetMapping("{phoneNumber}")
-    public ResponseEntity<CustomerResponse> getCustomerByPhoneNumber(@PathVariable String phoneNumber) {
-        return new ResponseEntity<>(customerService.getCustomerByPhone(phoneNumber), HttpStatus.OK);
-    }
-
-    @GetMapping("{name}")
-    public ResponseEntity<CustomerResponse> getCustomerByName(@PathVariable String name) {
-        return new ResponseEntity<>(customerService.getCustomerByName(name), HttpStatus.OK);
+    @GetMapping("/{id}")
+    public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable UUID id) {
+        return new ResponseEntity<>(customerService.getCustomerById(id), HttpStatus.OK);
     }
 
     @PostMapping
@@ -45,7 +35,7 @@ public class CustomerController {
         return new ResponseEntity<>(createdCustomer, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<CustomerResponse> updateCustomer(@PathVariable UUID id, @RequestBody CustomerRequest customer) {
         CustomerResponse updatedCustomer = customerService.updateCustomer(customer);
         return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);

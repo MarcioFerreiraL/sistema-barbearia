@@ -5,7 +5,7 @@ import com.barbershop.backend.application.dto.response.CustomerResponse;
 import com.barbershop.backend.domain.model.Customer;
 import com.barbershop.backend.domain.model.enums.Role;
 import com.barbershop.backend.service.exception.BusinessRuleException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.barbershop.backend.service.exception.ResourceNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.barbershop.backend.domain.repository.CustomerRepository;
@@ -48,9 +48,11 @@ public class CustomerService {
         return customerToResponse(customer);
     }
 
-    public CustomerResponse getCustomerByName(String fullname) {
-        Customer customer = customerRepository.getCustomerByFullName(fullname);
-        return customerToResponse(customer);
+    public List<CustomerResponse> getCustomersByName(String fullname) {
+        List<Customer> customers = customerRepository.getCustomersByFullName(fullname);
+        return customers.stream()
+                .map(this::customerToResponse)
+                .collect(Collectors.toList());
     }
 
     public CustomerResponse createCustomer(CustomerRequest request) {
@@ -66,7 +68,7 @@ public class CustomerService {
 
     public CustomerResponse updateCustomer(CustomerRequest request) {
         Customer customer = requestToCustomer(request);
-        customerRepository.getCustomerByEmail(customer.getEmail());
+        customerRepository.getCustomerById(customer.getId());
         validateCustomerBusinessRules(customer);
         customerRepository.save(customer);
         return customerToResponse(customer);
@@ -77,7 +79,7 @@ public class CustomerService {
         if (customer != null) {
             customerRepository.deleteById(id);
         } else {
-            throw new IllegalArgumentException("Não foi possivel deletar o barbeiro.");
+            throw new ResourceNotFoundException("Cliente com id" + id + "não encontrado");
         }
     }
 

@@ -1,0 +1,611 @@
+2026-06-07T22:27:51.155-03:00  INFO 45248 --- [backend] [main] c.barbershop.backend.BackendApplication  : Starting BackendApplication using Java 25.0.1 with PID 45248 (/home/ogmacin/Programação/sistema-barbearia/backend/target/classes started by ogmacin in /home/ogmacin/Programação/sistema-barbearia/backend)
+2026-06-07T22:27:51.163-03:00 DEBUG 45248 --- [backend] [main] c.barbershop.backend.BackendApplication  : Running with Spring Boot v4.0.6, Spring v7.0.7
+2026-06-07T22:27:51.165-03:00  INFO 45248 --- [backend] [main] c.barbershop.backend.BackendApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-06-07T22:27:52.388-03:00  INFO 45248 --- [backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-07T22:27:52.469-03:00  INFO 45248 --- [backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 70 ms. Found 6 JPA repository interfaces.
+2026-06-07T22:27:53.095-03:00  INFO 45248 --- [backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-06-07T22:27:53.113-03:00  INFO 45248 --- [backend] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-06-07T22:27:53.113-03:00  INFO 45248 --- [backend] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-06-07T22:27:53.161-03:00  INFO 45248 --- [backend] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1892 ms
+2026-06-07T22:27:53.330-03:00  INFO 45248 --- [backend] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-06-07T22:27:53.401-03:00  INFO 45248 --- [backend] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.12.Final
+2026-06-07T22:27:54.016-03:00  INFO 45248 --- [backend] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-07T22:27:54.053-03:00  INFO 45248 --- [backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-06-07T22:27:54.479-03:00  INFO 45248 --- [backend] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@46994f26
+2026-06-07T22:27:54.482-03:00  INFO 45248 --- [backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-06-07T22:27:54.573-03:00  INFO 45248 --- [backend] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/barbershop]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.14
+	Default catalog/schema: barbershop/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-06-07T22:27:56.065-03:00  INFO 45248 --- [backend] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-07T22:27:56.143-03:00  INFO 45248 --- [backend] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-07T22:27:56.210-03:00  INFO 45248 --- [backend] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-06-07T22:27:56.462-03:00 DEBUG 45248 --- [backend] [main] c.b.b.i.security.SecurityFilter          : Filter 'securityFilter' configured for use
+2026-06-07T22:27:57.292-03:00  INFO 45248 --- [backend] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name autheticationService
+2026-06-07T22:27:57.355-03:00  WARN 45248 --- [backend] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-06-07T22:27:57.558-03:00 DEBUG 45248 --- [backend] [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, SecurityFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2026-06-07T22:27:57.950-03:00  INFO 45248 --- [backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-06-07T22:27:57.956-03:00  INFO 45248 --- [backend] [main] c.barbershop.backend.BackendApplication  : Started BackendApplication in 7.579 seconds (process running for 8.612)
+2026-06-07T22:28:07.436-03:00  INFO 45248 --- [backend] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-06-07T22:28:07.437-03:00  INFO 45248 --- [backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-06-07T22:28:07.439-03:00  INFO 45248 --- [backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-06-07T22:28:07.455-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/auth/login
+2026-06-07T22:28:07.493-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing POST /api/auth/login
+2026-06-07T22:28:07.503-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:07.504-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured POST /api/auth/login
+2026-06-07T22:28:08.101-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.a.dao.DaoAuthenticationProvider    : Authenticated user
+2026-06-07T22:28:08.658-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:28:08.664-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers/
+2026-06-07T22:28:08.667-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers/
+2026-06-07T22:28:08.701-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/customers/
+2026-06-07T22:28:08.716-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:28:08.717-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers/
+2026-06-07T22:28:08.831-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:08.837-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:08.838-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:08.838-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:08.839-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:08.840-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:08.851-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:28:08.851-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:28:08.851-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:08.852-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:08.853-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:28:08.851-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:08.855-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:08.855-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:08.854-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:08.870-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/customers/
+2026-06-07T22:28:08.884-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:28:08.887-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:08.885-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers/
+2026-06-07T22:28:08.889-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:08.896-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:28:08.901-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:08.904-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:08.904-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:08.909-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:08.911-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:28:08.913-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:08.913-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:08.910-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:08.937-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:08.939-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:28:08.939-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:08.939-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:47.302-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/auth/login
+2026-06-07T22:28:47.371-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing POST /api/auth/login
+2026-06-07T22:28:47.372-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:47.373-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured POST /api/auth/login
+2026-06-07T22:28:47.508-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.s.a.dao.DaoAuthenticationProvider    : Authenticated user
+2026-06-07T22:28:47.878-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:28:47.880-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers/
+2026-06-07T22:28:47.884-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:28:47.884-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers/
+2026-06-07T22:28:47.888-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers/
+2026-06-07T22:28:47.897-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers/
+2026-06-07T22:28:47.905-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:28:47.909-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:28:47.911-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers/
+2026-06-07T22:28:47.916-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:47.917-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:47.917-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/customers/
+2026-06-07T22:28:47.917-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:28:47.918-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:47.921-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:47.921-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:47.922-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:28:47.922-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:47.923-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:47.924-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:47.928-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers/
+2026-06-07T22:28:47.925-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:47.928-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:47.928-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:47.929-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:28:47.928-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:47.929-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:47.929-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:28:47.930-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:47.931-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:47.929-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:47.929-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/customers/
+2026-06-07T22:28:47.934-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:47.935-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:47.936-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:28:47.936-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:47.936-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:47.939-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:47.939-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:28:47.940-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:28:47.941-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:28:47.942-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:30:07.503-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:30:07.503-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers
+2026-06-07T22:30:07.505-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:30:07.520-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:30:07.522-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:30:07.523-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:30:07.525-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:30:07.527-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:30:07.527-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:30:07.527-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:30:07.528-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:30:07.528-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:30:07.529-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:30:07.529-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:30:07.529-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:30:07.529-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:30:07.529-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:30:07.526-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:30:07.535-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:30:07.536-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:30:07.537-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:30:33.242-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/auth/login
+2026-06-07T22:30:33.249-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing POST /api/auth/login
+2026-06-07T22:30:33.252-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:30:33.254-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured POST /api/auth/login
+2026-06-07T22:30:33.259-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] .s.a.DefaultAuthenticationEventPublisher : No event was found for the exception org.springframework.security.authentication.InternalAuthenticationServiceException
+2026-06-07T22:30:33.259-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.authentication.ProviderManager     : Authentication service failed internally for user 'marciofl@gmail.com'
+
+org.springframework.security.authentication.InternalAuthenticationServiceException: UserDetailsService returned null, which is an interface contract violation
+	at org.springframework.security.authentication.dao.DaoAuthenticationProvider.retrieveUser(DaoAuthenticationProvider.java:108) ~[spring-security-core-7.0.5.jar:7.0.5]
+	at org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider.authenticate(AbstractUserDetailsAuthenticationProvider.java:145) ~[spring-security-core-7.0.5.jar:7.0.5]
+	at org.springframework.security.authentication.ProviderManager.authenticate(ProviderManager.java:183) ~[spring-security-core-7.0.5.jar:7.0.5]
+	at com.barbershop.backend.application.controller.AuthController.login(AuthController.java:31) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565) ~[na:na]
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:252) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:184) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117) ~[spring-webmvc-7.0.7.jar:7.0.7]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:934) ~[spring-webmvc-7.0.7.jar:7.0.7]
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:853) ~[spring-webmvc-7.0.7.jar:7.0.7]
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:86) ~[spring-webmvc-7.0.7.jar:7.0.7]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963) ~[spring-webmvc-7.0.7.jar:7.0.7]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866) ~[spring-webmvc-7.0.7.jar:7.0.7]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1000) ~[spring-webmvc-7.0.7.jar:7.0.7]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:903) ~[spring-webmvc-7.0.7.jar:7.0.7]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:649) ~[tomcat-embed-core-11.0.21.jar:6.1]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874) ~[spring-webmvc-7.0.7.jar:7.0.7]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710) ~[tomcat-embed-core-11.0.21.jar:6.1]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:128) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53) ~[tomcat-embed-websocket-11.0.21.jar:11.0.21]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:235) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:376) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:101) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:132) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:86) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:181) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at com.barbershop.backend.infraestructure.security.SecurityFilter.doFilterInternal(SecurityFilter.java:40) ~[classes/:na]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:110) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:96) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:385) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:237) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:195) ~[spring-security-web-7.0.5.jar:7.0.5]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.web.filter.ServletRequestPathFilter.doFilter(ServletRequestPathFilter.java:52) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebSecurityConfiguration.java:317) ~[spring-security-config-7.0.5.jar:7.0.5]
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:355) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:272) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:199) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.7.jar:7.0.7]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:77) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:492) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:113) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:83) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:72) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:341) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1801) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:946) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:480) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:57) ~[tomcat-embed-core-11.0.21.jar:11.0.21]
+	at java.base/java.lang.Thread.run(Thread.java:1474) ~[na:na]
+
+2026-06-07T22:31:25.412-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:31:25.419-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing POST /api/customers
+2026-06-07T22:31:25.420-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:25.420-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured POST /api/customers
+2026-06-07T22:31:34.207-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:31:34.217-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing POST /api/customers
+2026-06-07T22:31:34.219-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:34.220-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured POST /api/customers
+2026-06-07T22:31:34.487-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/auth/login
+2026-06-07T22:31:34.515-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing POST /api/auth/login
+2026-06-07T22:31:34.518-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:34.521-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured POST /api/auth/login
+2026-06-07T22:31:34.689-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.a.dao.DaoAuthenticationProvider    : Authenticated user
+2026-06-07T22:31:34.932-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:31:34.932-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers
+2026-06-07T22:31:34.936-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:31:34.936-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:31:34.937-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers
+2026-06-07T22:31:34.944-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:31:34.944-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:31:34.948-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:34.949-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:34.949-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:34.950-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:34.950-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:34.951-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:34.951-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:34.955-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:34.955-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:34.957-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:34.964-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:31:34.965-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:31:34.967-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:34.967-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:31:34.968-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:34.968-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:34.968-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:34.968-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:34.969-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:34.969-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:34.969-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:34.969-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:34.969-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:34.981-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:34.982-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:34.984-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:34.984-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:34.985-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:34.995-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:31:34.998-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:34.998-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:34.999-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:34.999-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:35.000-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:39.567-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:31:39.570-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:31:39.571-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:31:39.582-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:39.585-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:39.583-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:39.584-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:39.586-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:39.586-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:39.587-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:39.588-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:39.592-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:39.589-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:39.595-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:39.596-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:39.596-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:39.591-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:39.593-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:41.172-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:31:41.173-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers
+2026-06-07T22:31:41.173-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:31:41.179-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:31:41.182-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:31:41.184-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:31:41.187-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:41.188-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:41.188-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:41.190-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:41.193-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:41.193-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:41.193-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:41.197-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:41.196-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:41.198-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:41.201-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:41.203-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:41.202-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:41.204-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:41.207-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:43.074-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:31:43.075-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:31:43.079-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:31:43.082-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:43.083-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:43.084-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:43.084-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:43.084-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:43.084-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:43.084-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:43.084-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:43.085-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:43.085-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:43.086-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:43.086-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:43.086-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:43.087-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:43.086-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:52.561-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers
+2026-06-07T22:31:52.561-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:31:52.563-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:31:52.565-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:31:52.566-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers
+2026-06-07T22:31:52.567-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:31:52.593-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:31:52.593-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:31:52.594-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:31:52.595-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:31:52.598-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:31:52.601-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:52.601-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:52.606-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:31:52.609-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:52.610-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:52.610-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:52.616-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:52.617-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:52.617-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:52.617-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:52.617-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:52.617-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:52.618-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:52.618-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:52.618-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:52.618-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:52.618-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:52.619-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:52.620-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:52.620-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:52.622-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:52.626-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:52.629-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:52.627-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:52.630-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:52.631-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:31:52.631-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:52.631-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:52.631-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:31:52.627-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:31:52.632-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:32:14.294-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/auth/login
+2026-06-07T22:32:14.371-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing POST /api/auth/login
+2026-06-07T22:32:14.371-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:32:14.372-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured POST /api/auth/login
+2026-06-07T22:32:14.497-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.a.dao.DaoAuthenticationProvider    : Authenticated user
+2026-06-07T22:32:14.782-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:32:14.800-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:32:14.805-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:32:14.808-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers
+2026-06-07T22:32:14.810-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers
+2026-06-07T22:32:14.813-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:32:14.813-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:32:14.815-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:32:14.816-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:32:14.817-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:32:14.819-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:32:14.822-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-9] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:32:14.844-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:32:14.847-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:32:14.851-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:32:14.847-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:32:14.864-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:32:14.867-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:32:14.867-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:32:14.868-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:32:14.869-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:32:14.869-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:32:14.869-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:32:14.870-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:32:14.873-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:32:14.874-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:32:14.877-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:32:14.877-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:32:14.877-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:32:14.878-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:32:14.878-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:32:14.878-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:32:14.877-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:32:14.878-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:32:14.878-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-3] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:32:14.878-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:32:14.878-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:32:14.878-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:32:14.878-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:32:14.881-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:32:14.890-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:32:14.890-03:00 DEBUG 45248 --- [backend] [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:34:17.693-03:00  INFO 45248 --- [backend] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-06-07T22:34:17.709-03:00  INFO 45248 --- [backend] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-06-07T22:34:17.718-03:00  INFO 45248 --- [backend] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-06-07T22:34:17.722-03:00  INFO 45248 --- [backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-06-07T22:34:17.746-03:00  INFO 45248 --- [backend] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-06-07T22:34:22.939-03:00  INFO 50286 --- [backend] [main] c.barbershop.backend.BackendApplication  : Starting BackendApplication using Java 25.0.1 with PID 50286 (/home/ogmacin/Programação/sistema-barbearia/backend/target/classes started by ogmacin in /home/ogmacin/Programação/sistema-barbearia/backend)
+2026-06-07T22:34:22.944-03:00 DEBUG 50286 --- [backend] [main] c.barbershop.backend.BackendApplication  : Running with Spring Boot v4.0.6, Spring v7.0.7
+2026-06-07T22:34:22.949-03:00  INFO 50286 --- [backend] [main] c.barbershop.backend.BackendApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-06-07T22:34:24.160-03:00  INFO 50286 --- [backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-07T22:34:24.249-03:00  INFO 50286 --- [backend] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 76 ms. Found 6 JPA repository interfaces.
+2026-06-07T22:34:24.948-03:00  INFO 50286 --- [backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-06-07T22:34:24.964-03:00  INFO 50286 --- [backend] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-06-07T22:34:24.965-03:00  INFO 50286 --- [backend] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-06-07T22:34:25.009-03:00  INFO 50286 --- [backend] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1967 ms
+2026-06-07T22:34:25.170-03:00  INFO 50286 --- [backend] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-06-07T22:34:25.238-03:00  INFO 50286 --- [backend] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.12.Final
+2026-06-07T22:34:25.789-03:00  INFO 50286 --- [backend] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-07T22:34:25.824-03:00  INFO 50286 --- [backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-06-07T22:34:26.294-03:00  INFO 50286 --- [backend] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@64ed18ec
+2026-06-07T22:34:26.296-03:00  INFO 50286 --- [backend] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-06-07T22:34:26.364-03:00  INFO 50286 --- [backend] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/barbershop]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.14
+	Default catalog/schema: barbershop/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-06-07T22:34:27.827-03:00  INFO 50286 --- [backend] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-07T22:34:27.909-03:00  INFO 50286 --- [backend] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-07T22:34:27.975-03:00  INFO 50286 --- [backend] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-06-07T22:34:28.200-03:00 DEBUG 50286 --- [backend] [main] c.b.b.i.security.SecurityFilter          : Filter 'securityFilter' configured for use
+2026-06-07T22:34:29.243-03:00  INFO 50286 --- [backend] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name autheticationService
+2026-06-07T22:34:29.372-03:00  WARN 50286 --- [backend] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-06-07T22:34:29.816-03:00 DEBUG 50286 --- [backend] [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, SecurityFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2026-06-07T22:34:30.444-03:00  INFO 50286 --- [backend] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-06-07T22:34:30.458-03:00  INFO 50286 --- [backend] [main] c.barbershop.backend.BackendApplication  : Started BackendApplication in 8.294 seconds (process running for 9.235)
+2026-06-07T22:37:18.026-03:00  INFO 50286 --- [backend] [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-06-07T22:37:18.027-03:00  INFO 50286 --- [backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-06-07T22:37:18.029-03:00  INFO 50286 --- [backend] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-06-07T22:37:18.048-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:37:18.048-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers
+2026-06-07T22:37:18.048-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:37:18.101-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:37:18.100-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:37:18.103-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:37:18.488-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:37:18.491-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:37:18.494-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:37:18.494-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:37:18.495-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:37:18.495-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:37:18.512-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:37:18.512-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:37:18.513-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-6] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:37:18.512-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:37:18.514-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /error
+2026-06-07T22:37:18.514-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:37:18.515-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:37:18.515-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:37:18.517-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2026-06-07T22:37:31.766-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/auth/login
+2026-06-07T22:37:31.778-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing POST /api/auth/login
+2026-06-07T22:37:31.780-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-06-07T22:37:31.782-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured POST /api/auth/login
+2026-06-07T22:37:32.333-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-8] o.s.s.a.dao.DaoAuthenticationProvider    : Authenticated user
+2026-06-07T22:37:32.638-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:37:32.642-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers
+2026-06-07T22:37:32.643-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers
+2026-06-07T22:37:32.637-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:37:32.649-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:37:32.644-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:37:32.673-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:37:32.685-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/customers
+2026-06-07T22:37:32.697-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:37:32.701-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:37:32.704-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:37:32.703-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:37:32.706-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:37:32.716-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/services
+2026-06-07T22:37:32.725-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/services
+2026-06-07T22:37:32.727-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/barbers
+2026-06-07T22:37:32.730-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/barbers
+2026-06-07T22:37:32.733-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/customers
+2026-06-07T22:37:38.320-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/appointments
+2026-06-07T22:37:38.322-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers
+2026-06-07T22:37:38.325-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers
+2026-06-07T22:37:38.358-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:37:38.360-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/appointments
+2026-06-07T22:37:38.360-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:37:38.370-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/barbers
+2026-06-07T22:37:38.386-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/barbers
+2026-06-07T22:37:38.387-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/appointments
+2026-06-07T22:37:38.456-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/appointments
+2026-06-07T22:37:38.469-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/appointments
+2026-06-07T22:43:43.295-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:43:43.296-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:43:43.359-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:43:43.390-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:43:43.402-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/customers
+2026-06-07T22:43:43.417-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/customers
+2026-06-07T22:43:43.548-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/appointments
+2026-06-07T22:43:43.555-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/appointments
+2026-06-07T22:43:43.595-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/appointments
+2026-06-07T22:43:43.600-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/appointments
+2026-06-07T22:43:43.627-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/appointments
+2026-06-07T22:43:43.644-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/appointments
+2026-06-07T22:45:23.637-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:45:23.653-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:45:23.665-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/customers
+2026-06-07T22:45:23.709-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/appointments
+2026-06-07T22:45:23.721-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/appointments
+2026-06-07T22:45:23.730-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/appointments
+2026-06-07T22:45:33.669-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers
+2026-06-07T22:45:33.669-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:45:33.670-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:45:33.677-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:45:33.678-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/barbers
+2026-06-07T22:45:33.681-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:45:33.709-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:45:33.709-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:45:33.712-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:45:33.712-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/barbers
+2026-06-07T22:45:33.712-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:45:33.721-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:45:33.723-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/customers
+2026-06-07T22:45:33.730-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/barbers
+2026-06-07T22:45:33.745-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/customers
+2026-06-07T22:45:33.746-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/services
+2026-06-07T22:45:33.750-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/barbers
+2026-06-07T22:45:33.761-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/services
+2026-06-07T22:45:55.911-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:45:55.912-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/services
+2026-06-07T22:45:55.927-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:45:55.928-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/services
+2026-06-07T22:45:55.935-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/services
+2026-06-07T22:45:55.935-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/services
+2026-06-07T22:46:03.366-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:46:03.367-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/customers
+2026-06-07T22:46:03.378-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:46:03.383-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/customers
+2026-06-07T22:46:03.389-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/customers
+2026-06-07T22:46:03.396-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/customers
+2026-06-07T22:46:03.472-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/appointments
+2026-06-07T22:46:03.475-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/appointments
+2026-06-07T22:46:03.477-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/appointments
+2026-06-07T22:46:03.485-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/appointments
+2026-06-07T22:46:03.489-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/appointments
+2026-06-07T22:46:03.499-03:00 DEBUG 50286 --- [backend] [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/appointments

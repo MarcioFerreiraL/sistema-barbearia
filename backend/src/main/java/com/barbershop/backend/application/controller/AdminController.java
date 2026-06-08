@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/admins/")
+@RequestMapping("/api/admins")
 public class AdminController {
     private final AdminService adminService;
     public AdminController(AdminService adminService) {

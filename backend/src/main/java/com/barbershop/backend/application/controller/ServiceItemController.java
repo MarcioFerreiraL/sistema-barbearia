@@ -36,15 +36,20 @@ public class ServiceItemController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ServiceItemResponse> updateServiceItem(@RequestBody ServiceItemRequest request) {
-        ServiceItemResponse updatedServiceItem = serviceItemService.updateServiceItem(request);
+    public ResponseEntity<ServiceItemResponse> updateServiceItem(@PathVariable Long id, @RequestBody ServiceItemRequest request) {
+        ServiceItemResponse updatedServiceItem = serviceItemService.updateServiceItem(id, request);
         return new ResponseEntity<>(updatedServiceItem, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ServiceItemResponse> deleteServiceItem(@PathVariable Long id) {
         serviceItemService.deleteServiceItem(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
-        return ResponseEntity.noContent().build();
+    @PatchMapping("/{id}/toggle-status")
+    public ResponseEntity<ServiceItemResponse> toggleServiceItemStatus(@PathVariable Long id) {
+        ServiceItemResponse updatedServiceItem = serviceItemService.toggleServiceItemStatus(id);
+        return new ResponseEntity<>(updatedServiceItem, HttpStatus.OK);
     }
 }

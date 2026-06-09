@@ -1,54 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useAuth } from "../../contexts/AuthContext";
+
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const router = useRouter();
+  const { isLoggedIn, role, logout } = useAuth();
 
-  useEffect(() => {
-    // Verificar token ao montar o componente
-    const checkAuth = () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        setIsLoggedIn(true);
-        try {
-          const payload = JSON.parse(atob(token.split(".")[1]));
-          const email = payload.sub || "";
-          // Lógica simplificada: Se o e-mail tiver "admin", exibe a aba de admin.
-          // O ideal seria o token conter a ROLE do utilizador.
-          if (email.toLowerCase().includes("admin")) {
-            setIsAdmin(true);
-          }
-        } catch (e) {
-          console.error("Token inválido");
-        }
-      } else {
-        setIsLoggedIn(false);
-        setIsAdmin(false);
-      }
-    };
-
-    checkAuth();
-    
-    // Opcional: ouvir mudanças no storage se o login ocorrer noutra aba
-    window.addEventListener("storage", checkAuth);
-    return () => window.removeEventListener("storage", checkAuth);
-  }, []);
+  const isAdmin = role === "ADMIN";
+  const isBarber = role === "BARBER";
+  const isCustomer = isLoggedIn && !isAdmin && !isBarber;
 
   const toggleMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
-    setIsAdmin(false);
-    router.push("/login");
+    logout();
   };
 
   return (
@@ -81,13 +51,18 @@ export default function Navbar() {
           <Link href="/prices" className="hover:text-amber-500 transition-colors">Serviços</Link>
           <Link href="/gallery" className="hover:text-amber-500 transition-colors">Galeria</Link>
           
-          {isLoggedIn && (
+          {isCustomer && (
             <Link href="/profile" className="hover:text-amber-500 transition-colors">Meu Perfil</Link>
           )}
 
           {isAdmin && (
             <Link href="/admin" className="hover:text-amber-500 transition-colors">Painel Admin</Link>
           )}
+
+          {isBarber && (
+            <Link href="/barber-panel" className="hover:text-amber-500 transition-colors">Painel do Barbeiro</Link>
+          )}
+
           
           {!isLoggedIn ? (
             <Link href="/login" className="hover:text-amber-500 transition-colors">Entrar</Link>
@@ -95,9 +70,11 @@ export default function Navbar() {
             <button onClick={handleLogout} className="hover:text-red-500 transition-colors">Sair</button>
           )}
           
-          <Link href="/appointment" className="bg-amber-500 text-zinc-950 px-5 py-2.5 rounded-md font-bold hover:bg-amber-400 transition-transform hover:scale-105">
-            Agendar Agora
-          </Link>
+          {(!isLoggedIn || isCustomer) && (
+            <Link href="/appointment" className="bg-amber-500 text-zinc-950 px-5 py-2.5 rounded-md font-bold hover:bg-amber-400 transition-transform hover:scale-105">
+              Agendar Agora
+            </Link>
+          )}
         </div>
       </div>
 
@@ -108,12 +85,16 @@ export default function Navbar() {
           <Link href="/prices" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Serviços</Link>
           <Link href="/gallery" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Galeria</Link>
           
-          {isLoggedIn && (
+          {isCustomer && (
             <Link href="/profile" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Meu Perfil</Link>
           )}
 
           {isAdmin && (
             <Link href="/admin" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Painel Admin</Link>
+          )}
+
+          {isBarber && (
+            <Link href="/barber-panel" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Painel do Barbeiro</Link>
           )}
 
           {!isLoggedIn ? (
@@ -122,9 +103,11 @@ export default function Navbar() {
             <button onClick={() => { handleLogout(); toggleMenu(); }} className="text-left hover:text-red-500 transition-colors">Sair</button>
           )}
           
-          <Link href="/appointment" onClick={toggleMenu} className="bg-amber-500 text-zinc-950 px-4 py-3 rounded-md font-bold text-center hover:bg-amber-400 transition-colors mt-2">
-            Agendar Agora
-          </Link>
+          {(!isLoggedIn || isCustomer) && (
+            <Link href="/appointment" onClick={toggleMenu} className="bg-amber-500 text-zinc-950 px-4 py-3 rounded-md font-bold text-center hover:bg-amber-400 transition-colors mt-2">
+              Agendar Agora
+            </Link>
+          )}
         </div>
       )}
     </nav>

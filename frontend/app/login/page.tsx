@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { login, registerCustomer } from "../services/api";
+import { login as apiLogin, registerCustomer } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   
   // Estados para controlar se estamos a mostrar o formulário de Login ou Registo
   const [isLoginView, setIsLoginView] = useState(true);
@@ -29,22 +31,39 @@ export default function LoginPage() {
     try {
       if (isLoginView) {
         // --- FAZER LOGIN ---
-        const data = await login(email, password);
+        const data = await apiLogin(email, password);
         
-        // Guarda o Token JWT no armazenamento do navegador
-        localStorage.setItem("token", data.token);
+        // Guarda o Token JWT usando o contexto (atualiza a navbar instantaneamente)
+        login(data.token);
         
-        // Redireciona o cliente para a página de marcações ou perfil
-        router.push("/appointment"); 
-        
+        // Descobre a role para redirecionar para o local certo
+        try {
+          const payload = JSON.parse(atob(data.token.split(".")[1]));
+          let role = payload.sub && payload.sub.toLowerCase().includes("admin") ? "ADMIN" : "CLIENT";
+          
+          if (payload.role) {
+            const rawRole = payload.role.replace("ROLE_", "");
+            role = rawRole === "CUSTOMER" ? "CLIENT" : rawRole;
+          }
+          
+          if (role === "ADMIN") {
+            router.push("/admin");
+          } else if (role === "BARBER") {
+            router.push("/barber-panel");
+          } else {
+            router.push("/appointment");
+          }
+        } catch (e) {
+          router.push("/appointment"); 
+        }
       } else {
         // --- FAZER REGISTO ---
         await registerCustomer({ fullName, email, password, phoneNumber });
         
         // Se o registo der sucesso, fazemos login automático logo de seguida!
-        const data = await login(email, password);
-        localStorage.setItem("token", data.token);
-        router.push("/appointment");
+        const data = await apiLogin(email, password);
+        login(data.token);
+        router.push("/appointment"); // Registo é sempre cliente
       }
     } catch (err: any) {
       setError(err.message);

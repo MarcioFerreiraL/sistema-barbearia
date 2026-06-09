@@ -25,6 +25,7 @@ public class TokenService {
             return JWT.create()
                     .withIssuer("barbershop-api") // Quem emitiu
                     .withSubject(user.getEmail()) // Quem é o dono do token
+                    .withClaim("role", user.getRole().name())
                     .withExpiresAt(genExpirationDate()) // Expira em 2 horas
                     .sign(algorithm);
         } catch (JWTVerificationException exception) {

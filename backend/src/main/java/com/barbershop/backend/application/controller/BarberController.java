@@ -35,8 +35,8 @@ public class BarberController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<BarberResponse> updateBarber(@RequestBody BarberRequest barber) {
-        BarberResponse updatedBarber = barberService.updateBarber(barber);
+    public ResponseEntity<BarberResponse> updateBarber(@PathVariable UUID id, @RequestBody BarberRequest barber) {
+        BarberResponse updatedBarber = barberService.updateBarber(id, barber);
         return new ResponseEntity<>(updatedBarber, HttpStatus.OK);
     }
 
@@ -44,5 +44,11 @@ public class BarberController {
     public ResponseEntity<BarberResponse> deleteBarber(@PathVariable UUID id) {
         barberService.deleteBarber(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}/toggle-status")
+    public ResponseEntity<BarberResponse> toggleBarberStatus(@PathVariable UUID id) {
+        BarberResponse updatedBarber = barberService.toggleBarberStatus(id);
+        return new ResponseEntity<>(updatedBarber, HttpStatus.OK);
     }
 }

@@ -9,11 +9,14 @@ function getToken() {
 
 async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const token = getToken();
-  const headers = {
-    "Content-Type": "application/json",
+  const headers: any = {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(options.headers || {}),
   };
+
+  if (options.body) {
+    headers["Content-Type"] = "application/json";
+  }
 
   const response = await fetch(url, { ...options, headers });
   
@@ -85,5 +88,43 @@ export async function createAppointment(appointmentData: any) {
   return fetchWithAuth(`${BASE_URL}/appointments`, {
     method: "POST",
     body: JSON.stringify(appointmentData),
+  });
+}
+
+export async function deleteService(id: number) {
+  return fetchWithAuth(`${BASE_URL}/services/${id}`, {
+    method: "DELETE",
+  });
+}
+
+export async function deleteBarber(id: string) {
+  return fetchWithAuth(`${BASE_URL}/barbers/${id}`, {
+    method: "DELETE",
+  });
+}
+
+export async function updateService(id: number, data: any) {
+  return fetchWithAuth(`${BASE_URL}/services/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function toggleServiceStatus(id: number) {
+  return fetchWithAuth(`${BASE_URL}/services/${id}/toggle-status`, {
+    method: "PATCH",
+  });
+}
+
+export async function updateBarber(id: string, data: any) {
+  return fetchWithAuth(`${BASE_URL}/barbers/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function toggleBarberStatus(id: string) {
+  return fetchWithAuth(`${BASE_URL}/barbers/${id}/toggle-status`, {
+    method: "PATCH",
   });
 }

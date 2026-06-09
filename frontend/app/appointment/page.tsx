@@ -51,6 +51,21 @@ export default function Appointment() {
         const payloadBase64 = token.split(".")[1];
         const payload = JSON.parse(atob(payloadBase64));
         const userEmail = payload.sub;
+        
+        let role = userEmail && userEmail.toLowerCase().includes("admin") ? "ADMIN" : "CLIENT";
+        if (payload.role) {
+          const rawRole = payload.role.replace("ROLE_", "");
+          role = rawRole === "CUSTOMER" ? "CLIENT" : rawRole;
+        }
+
+        if (role === "ADMIN") {
+          router.push("/admin");
+          return;
+        }
+        if (role === "BARBER") {
+          router.push("/barber-panel");
+          return;
+        }
 
         const [fetchedServices, fetchedBarbers, fetchedCustomers] = await Promise.all([
           getServices(),

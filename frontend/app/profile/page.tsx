@@ -23,6 +23,21 @@ export default function UserProfile() {
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
         const userEmail = payload.sub;
+        
+        let role = userEmail && userEmail.toLowerCase().includes("admin") ? "ADMIN" : "CLIENT";
+        if (payload.role) {
+          const rawRole = payload.role.replace("ROLE_", "");
+          role = rawRole === "CUSTOMER" ? "CLIENT" : rawRole;
+        }
+
+        if (role === "ADMIN") {
+          router.push("/admin");
+          return;
+        }
+        if (role === "BARBER") {
+          router.push("/barber-panel");
+          return;
+        }
 
         if (!userEmail) {
           throw new Error("Token inválido.");

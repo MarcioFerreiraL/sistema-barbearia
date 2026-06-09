@@ -39,12 +39,19 @@ public class ServiceItemService {
         return serviceItemToResponse(serviceItem);
     }
 
-    public ServiceItemResponse updateServiceItem(ServiceItemRequest request) {
-        ServiceItem serviceItem = requestToService(request);
-        validateServiceItemBusinessRules(serviceItem);
-        serviceItemRepository.getServiceItemById(serviceItem.getId());
-        serviceItemRepository.save(serviceItem);
-        return serviceItemToResponse(serviceItem);
+    public ServiceItemResponse updateServiceItem(Long id, ServiceItemRequest request) {
+        ServiceItem existingService = serviceItemRepository.getServiceItemById(id);
+        if (existingService == null) {
+            throw new ResourceNotFoundException("Serviço não encontrado");
+        }
+        existingService.setName(request.name());
+        existingService.setDescription(request.description());
+        existingService.setPrice(request.price());
+        existingService.setDurationInMinutes(request.durationInMinutes());
+        
+        validateServiceItemBusinessRules(existingService);
+        serviceItemRepository.save(existingService);
+        return serviceItemToResponse(existingService);
     }
 
     public void deleteServiceItem(Long id) {
@@ -54,7 +61,17 @@ public class ServiceItemService {
         } else {
             throw new ResourceNotFoundException("Serviço não encontrado");
         }
+    }
 
+    @org.springframework.transaction.annotation.Transactional
+    public ServiceItemResponse toggleServiceItemStatus(Long id) {
+        ServiceItem serviceItem = serviceItemRepository.getServiceItemById(id);
+        if (serviceItem == null) {
+            throw new ResourceNotFoundException("Serviço não encontrado");
+        }
+        serviceItem.setActive(!serviceItem.isActive());
+        serviceItemRepository.save(serviceItem);
+        return serviceItemToResponse(serviceItem);
     }
 
     public void validateServiceItemBusinessRules(ServiceItem serviceItem) {
@@ -70,7 +87,7 @@ public class ServiceItemService {
                 serviceItem.getDescription(),
                 serviceItem.getPrice(),
                 serviceItem.getDurationInMinutes(),
-                true
+                serviceItem.isActive()
         );
     }
 

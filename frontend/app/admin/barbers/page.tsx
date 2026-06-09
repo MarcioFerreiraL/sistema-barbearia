@@ -1,0 +1,328 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { getBarbers, deleteBarber, getAppointments, updateBarber, toggleBarberStatus } from "../../services/api";
+
+export default function ManageBarbersPage() {
+  const [barbers, setBarbers] = useState<any[]>([]);
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Create form state
+  const [formData, setFormData] = useState({ fullName: "", email: "", password: "", phoneNumber: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState({ type: "", message: "" });
+
+  // Modal states
+  const [selectedBarber, setSelectedBarber] = useState<any>(null);
+  const [isReportOpen, setIsReportOpen] = useState(false);
+  
+  // Edit form state
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState({ id: "", fullName: "", email: "", password: "", phoneNumber: "" });
+  const [editStatus, setEditStatus] = useState({ type: "", message: "" });
+
+  const fetchData = async () => {
+    try {
+      const [barberData, apptData] = await Promise.all([getBarbers(), getAppointments()]);
+      setBarbers(barberData);
+      setAppointments(apptData);
+    } catch (e) {
+      console.error("Erro ao carregar dados", e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditFormData({ ...editFormData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setStatus({ type: "", message: "" });
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:8080/api/barbers", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      if (res.ok) {
+        setStatus({ type: "success", message: "Barbeiro cadastrado com sucesso!" });
+        setFormData({ fullName: "", email: "", password: "", phoneNumber: "" });
+        fetchData();
+      } else {
+        const err = await res.json().catch(() => null);
+        setStatus({ type: "error", message: "Erro: " + (err?.message || res.statusText) });
+      }
+    } catch (e: any) {
+      setStatus({ type: "error", message: "Erro de conexão: " + e.message });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir este barbeiro?")) return;
+    try {
+      await deleteBarber(id);
+      setBarbers(barbers.filter(b => b.id !== id));
+      alert("Barbeiro excluído com sucesso.");
+    } catch (e: any) {
+      alert("Erro ao excluir barbeiro: " + e.message);
+    }
+  };
+
+  const handleToggleStatus = async (id: string, currentStatus: boolean) => {
+    if (!confirm(`Tem certeza que deseja ${currentStatus ? 'desativar' : 'ativar'} este barbeiro?`)) return;
+    try {
+      await toggleBarberStatus(id);
+      fetchData();
+    } catch (e: any) {
+      alert("Erro ao alterar estado: " + e.message);
+    }
+  };
+
+  const openReport = (barber: any) => {
+    setSelectedBarber(barber);
+    setIsReportOpen(true);
+  };
+
+  const openEdit = (barber: any) => {
+    setEditFormData({
+      id: barber.id,
+      fullName: barber.fullName,
+      email: barber.email,
+      password: "", // Não mostrar senha existente
+      phoneNumber: barber.phoneNumber
+    });
+    setEditStatus({ type: "", message: "" });
+    setIsEditOpen(true);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setEditStatus({ type: "", message: "" });
+
+    try {
+      const payload = {
+        fullName: editFormData.fullName,
+        email: editFormData.email,
+        phoneNumber: editFormData.phoneNumber,
+        ...(editFormData.password ? { password: editFormData.password } : {})
+      };
+
+      await updateBarber(editFormData.id, payload);
+      setEditStatus({ type: "success", message: "Barbeiro atualizado com sucesso!" });
+      fetchData();
+      setTimeout(() => setIsEditOpen(false), 1500);
+    } catch (e: any) {
+      setEditStatus({ type: "error", message: "Erro ao atualizar: " + e.message });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const barberAppointments = selectedBarber 
+    ? appointments.filter(app => app.barberName === selectedBarber.fullName)
+    : [];
+
+  return (
+    <div>
+      <h1 className="text-3xl font-black text-zinc-900 mb-8">
+        Gerir <span className="text-amber-500">Barbeiros</span>
+      </h1>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Formulário de Cadastro */}
+        <div className="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 h-fit">
+          <h2 className="text-xl font-bold text-zinc-900 mb-4">Novo Barbeiro</h2>
+          
+          {status.message && (
+            <div className={`p-3 rounded-lg mb-4 text-xs font-medium ${
+              status.type === "error" ? "bg-red-50 text-red-600 border border-red-200" : "bg-emerald-50 text-emerald-600 border border-emerald-200"
+            }`}>
+              {status.message}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">Nome Completo</label>
+              <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required
+                className="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 p-2.5 rounded-lg focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">E-mail</label>
+              <input type="email" name="email" value={formData.email} onChange={handleChange} required
+                className="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 p-2.5 rounded-lg focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">Senha Provisória</label>
+              <input type="password" name="password" value={formData.password} onChange={handleChange} required minLength={6}
+                className="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 p-2.5 rounded-lg focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">Telefone</label>
+              <input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required
+                className="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 p-2.5 rounded-lg focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors" />
+            </div>
+            <button type="submit" disabled={isSubmitting} className="w-full bg-zinc-900 text-white font-bold p-3 rounded-lg hover:bg-zinc-800 transition-colors mt-2">
+              {isSubmitting ? "Salvando..." : "Cadastrar"}
+            </button>
+          </form>
+        </div>
+
+        {/* Lista de Barbeiros */}
+        <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
+          <h2 className="text-xl font-bold text-zinc-900 mb-4">Equipa Atual</h2>
+          
+          {isLoading ? (
+            <p className="text-zinc-500 animate-pulse text-sm">Carregando...</p>
+          ) : barbers.length === 0 ? (
+            <p className="text-zinc-500 text-sm">Nenhum barbeiro cadastrado.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs text-zinc-500 uppercase bg-zinc-50 border-b border-zinc-200">
+                  <tr>
+                    <th className="px-4 py-3">Nome</th>
+                    <th className="px-4 py-3">E-mail</th>
+                    <th className="px-4 py-3">Telefone</th>
+                    <th className="px-4 py-3 text-right">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {barbers.map((b) => (
+                    <tr key={b.id} className="border-b border-zinc-100 hover:bg-zinc-50 transition-colors">
+                      <td className="px-4 py-4 font-medium text-zinc-900">
+                        {b.fullName}
+                        {!b.active && <span className="ml-2 text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold">INATIVO</span>}
+                      </td>
+                      <td className="px-4 py-4 text-zinc-500">{b.email}</td>
+                      <td className="px-4 py-4 text-zinc-500">{b.phoneNumber}</td>
+                      <td className="px-4 py-4 text-right">
+                        <div className="flex justify-end items-center gap-2">
+                          <button onClick={() => openReport(b)} title="Relatório" className="p-2 text-zinc-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors border border-transparent hover:border-amber-200">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                          </button>
+                          
+                          <button onClick={() => openEdit(b)} title="Editar" className="p-2 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-200">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                          </button>
+                          
+                          <button 
+                            onClick={() => handleToggleStatus(b.id, b.active)} 
+                            title={b.active ? 'Desativar' : 'Ativar'}
+                            className={`p-2 rounded-lg transition-colors border border-transparent ${b.active ? 'text-zinc-400 hover:text-orange-600 hover:bg-orange-50 hover:border-orange-200' : 'text-zinc-400 hover:text-emerald-600 hover:bg-emerald-50 hover:border-emerald-200'}`}
+                          >
+                            {b.active ? (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            ) : (
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            )}
+                          </button>
+                          
+                          <button onClick={() => handleDelete(b.id)} title="Remover" className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Modal de Relatório */}
+      {isReportOpen && selectedBarber && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl relative">
+            <button onClick={() => setIsReportOpen(false)} className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-900">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h2 className="text-2xl font-black text-zinc-900 mb-1">{selectedBarber.fullName}</h2>
+            <p className="text-sm text-zinc-500 mb-6">Relatório de Atendimentos</p>
+            
+            <div className="space-y-4 mb-6">
+              <div className="bg-zinc-50 p-4 rounded-xl border border-zinc-200 flex justify-between items-center">
+                <span className="text-sm font-bold text-zinc-600 uppercase">Cortes Agendados</span>
+                <span className="text-2xl font-black text-zinc-900">{barberAppointments.length}</span>
+              </div>
+            </div>
+
+            <button onClick={() => setIsReportOpen(false)} className="w-full bg-zinc-900 text-white font-bold p-3 rounded-lg hover:bg-zinc-800 transition-colors">
+              Fechar Relatório
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Edição */}
+      {isEditOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl relative">
+            <button onClick={() => setIsEditOpen(false)} className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-900">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h2 className="text-xl font-bold text-zinc-900 mb-4">Editar Barbeiro</h2>
+            
+            {editStatus.message && (
+              <div className={`p-3 rounded-lg mb-4 text-xs font-medium ${
+                editStatus.type === "error" ? "bg-red-50 text-red-600 border border-red-200" : "bg-emerald-50 text-emerald-600 border border-emerald-200"
+              }`}>
+                {editStatus.message}
+              </div>
+            )}
+
+            <form onSubmit={handleEditSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">Nome Completo</label>
+                <input type="text" name="fullName" value={editFormData.fullName} onChange={handleEditChange} required
+                  className="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 p-2.5 rounded-lg focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">E-mail</label>
+                <input type="email" name="email" value={editFormData.email} onChange={handleEditChange} required
+                  className="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 p-2.5 rounded-lg focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">Nova Senha (Opcional)</label>
+                <input type="password" name="password" value={editFormData.password} onChange={handleEditChange} placeholder="Deixe em branco para manter" minLength={6}
+                  className="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 p-2.5 rounded-lg focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1">Telefone</label>
+                <input type="text" name="phoneNumber" value={editFormData.phoneNumber} onChange={handleEditChange} required
+                  className="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 p-2.5 rounded-lg focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors" />
+              </div>
+              <button type="submit" disabled={isSubmitting} className="w-full bg-amber-500 text-zinc-900 font-bold p-3 rounded-lg hover:bg-amber-400 transition-colors mt-2">
+                {isSubmitting ? "Atualizando..." : "Salvar Alterações"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

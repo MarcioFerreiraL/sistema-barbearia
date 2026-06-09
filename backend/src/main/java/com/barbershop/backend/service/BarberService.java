@@ -63,12 +63,21 @@ public class BarberService {
         return barberToResponse(newBarber);
     }
 
-    public BarberResponse updateBarber(BarberRequest request) {
-        Barber barber = requestToBarber(request);
-        barberRepository.getBarberById(barber.getId());
-        validateBarberBusinessRules(barber);
-        barberRepository.save(barber);
-        return barberToResponse(barber);
+    public BarberResponse updateBarber(UUID id, BarberRequest request) {
+        Barber existingBarber = barberRepository.getBarberById(id);
+        if (existingBarber == null) {
+            throw new ResourceNotFoundException("Barbeiro não encontrado");
+        }
+        existingBarber.setFullName(request.fullName());
+        existingBarber.setEmail(request.email());
+        existingBarber.setPhoneNumber(request.phoneNumber());
+        if (request.password() != null && !request.password().isEmpty()) {
+            existingBarber.setPassword(passwordEncoder.encode(request.password()));
+        }
+        
+        validateBarberBusinessRules(existingBarber);
+        barberRepository.save(existingBarber);
+        return barberToResponse(existingBarber);
     }
 
     public void deleteBarber(UUID id) {
@@ -78,6 +87,17 @@ public class BarberService {
         } else {
             throw new ResourceNotFoundException("Não foi possivel deletar o barbeiro.");
         }
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public BarberResponse toggleBarberStatus(UUID id) {
+        Barber barber = barberRepository.getBarberById(id);
+        if (barber == null) {
+            throw new ResourceNotFoundException("Barbeiro não encontrado.");
+        }
+        barber.setActive(!barber.isActive());
+        barberRepository.save(barber);
+        return barberToResponse(barber);
     }
 
     private void validateBarberBusinessRules(Barber barber) {
@@ -90,7 +110,8 @@ public class BarberService {
         if (barber.getEmail() == null || barber.getEmail().isEmpty()) {
             throw new BusinessRuleException("O e-mail é obrigatório.");
         }
-        if (barberRepository.existsByEmail(barber.getEmail())) {
+        Barber existingEmailBarber = barberRepository.getBarberByEmail(barber.getEmail());
+        if (existingEmailBarber != null && (barber.getId() == null || !existingEmailBarber.getId().equals(barber.getId()))) {
             throw new BusinessRuleException("Este e-mail já está em uso por outro utilizador.");
         }
 
@@ -98,7 +119,8 @@ public class BarberService {
         if (barber.getPhoneNumber() == null || barber.getPhoneNumber().isEmpty()) {
             throw new BusinessRuleException("O número de telefone é obrigatório.");
         }
-        if (barberRepository.existsByPhoneNumber(barber.getPhoneNumber())) {
+        Barber existingPhoneBarber = barberRepository.getBarberByPhoneNumber(barber.getPhoneNumber());
+        if (existingPhoneBarber != null && (barber.getId() == null || !existingPhoneBarber.getId().equals(barber.getId()))) {
             throw new BusinessRuleException("Este número de telefone já se encontra registado no sistema.");
         }
 

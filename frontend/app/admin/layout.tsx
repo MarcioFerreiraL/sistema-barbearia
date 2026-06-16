@@ -34,6 +34,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Dashboard / Relatórios", path: "/admin" },
     { name: "Gerir Barbeiros", path: "/admin/barbers" },
     { name: "Gerir Serviços", path: "/admin/services" },
+    { name: "Horários de Funcionamento", path: "/admin/hours" },
+    { name: "Meu Perfil", path: "/admin/profile" },
   ];
 
   if (pathname === "/admin/setup") {

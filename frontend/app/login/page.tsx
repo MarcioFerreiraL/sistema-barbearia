@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { login as apiLogin, registerCustomer } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
@@ -21,6 +21,18 @@ export default function LoginPage() {
   // Estados de feedback (carregamento e erros)
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Lógica para detetar se a sessão expirou
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("expired") === "true") {
+        setError("A sua sessão expirou. Por favor, faça login novamente.");
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    }
+  }, []);
 
   // Lógica de Submissão
   const handleSubmit = async (e: React.FormEvent) => {

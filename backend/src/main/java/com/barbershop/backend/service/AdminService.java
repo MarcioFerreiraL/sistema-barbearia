@@ -51,13 +51,47 @@ public class AdminService {
         return adminToResponse(newAdmin);
     }
 
-    public AdminResponse updateAdmin(AdminRequest request) {
-        Admin admin = requestToAdmin(request);
-        adminRepository.getAdminById(admin.getId());
-        validateAdminBusinessRules(admin);
-        adminRepository.save(admin);
-        return adminToResponse(admin);
+    public AdminResponse updateAdmin(UUID id, AdminRequest request) {
+        Admin existingAdmin = adminRepository.getAdminById(id);
+        if (existingAdmin == null) {
+            throw new ResourceNotFoundException("Administrador não encontrado com o ID fornecido.");
+        }
+
+        if (request.fullName() == null || request.fullName().trim().isEmpty()) {
+            throw new BusinessRuleException("O nome completo é obrigatório.");
+        }
+
+        if (request.email() == null || request.email().trim().isEmpty()) {
+            throw new BusinessRuleException("O e-mail é obrigatório.");
+        }
+        if (!existingAdmin.getEmail().equalsIgnoreCase(request.email()) &&
+                adminRepository.existsByEmail(request.email())) {
+            throw new BusinessRuleException("Este e-mail já está em uso por outro utilizador.");
+        }
+
+        if (request.phoneNumber() == null || request.phoneNumber().trim().isEmpty()) {
+            throw new BusinessRuleException("O número de telefone é obrigatório.");
+        }
+        if (!existingAdmin.getPhoneNumber().equals(request.phoneNumber()) &&
+                adminRepository.existsByPhoneNumber(request.phoneNumber())) {
+            throw new BusinessRuleException("Este número de telefone já se encontra registado no sistema.");
+        }
+
+        if (request.password() != null && !request.password().trim().isEmpty()) {
+            if (request.password().length() < 6) {
+                throw new BusinessRuleException("A palavra-passe deve ter pelo menos 6 caracteres por motivos de segurança.");
+            }
+            existingAdmin.setPassword(passwordEncoder.encode(request.password()));
+        }
+
+        existingAdmin.setFullName(request.fullName());
+        existingAdmin.setEmail(request.email());
+        existingAdmin.setPhoneNumber(request.phoneNumber());
+
+        Admin savedAdmin = adminRepository.save(existingAdmin);
+        return adminToResponse(savedAdmin);
     }
+
 
     public void deleteAdmin(UUID id) {
         Admin admin = adminRepository.getAdminById(id);

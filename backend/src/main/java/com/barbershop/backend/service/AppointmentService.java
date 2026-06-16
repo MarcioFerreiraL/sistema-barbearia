@@ -13,6 +13,7 @@ import com.barbershop.backend.domain.repository.CustomerRepository;
 import com.barbershop.backend.domain.repository.ServiceItemRepository;
 import com.barbershop.backend.service.exception.BusinessRuleException;
 import com.barbershop.backend.service.exception.ResourceNotFoundException;
+import com.barbershop.backend.domain.repository.BusinessHoursRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,12 +34,14 @@ public class AppointmentService {
     private final CustomerRepository customerRepository;
     private final BarberRepository barberRepository;
     private final ServiceItemRepository serviceItemRepository;
+    private final BusinessHoursRepository businessHoursRepository;
 
-    public AppointmentService(ServiceItemRepository serviceItemRepository, CustomerRepository customerRepository, BarberRepository barberRepository, AppointmentRepository appointmentRepository) {
+    public AppointmentService(ServiceItemRepository serviceItemRepository, CustomerRepository customerRepository, BarberRepository barberRepository, AppointmentRepository appointmentRepository, BusinessHoursRepository businessHoursRepository) {
         this.serviceItemRepository = serviceItemRepository;
         this.customerRepository = customerRepository;
         this.barberRepository = barberRepository;
         this.appointmentRepository = appointmentRepository;
+        this.businessHoursRepository = businessHoursRepository;
     }
 
     @Transactional
@@ -162,15 +166,21 @@ public class AppointmentService {
             throw new BusinessRuleException("Não é possível agendar um horário no passado.");
         }
 
-        // Regra: Não funciona aos domingos
-        if (startTime.getDayOfWeek() == DayOfWeek.SUNDAY || startTime.getDayOfWeek() == DayOfWeek.SATURDAY) {
-            throw new BusinessRuleException("A barbearia BarberPro não funciona aos domingos.");
+        // Regra: Horários e Dias Dinâmicos do Banco de Dados
+        int dayOfWeekVal = startTime.getDayOfWeek().getValue(); // 1 = Monday, ..., 7 = Sunday
+        com.barbershop.backend.domain.model.BusinessHours hours = businessHoursRepository.findById(dayOfWeekVal)
+                .orElseThrow(() -> new BusinessRuleException("Configuração de funcionamento não encontrada para o dia da semana."));
+
+        if (!hours.isOpen()) {
+            throw new BusinessRuleException("A barbearia não funciona aos " + hours.getDayName() + "s.");
         }
 
-        // Regra: Horário comercial
-        int hour = startTime.getHour();
-        if (hour < 8 || hour >= 18) {
-            throw new BusinessRuleException("O horário selecionado está fora do horário de funcionamento (09:00 às 20:00).");
+        LocalTime appointmentTime = startTime.toLocalTime();
+        LocalTime openTime = LocalTime.parse(hours.getOpenTime());
+        LocalTime closeTime = LocalTime.parse(hours.getCloseTime());
+
+        if (appointmentTime.isBefore(openTime) || appointmentTime.isAfter(closeTime.minusMinutes(appointment.getServiceItem().getDurationInMinutes()))) {
+            throw new BusinessRuleException("O horário selecionado está fora do horário de funcionamento configurado (" + hours.getOpenTime() + " às " + hours.getCloseTime() + ").");
         }
 
         // --- 2. BUSCA E VALIDAÇÃO DE REGISTROS INATIVOS ---

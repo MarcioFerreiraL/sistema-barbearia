@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getCustomers, getAppointments } from "../services/api";
+import { getCustomers, getAppointments, updateCustomer } from "../services/api";
 
 export default function UserProfile() {
   const router = useRouter();
@@ -11,6 +11,10 @@ export default function UserProfile() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [formData, setFormData] = useState({ fullName: "", email: "", phoneNumber: "", password: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState({ type: "", message: "" });
 
   useEffect(() => {
     async function loadProfile() {
@@ -52,6 +56,12 @@ export default function UserProfile() {
         }
 
         setCustomer(currentCustomer);
+        setFormData({
+          fullName: currentCustomer.fullName,
+          email: currentCustomer.email,
+          phoneNumber: currentCustomer.phoneNumber,
+          password: ""
+        });
 
         // Carregar agendamentos e filtrar pelo nome do cliente (já que o DTO retorna customerName)
         const allAppointments = await getAppointments();
@@ -67,11 +77,10 @@ export default function UserProfile() {
         setAppointments(myAppointments);
 
       } catch (err: any) {
-        setError(err.message || "Erro ao carregar o seu perfil.");
-        if (err.message.includes("Token")) {
-          localStorage.removeItem("token");
-          router.push("/login");
+        if (err.message === "Unauthorized" || !localStorage.getItem("token")) {
+          return;
         }
+        setError(err.message || "Erro ao carregar o seu perfil.");
       } finally {
         setIsLoading(false);
       }
@@ -79,6 +88,35 @@ export default function UserProfile() {
 
     loadProfile();
   }, [router]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setStatus({ type: "", message: "" });
+
+    try {
+      const payload = {
+        fullName: formData.fullName,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber,
+        ...(formData.password ? { password: formData.password } : {})
+      };
+
+      const updated = await updateCustomer(customer.id, payload);
+      setCustomer(updated);
+      setFormData(prev => ({ ...prev, password: "" }));
+      setStatus({ type: "success", message: "Perfil atualizado com sucesso!" });
+    } catch (err: any) {
+      setStatus({ type: "error", message: err.message || "Erro ao atualizar o perfil." });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
 
   if (isLoading) {
     return (
@@ -119,40 +157,73 @@ export default function UserProfile() {
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 to-amber-700"></div>
             <h2 className="text-2xl font-bold mb-6 text-zinc-50">Dados Pessoais</h2>
             
-            <form className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {status.message && (
+                <div className={`sm:col-span-2 p-4 rounded-xl text-sm font-bold ${
+                  status.type === "error" ? "bg-red-950/40 text-red-400 border border-red-900/50" : "bg-emerald-950/40 text-emerald-400 border border-emerald-900/50"
+                }`}>
+                  {status.message}
+                </div>
+              )}
+              
               <div className="sm:col-span-2">
                 <label className="block text-sm font-bold text-zinc-400 mb-2">Nome Completo</label>
                 <input 
                   type="text" 
-                  className="w-full p-4 bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-lg outline-none cursor-not-allowed opacity-80" 
-                  defaultValue={customer.fullName}
-                  readOnly
+                  name="fullName"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  required
+                  className="w-full p-4 bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-lg outline-none focus:border-amber-500 transition-colors" 
                 />
               </div>
               <div>
                 <label className="block text-sm font-bold text-zinc-400 mb-2">E-mail</label>
                 <input 
                   type="email" 
-                  className="w-full p-4 bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-lg outline-none cursor-not-allowed opacity-80" 
-                  defaultValue={customer.email} 
-                  readOnly
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="w-full p-4 bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-lg outline-none focus:border-amber-500 transition-colors" 
                 />
               </div>
               <div>
                 <label className="block text-sm font-bold text-zinc-400 mb-2">Telemóvel</label>
                 <input 
                   type="tel" 
-                  className="w-full p-4 bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-lg outline-none cursor-not-allowed opacity-80" 
-                  defaultValue={customer.phoneNumber} 
-                  readOnly
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  required
+                  className="w-full p-4 bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-lg outline-none focus:border-amber-500 transition-colors" 
                 />
               </div>
-              {/* Opção para atualizar perfil no futuro */}
-              <div className="sm:col-span-2 pt-4">
-                <p className="text-xs text-zinc-500 italic">* Por questões de segurança, para alterar os seus dados, por favor contacte a nossa equipa.</p>
+              <div className="sm:col-span-2 pt-4 border-t border-zinc-800">
+                <label className="block text-sm font-bold text-zinc-400 mb-2">Nova Palavra-passe</label>
+                <p className="text-xs text-zinc-500 mb-2">Se não pretender alterar a sua palavra-passe, deixe este campo em branco.</p>
+                <input 
+                  type="password" 
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Min. 6 caracteres"
+                  minLength={6}
+                  className="w-full p-4 bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-lg outline-none focus:border-amber-500 transition-colors" 
+                />
+              </div>
+              <div className="sm:col-span-2 pt-4 flex justify-end">
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold px-8 py-3.5 rounded-xl transition-all active:scale-95 disabled:opacity-50"
+                >
+                  {isSubmitting ? "A guardar..." : "Guardar Alterações"}
+                </button>
               </div>
             </form>
           </div>
+
 
           {/* ACCOUNT SUMMARY CARD */}
           <div className="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl flex flex-col justify-center">

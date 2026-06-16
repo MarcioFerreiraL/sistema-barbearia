@@ -3,6 +3,9 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+backend-api.log
+backend-api.log.2026-06-07.0.gz
+
 
 ### STS ###
 .apt_generated

@@ -1,89 +1,95 @@
 "use client";
 
+/**
+ * Página de Login e Registro de Clientes
+ * 
+ * Oferece uma interface única com alternância dinâmica de formulário
+ * para login de usuários ou criação de novas contas de clientes.
+ * Integra-se aos contextos de autenticação (AuthContext) e notificações (ToastContext).
+ */
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { login as apiLogin, registerCustomer } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../contexts/ToastContext";
+import { getUserInfoFromToken } from "../../lib/auth";
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
   const { showToast } = useToast();
   
-  // Estados para controlar se estamos a mostrar o formulário de Login ou Registo
+  // Alterna o estado da tela: true para Login, false para Registro/Cadastro
   const [isLoginView, setIsLoginView] = useState(true);
   
-  // Estados dos inputs
+  // Estados para controle dos inputs do formulário
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   
-  // Estados de feedback (carregamento)
+  // Estado para controlar o loading do botão de envio
   const [isLoading, setIsLoading] = useState(false);
 
-  // Lógica para detetar se a sessão expirou
+  // Monitora se o usuário foi redirecionado por causa de uma sessão expirada no backend
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       if (params.get("expired") === "true") {
         showToast("A sua sessão expirou. Por favor, faça login novamente.", "error");
+        
+        // Limpa a query string (?expired=true) da URL de forma silenciosa na barra do navegador
         const cleanUrl = window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
       }
     }
   }, [showToast]);
 
-  // Lógica de Submissão
+  /**
+   * Processa a submissão dos formulários (Login ou Registro).
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
       if (isLoginView) {
-        // --- FAZER LOGIN ---
+        // --- FLUXO DE LOGIN ---
         const data = await apiLogin(email, password);
         
-        // Guarda o Token JWT usando o contexto (atualiza a navbar instantaneamente)
+        // Salva o token localmente e atualiza o estado global de autenticação
         login(data.token);
         showToast("Login efetuado com sucesso! Bem-vindo.", "success");
         
-        // Descobre a role para redirecionar para o local certo
-        try {
-          const payload = JSON.parse(atob(data.token.split(".")[1]));
-          let role = payload.sub && payload.sub.toLowerCase().includes("admin") ? "ADMIN" : "CLIENT";
-          
-          if (payload.role) {
-            const rawRole = payload.role.replace("ROLE_", "");
-            role = rawRole === "CUSTOMER" ? "CLIENT" : rawRole;
-          }
-          
-          if (role === "ADMIN") {
-            router.push("/admin");
-          } else if (role === "BARBER") {
-            router.push("/barber-panel");
-          } else {
-            router.push("/appointment");
-          }
-        } catch (e) {
-          router.push("/appointment"); 
+        // Decodifica a role usando a biblioteca utilitária centralizada (Clean Code: DRY)
+        const userInfo = getUserInfoFromToken(data.token);
+        
+        // Redireciona o usuário para seu painel adequado baseado no seu perfil
+        if (userInfo.role === "ADMIN") {
+          router.push("/admin");
+        } else if (userInfo.role === "BARBER") {
+          router.push("/barber-panel");
+        } else {
+          router.push("/appointment"); // Clientes vão para agendamento
         }
       } else {
-        // --- FAZER REGISTO ---
+        // --- FLUXO DE REGISTRO ---
+        // Validação obrigatória dos Termos de Uso e Política de Privacidade
         if (!acceptedTerms) {
           throw new Error("Você precisa de aceitar os Termos de Uso e a Política de Privacidade.");
         }
 
+        // Envia requisição pública de cadastro de cliente
         await registerCustomer({ fullName, email, password, phoneNumber });
         showToast("Conta criada com sucesso! A entrar...", "success");
         
-        // Se o registo der sucesso, fazemos login automático logo de seguida!
+        // Efetua login automático imediato pós-cadastro para melhorar a UX
         const data = await apiLogin(email, password);
         login(data.token);
-        router.push("/appointment"); // Registo é sempre cliente
+        router.push("/appointment");
       }
     } catch (err: any) {
       showToast(err.message || "Ocorreu um erro. Verifique as suas credenciais.", "error");
@@ -95,6 +101,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-[85vh] flex items-center justify-center bg-zinc-950 py-12 px-4">
       <div className="bg-zinc-950 p-8 sm:p-10 rounded-2xl shadow-xl w-full max-w-md border border-zinc-800">
+        
+        {/* Cabeçalho do formulário */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-black text-zinc-50">
             {isLoginView ? "Bem-vindo à " : "Crie a sua Conta na "}
@@ -105,7 +113,9 @@ export default function LoginPage() {
           </p>
         </div>
 
+        {/* Formulário Interativo */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          {/* Inputs exibidos somente no modo de Cadastro */}
           {!isLoginView && (
             <>
               <div>
@@ -133,6 +143,7 @@ export default function LoginPage() {
             </>
           )}
 
+          {/* Inputs Comuns a Ambos os Modos */}
           <div>
             <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">E-mail</label>
             <input
@@ -158,6 +169,7 @@ export default function LoginPage() {
             />
           </div>
 
+          {/* Checkbox de Termos de Consentimento (Somente no Cadastro) */}
           {!isLoginView && (
             <div className="flex items-start gap-3 mt-1">
               <input
@@ -182,6 +194,7 @@ export default function LoginPage() {
             </div>
           )}
 
+          {/* Botão de Envio com Estado Visual de Carregamento */}
           <button
             type="submit"
             disabled={isLoading}
@@ -189,6 +202,7 @@ export default function LoginPage() {
           >
             {isLoading ? (
               <span className="flex items-center gap-2">
+                {/* Spinner Animado SVG */}
                 <svg className="animate-spin h-5 w-5 text-zinc-950" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -203,6 +217,7 @@ export default function LoginPage() {
           </button>
         </form>
 
+        {/* Rodapé Alternador de Visão */}
         <div className="mt-8 pt-6 border-t border-zinc-800 text-center">
           <p className="text-sm text-zinc-400">
             {isLoginView ? "Ainda não tem conta? " : "Já tem uma conta? "}

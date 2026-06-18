@@ -1,11 +1,18 @@
 import Link from "next/link";
 
+/**
+ * Componente Footer Global da Barbearia
+ * 
+ * Renderiza o rodapé unificado do site contendo informações institucionais,
+ * links institucionais e de agendamento, canais de contato direto,
+ * ano dinâmico de direitos autorais e links legais para políticas de privacidade e termos.
+ */
 export default function Footer() {
   return (
     <footer className="bg-zinc-950 text-zinc-400 pt-16 pb-8 border-t border-zinc-900 mt-auto">
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         
-        {/* Bloco 1: Marca e Descrição */}
+        {/* Bloco 1: Identidade da Marca e Slogan */}
         <div className="space-y-4">
           <Link href="/" className="text-2xl font-black tracking-tighter text-white inline-block">
             BARBEARIA DO <span className="text-amber-500">ZÉ</span>
@@ -15,7 +22,7 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* Bloco 2: Links Rápidos */}
+        {/* Bloco 2: Links Rápidos Institucionais e de Navegação SPA */}
         <div>
           <h4 className="text-white font-bold mb-5 tracking-wide uppercase text-sm">Acesso Rápido</h4>
           <ul className="space-y-3 text-sm">
@@ -27,7 +34,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Bloco 3: Contato */}
+        {/* Bloco 3: Informações de Contato da Barbearia */}
         <div>
           <h4 className="text-white font-bold mb-5 tracking-wide uppercase text-sm">Contato</h4>
           <ul className="space-y-4 text-sm">
@@ -43,11 +50,14 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Direitos Autorais e Links Legais */}
+      {/* Faixa inferior de Direitos Autorais e Créditos */}
       <div className="max-w-6xl mx-auto px-4 mt-16 pt-8 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center text-sm text-zinc-600 gap-4">
         <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-center md:text-left">
+          {/* Exibição dinâmica do ano corrente (Clean Code: Evita obsolescência) */}
           <p>© {new Date().getFullYear()} MarcioTec. Todos os direitos reservados.</p>
           <span className="hidden md:inline text-zinc-800">|</span>
+          
+          {/* Links para Documentações Legais */}
           <div className="flex gap-3">
             <Link href="/terms-of-use" className="hover:text-amber-500 transition-colors">
               Termos de Uso
@@ -58,6 +68,8 @@ export default function Footer() {
             </Link>
           </div>
         </div>
+        
+        {/* Créditos de Desenvolvimento */}
         <p className="flex items-center">
           <span className="mr-1">Desenvolvido por</span>
           <span className="text-zinc-400 font-semibold hover:text-amber-500 transition-colors">Márcio e Lucas</span>

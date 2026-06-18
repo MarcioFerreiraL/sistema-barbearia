@@ -1,7 +1,15 @@
 "use client";
 
+/**
+ * Painel Administrativo de Gerenciamento de Barbeiros
+ * 
+ * Permite ao administrador cadastrar novos barbeiros, editar dados cadastrais,
+ * alternar o status de atividade (soft delete) e excluir barbeiros definitivamente.
+ * Fornece também modais de relatório de volumetria de agendamentos por barbeiro.
+ */
+
 import { useState, useEffect } from "react";
-import { getBarbers, deleteBarber, getAppointments, updateBarber, toggleBarberStatus } from "../../services/api";
+import { getBarbers, deleteBarber, getAppointments, updateBarber, toggleBarberStatus, createBarber } from "../../services/api";
 import { useToast } from "../../contexts/ToastContext";
 
 export default function ManageBarbersPage() {
@@ -10,25 +18,28 @@ export default function ManageBarbersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { showToast } = useToast();
   
-  // Create form state
+  // Estado para o formulário de cadastro de novos barbeiros
   const [formData, setFormData] = useState({ fullName: "", email: "", password: "", phoneNumber: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Modal states
+  // Estados dos Modais
   const [selectedBarber, setSelectedBarber] = useState<any>(null);
   const [isReportOpen, setIsReportOpen] = useState(false);
   
-  // Edit form state
+  // Estado do modal e formulário de Edição
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editFormData, setEditFormData] = useState({ id: "", fullName: "", email: "", password: "", phoneNumber: "" });
 
+  /**
+   * Recarrega concorrentemente a lista de barbeiros e agendamentos para manter os dados atualizados.
+   */
   const fetchData = async () => {
     try {
       const [barberData, apptData] = await Promise.all([getBarbers(), getAppointments()]);
       setBarbers(barberData);
       setAppointments(apptData);
-    } catch (e) {
-      console.error("Erro ao carregar dados", e);
+    } catch (e: any) {
+      console.error("[ADMIN BARBERS] Erro ao carregar equipe:", e);
     } finally {
       setIsLoading(false);
     }
@@ -38,48 +49,48 @@ export default function ManageBarbersPage() {
     fetchData();
   }, []);
 
+  /**
+   * Gerencia digitação no formulário de cadastro.
+   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  /**
+   * Gerencia digitação no formulário de edição.
+   */
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditFormData({ ...editFormData, [e.target.name]: e.target.value });
   };
 
+  /**
+   * Envia a criação de um novo barbeiro usando a chamada centralizada.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:8080/api/barbers", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-      
-      if (res.ok) {
-        showToast("Barbeiro cadastrado com sucesso!", "success");
-        setFormData({ fullName: "", email: "", password: "", phoneNumber: "" });
-        fetchData();
-      } else {
-        const err = await res.json().catch(() => null);
-        showToast("Erro ao cadastrar: " + (err?.message || res.statusText), "error");
-      }
+      // Clean Code: Usando a função createBarber centralizada em vez de fetch local com headers manuais
+      await createBarber(formData);
+      showToast("Barbeiro cadastrado com sucesso!", "success");
+      setFormData({ fullName: "", email: "", password: "", phoneNumber: "" });
+      fetchData(); // Recarrega dados na grade
     } catch (e: any) {
-      showToast("Erro de conexão: " + e.message, "error");
+      showToast(e.message || "Erro ao cadastrar barbeiro.", "error");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  /**
+   * Exclui permanentemente um barbeiro da base.
+   */
   const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este barbeiro?")) return;
     try {
       await deleteBarber(id);
+      // Atualiza visualmente na lista imediatamente (SPA)
       setBarbers(barbers.filter(b => b.id !== id));
       showToast("Barbeiro excluído com sucesso.", "success");
     } catch (e: any) {
@@ -87,6 +98,9 @@ export default function ManageBarbersPage() {
     }
   };
 
+  /**
+   * Alterna a atividade de um barbeiro (Ativo/Inativo).
+   */
   const handleToggleStatus = async (id: string, currentStatus: boolean) => {
     if (!confirm(`Tem certeza que deseja ${currentStatus ? 'desativar' : 'ativar'} este barbeiro?`)) return;
     try {
@@ -98,22 +112,31 @@ export default function ManageBarbersPage() {
     }
   };
 
+  /**
+   * Abre o modal de volumetria e histórico de atendimentos do barbeiro.
+   */
   const openReport = (barber: any) => {
     setSelectedBarber(barber);
     setIsReportOpen(true);
   };
 
+  /**
+   * Abre o formulário de edição pré-carregando os dados existentes.
+   */
   const openEdit = (barber: any) => {
     setEditFormData({
       id: barber.id,
       fullName: barber.fullName,
       email: barber.email,
-      password: "", // Não mostrar senha existente
+      password: "", // Inicia vazio para que a senha não seja exposta na tela
       phoneNumber: barber.phoneNumber
     });
     setIsEditOpen(true);
   };
 
+  /**
+   * Submete a atualização cadastral do barbeiro editado.
+   */
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -123,7 +146,7 @@ export default function ManageBarbersPage() {
         fullName: editFormData.fullName,
         email: editFormData.email,
         phoneNumber: editFormData.phoneNumber,
-        ...(editFormData.password ? { password: editFormData.password } : {})
+        ...(editFormData.password ? { password: editFormData.password } : {}) // Envia apenas se alterada
       };
 
       await updateBarber(editFormData.id, payload);
@@ -137,19 +160,22 @@ export default function ManageBarbersPage() {
     }
   };
 
+  // Filtra agendamentos associados ao barbeiro selecionado para o relatório modal
   const barberAppointments = selectedBarber 
     ? appointments.filter(app => app.barberName === selectedBarber.fullName)
     : [];
 
   return (
     <div className="w-full text-zinc-100">
+      
+      {/* Título da Página */}
       <h1 className="text-3xl font-black text-zinc-50 mb-8 border-b border-zinc-800 pb-4">
         Gerir <span className="text-amber-500">Barbeiros</span>
       </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Formulário de Cadastro */}
+        {/* Painel do Formulário de Criação */}
         <div className="lg:col-span-1 bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl h-fit">
           <h2 className="text-xl font-bold text-zinc-100 mb-6 flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-amber-500"></span>
@@ -183,7 +209,7 @@ export default function ManageBarbersPage() {
           </form>
         </div>
 
-        {/* Lista de Barbeiros */}
+        {/* Tabela de Equipa de Barbeiros Cadastrados */}
         <div className="lg:col-span-2 bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl overflow-hidden">
           <h2 className="text-xl font-bold text-zinc-100 mb-6 flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-amber-500"></span>
@@ -222,14 +248,17 @@ export default function ManageBarbersPage() {
                       <td className="px-5 py-4 text-zinc-400">{b.phoneNumber}</td>
                       <td className="px-5 py-4 text-right">
                         <div className="flex justify-end items-center gap-1.5">
+                          {/* Visualizar Relatório */}
                           <button onClick={() => openReport(b)} title="Relatório" className="p-2 text-zinc-400 hover:text-amber-500 hover:bg-amber-500/10 rounded-xl transition-all border border-zinc-800 cursor-pointer">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                           </button>
                           
+                          {/* Editar Barbeiro */}
                           <button onClick={() => openEdit(b)} title="Editar" className="p-2 text-zinc-400 hover:text-amber-500 hover:bg-amber-500/10 rounded-xl transition-all border border-zinc-800 cursor-pointer">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                           </button>
                           
+                          {/* Toggle de Ativo/Inativo */}
                           <button 
                             onClick={() => handleToggleStatus(b.id, b.active)} 
                             title={b.active ? 'Desativar' : 'Ativar'}
@@ -242,6 +271,7 @@ export default function ManageBarbersPage() {
                             )}
                           </button>
                           
+                          {/* Excluir Barbeiro */}
                           <button onClick={() => handleDelete(b.id)} title="Remover" className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all border border-zinc-800 cursor-pointer">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                           </button>
@@ -280,7 +310,7 @@ export default function ManageBarbersPage() {
         </div>
       )}
 
-      {/* Modal de Edição */}
+      {/* Modal de Edição de Cadastro */}
       {isEditOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[999] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 max-w-md w-full shadow-2xl relative animate-slide-in">

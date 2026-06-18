@@ -1,22 +1,34 @@
 "use client";
 
+/**
+ * Página do Perfil do Cliente
+ * 
+ * Permite ao cliente logado visualizar seus dados pessoais, atualizar nome,
+ * e-mail, telefone e senha, bem como gerenciar seu histórico completo
+ * de agendamentos de forma interativa e sem recarregamentos (SPA).
+ */
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getCustomers, getAppointments, updateCustomer, cancelAppointment } from "../services/api";
 import { useToast } from "../contexts/ToastContext";
+import { getUserInfoFromToken } from "../../lib/auth";
 
 export default function UserProfile() {
   const router = useRouter();
   const { showToast } = useToast();
   
+  // Estados para dados locais
   const [customer, setCustomer] = useState<any>(null);
   const [appointments, setAppointments] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Estado para os inputs de edição do formulário
   const [formData, setFormData] = useState({ fullName: "", email: "", phoneNumber: "", password: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Carrega as informações do usuário e histórico de agendamentos
   useEffect(() => {
     async function loadProfile() {
       const token = localStorage.getItem("token");
@@ -26,29 +38,25 @@ export default function UserProfile() {
       }
 
       try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        const userEmail = payload.sub;
+        // Decodifica as informações e roles de forma centralizada (Clean Code: DRY)
+        const userInfo = getUserInfoFromToken(token);
+        const userEmail = userInfo.email;
         
-        let role = userEmail && userEmail.toLowerCase().includes("admin") ? "ADMIN" : "CLIENT";
-        if (payload.role) {
-          const rawRole = payload.role.replace("ROLE_", "");
-          role = rawRole === "CUSTOMER" ? "CLIENT" : rawRole;
+        if (!userInfo.role || !userEmail) {
+          throw new Error("Token inválido.");
         }
 
-        if (role === "ADMIN") {
+        // Se o usuário não for cliente, redireciona para a tela correta (segurança adicional)
+        if (userInfo.role === "ADMIN") {
           router.push("/admin");
           return;
         }
-        if (role === "BARBER") {
+        if (userInfo.role === "BARBER") {
           router.push("/barber-panel");
           return;
         }
 
-        if (!userEmail) {
-          throw new Error("Token inválido.");
-        }
-
-        // Carregar clientes para descobrir os dados completos
+        // Carregar clientes do backend para obter dados completos cadastrais do usuário atual
         const customers = await getCustomers();
         const currentCustomer = customers.find((c: any) => c.email === userEmail);
 
@@ -61,16 +69,16 @@ export default function UserProfile() {
           fullName: currentCustomer.fullName,
           email: currentCustomer.email,
           phoneNumber: currentCustomer.phoneNumber,
-          password: ""
+          password: "" // Inicia vazio por segurança
         });
 
-        // Carregar agendamentos e filtrar pelo ID do cliente
+        // Carrega agendamentos e filtra para exibir apenas os deste cliente (BOLA já mitigada no backend)
         const allAppointments = await getAppointments();
         const myAppointments = allAppointments.filter(
           (app: any) => app.customerId === currentCustomer.id
         );
 
-        // Ordenar os mais recentes primeiro
+        // Ordena os agendamentos por data de início: os mais recentes primeiro
         myAppointments.sort((a: any, b: any) => 
           new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
         );
@@ -78,6 +86,7 @@ export default function UserProfile() {
         setAppointments(myAppointments);
 
       } catch (err: any) {
+        // Evita exibir erro na tela caso seja um redirecionamento por unauthorized resolvido pelo interceptador da API
         if (err.message === "Unauthorized" || !localStorage.getItem("token")) {
           return;
         }
@@ -90,10 +99,16 @@ export default function UserProfile() {
     loadProfile();
   }, [router]);
 
+  /**
+   * Monitora a digitação nos inputs do formulário.
+   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  /**
+   * Submete a atualização cadastral do cliente.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -103,12 +118,12 @@ export default function UserProfile() {
         fullName: formData.fullName,
         email: formData.email,
         phoneNumber: formData.phoneNumber,
-        ...(formData.password ? { password: formData.password } : {})
+        ...(formData.password ? { password: formData.password } : {}) // Envia senha somente se preenchida
       };
 
       const updated = await updateCustomer(customer.id, payload);
       setCustomer(updated);
-      setFormData(prev => ({ ...prev, password: "" }));
+      setFormData(prev => ({ ...prev, password: "" })); // Limpa campo de senha pós-sucesso
       showToast("Perfil atualizado com sucesso!", "success");
     } catch (err: any) {
       showToast(err.message || "Erro ao atualizar o perfil.", "error");
@@ -117,7 +132,7 @@ export default function UserProfile() {
     }
   };
 
-
+  // Renderização em estado de Loading
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[70vh] bg-zinc-950">
@@ -126,6 +141,7 @@ export default function UserProfile() {
     );
   }
 
+  // Renderização de Erro
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-[70vh] bg-zinc-950 text-white">
@@ -143,6 +159,7 @@ export default function UserProfile() {
     <div className="min-h-screen bg-zinc-950 py-12 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto space-y-10">
         
+        {/* Cabeçalho da Página */}
         <header className="border-b border-zinc-800 pb-6">
           <h1 className="text-4xl font-black text-zinc-50 tracking-tight">
             Meu <span className="text-amber-500">Perfil</span>
@@ -152,7 +169,7 @@ export default function UserProfile() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
-          {/* EDIT INFO FORM */}
+          {/* Formulário de Dados Pessoais */}
           <div className="md:col-span-2 bg-zinc-900 p-8 rounded-2xl border border-zinc-800 shadow-xl relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 to-amber-700"></div>
             <h2 className="text-2xl font-bold mb-6 text-zinc-50">Dados Pessoais</h2>
@@ -170,6 +187,7 @@ export default function UserProfile() {
                   className="w-full p-4 bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-lg outline-none focus:border-amber-500 transition-colors" 
                 />
               </div>
+              
               <div>
                 <label className="block text-sm font-bold text-zinc-400 mb-2">E-mail</label>
                 <input 
@@ -181,6 +199,7 @@ export default function UserProfile() {
                   className="w-full p-4 bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-lg outline-none focus:border-amber-500 transition-colors" 
                 />
               </div>
+              
               <div>
                 <label className="block text-sm font-bold text-zinc-400 mb-2">Telemóvel</label>
                 <input 
@@ -192,6 +211,7 @@ export default function UserProfile() {
                   className="w-full p-4 bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-lg outline-none focus:border-amber-500 transition-colors" 
                 />
               </div>
+              
               <div className="sm:col-span-2 pt-4 border-t border-zinc-800">
                 <label className="block text-sm font-bold text-zinc-400 mb-2">Nova Palavra-passe</label>
                 <p className="text-xs text-zinc-500 mb-2">Se não pretender alterar a sua palavra-passe, deixe este campo em branco.</p>
@@ -205,6 +225,7 @@ export default function UserProfile() {
                   className="w-full p-4 bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-lg outline-none focus:border-amber-500 transition-colors" 
                 />
               </div>
+              
               <div className="sm:col-span-2 pt-4 flex justify-end">
                 <button 
                   type="submit" 
@@ -217,8 +238,7 @@ export default function UserProfile() {
             </form>
           </div>
 
-
-          {/* ACCOUNT SUMMARY CARD */}
+          {/* Cards de Resumo Rápido */}
           <div className="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl flex flex-col justify-center">
             <h2 className="font-bold text-zinc-50 mb-6 text-center text-xl">O Meu Resumo</h2>
             <div className="space-y-4">
@@ -236,7 +256,7 @@ export default function UserProfile() {
           </div>
         </div>
 
-        {/* RECENT HISTORY */}
+        {/* Seção de Histórico de Agendamentos */}
         <div className="bg-zinc-900 p-8 rounded-2xl border border-zinc-800 shadow-xl">
           <div className="flex justify-between items-end mb-8">
             <div>
@@ -271,6 +291,7 @@ export default function UserProfile() {
                 let statusLabel = "Agendado";
                 let statusClasses = "bg-emerald-900/30 text-emerald-400 border border-emerald-800";
 
+                // Gerencia os estados do rótulo de status visual
                 if (isCancelled) {
                   statusLabel = "Cancelado";
                   statusClasses = "bg-red-900/30 text-red-400 border border-red-800";
@@ -281,7 +302,9 @@ export default function UserProfile() {
                 
                 return (
                   <div key={item.id || i} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-5 bg-zinc-950 border border-zinc-800 rounded-xl hover:border-amber-500/30 transition-colors group relative overflow-hidden">
+                    {/* Linha colorida lateral baseada no status */}
                     <div className={`absolute left-0 top-0 bottom-0 w-1 ${isCancelled ? "bg-red-500" : isCompleted || isPast ? "bg-zinc-700" : "bg-amber-500"}`}></div>
+                    
                     <div className="pl-3">
                       <p className="font-bold text-zinc-100 text-lg group-hover:text-amber-500 transition-colors">{item.serviceName}</p>
                       <p className="text-sm text-zinc-400 mt-1">
@@ -296,10 +319,13 @@ export default function UserProfile() {
                         Barbeiro: <span className="text-amber-500/80">{item.barberName}</span>
                       </p>
                     </div>
+
                     <div className="mt-4 sm:mt-0 pl-3 sm:pl-0 flex items-center space-x-4">
                       <span className={`px-3 py-1 text-xs font-bold rounded-full ${statusClasses}`}>
                         {statusLabel}
                       </span>
+                      
+                      {/* Exibe botão de cancelar somente se estiver ativo e for futuro */}
                       {!isCancelled && !isCompleted && !isPast && (
                         <button
                           onClick={async () => {
@@ -307,7 +333,8 @@ export default function UserProfile() {
                               try {
                                 await cancelAppointment(item.id);
                                 showToast("Agendamento cancelado com sucesso!", "success");
-                                // Atualiza o estado localmente sem precisar recarregar a tela inteira
+                                
+                                // Clean Code/SPA: Atualiza o estado local para refletir na tela imediatamente (sem reload)
                                 setAppointments(prev => prev.map(appt => appt.id === item.id ? { ...appt, status: "CANCELLED" } : appt));
                               } catch (err: any) {
                                 showToast(err.message || "Erro ao cancelar o agendamento.", "error");

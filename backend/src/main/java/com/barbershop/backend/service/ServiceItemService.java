@@ -5,6 +5,10 @@ import com.barbershop.backend.application.dto.response.ServiceItemResponse;
 import com.barbershop.backend.domain.model.ServiceItem;
 import com.barbershop.backend.domain.repository.ServiceItemRepository;
 import com.barbershop.backend.service.exception.ResourceNotFoundException;
+import com.barbershop.backend.service.exception.BusinessRuleException;
+import com.barbershop.backend.domain.model.User;
+import com.barbershop.backend.domain.model.enums.Role;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +37,7 @@ public class ServiceItemService {
     }
 
     public ServiceItemResponse createServiceItem(ServiceItemRequest request) {
+        checkAdminAccess();
         ServiceItem serviceItem = requestToService(request);
         validateServiceItemBusinessRules(serviceItem);
         serviceItemRepository.save(serviceItem);
@@ -40,6 +45,7 @@ public class ServiceItemService {
     }
 
     public ServiceItemResponse updateServiceItem(Long id, ServiceItemRequest request) {
+        checkAdminAccess();
         ServiceItem existingService = serviceItemRepository.getServiceItemById(id);
         if (existingService == null) {
             throw new ResourceNotFoundException("Serviço não encontrado");
@@ -55,6 +61,7 @@ public class ServiceItemService {
     }
 
     public void deleteServiceItem(Long id) {
+        checkAdminAccess();
         ServiceItem serviceItem = serviceItemRepository.getServiceItemById(id);
         if (serviceItem != null) {
             serviceItemRepository.delete(serviceItem);
@@ -65,6 +72,7 @@ public class ServiceItemService {
 
     @org.springframework.transaction.annotation.Transactional
     public ServiceItemResponse toggleServiceItemStatus(Long id) {
+        checkAdminAccess();
         ServiceItem serviceItem = serviceItemRepository.getServiceItemById(id);
         if (serviceItem == null) {
             throw new ResourceNotFoundException("Serviço não encontrado");
@@ -99,6 +107,17 @@ public class ServiceItemService {
                 request.durationInMinutes(),
                 true
         );
+    }
+
+    private void checkAdminAccess() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            if (user.getRole() == Role.ROLE_ADMIN) {
+                return;
+            }
+        }
+        throw new BusinessRuleException("Acesso negado. Apenas administradores têm permissão para esta ação.");
     }
 }
 

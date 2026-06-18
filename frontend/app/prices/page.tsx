@@ -40,7 +40,7 @@ export default function Prices() {
         <h1 className="text-4xl md:text-5xl font-black text-zinc-50 mb-4">
           Nossos <span className="text-amber-500">Serviços</span>
         </h1>
-        <p className="text-lg text-zinc-600">
+        <p className="text-lg text-zinc-400">
             Nosso Serviços e Preços.
         </p>
       </div>
@@ -52,16 +52,16 @@ export default function Prices() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
-            <div key={service.id} className="bg-white border border-zinc-200 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+            <div key={service.id} className="bg-zinc-900 border border-zinc-800 p-6 rounded-xl shadow-lg hover:border-amber-500/50 transition-colors flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-start mb-3">
-                  <h3 className="text-xl font-bold text-zinc-900 pr-4">{service.name}</h3>
+                  <h3 className="text-xl font-bold text-zinc-100 pr-4">{service.name}</h3>
                   <span className="text-xl font-black text-amber-600">R${service.price.toFixed(2)}</span>
                 </div>
-                <p className="text-sm text-zinc-500 mb-6 leading-relaxed">{service.description}</p>
+                <p className="text-sm text-zinc-400 mb-6 leading-relaxed">{service.description}</p>
               </div>
               
-              <div className="flex items-center justify-between border-t border-zinc-100 pt-4 mt-auto">
+              <div className="flex items-center justify-between border-t border-zinc-800 pt-4 mt-auto">
                 <span className="text-sm font-medium text-zinc-400">
                   ⏱ {service.durationInMinutes >= 60 ? `${Math.floor(service.durationInMinutes / 60)}h ${service.durationInMinutes % 60 > 0 ? `${service.durationInMinutes % 60}min` : ''}` : `${service.durationInMinutes} min`}
                 </span>

@@ -3,6 +3,10 @@ package com.barbershop.backend.service;
 import com.barbershop.backend.domain.model.BusinessHours;
 import com.barbershop.backend.domain.repository.BusinessHoursRepository;
 import jakarta.annotation.PostConstruct;
+import com.barbershop.backend.domain.model.User;
+import com.barbershop.backend.domain.model.enums.Role;
+import com.barbershop.backend.service.exception.BusinessRuleException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +29,7 @@ public class BusinessHoursService {
 
     @Transactional
     public BusinessHours updateBusinessHours(Integer dayOfWeek, BusinessHours request) {
+        checkAdminAccess();
         BusinessHours existing = businessHoursRepository.findById(dayOfWeek)
                 .orElseThrow(() -> new IllegalArgumentException("Dia da semana inválido: " + dayOfWeek));
 
@@ -47,5 +52,16 @@ public class BusinessHoursService {
             businessHoursRepository.save(new BusinessHours(6, "Sábado", true, "09:00", "13:00"));
             businessHoursRepository.save(new BusinessHours(7, "Domingo", false, "08:00", "18:00"));
         }
+    }
+
+    private void checkAdminAccess() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            if (user.getRole() == Role.ROLE_ADMIN) {
+                return;
+            }
+        }
+        throw new BusinessRuleException("Acesso negado. Apenas administradores têm permissão para esta ação.");
     }
 }

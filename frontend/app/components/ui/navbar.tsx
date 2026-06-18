@@ -27,7 +27,7 @@ export default function Navbar() {
         
         {/* Logo */}
         <Link href="/" className="text-2xl font-black tracking-tighter">
-          BARBER<span className="text-amber-500">PRO</span>
+          BARBEARIA DO <span className="text-amber-500">ZÉ</span>
         </Link>
         
         {/* Botão Hambúrguer (Visível apenas no Celular) */}
@@ -80,34 +80,48 @@ export default function Navbar() {
 
       {/* Menu Mobile */}
       {isMobileMenuOpen && (
-        <div className="md:hidden mt-4 bg-zinc-900 rounded-lg p-4 flex flex-col space-y-4 shadow-xl border border-zinc-800">
-          <Link href="/about" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Sobre Nós</Link>
-          <Link href="/prices" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Serviços</Link>
-          <Link href="/gallery" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Galeria</Link>
+        <div className="fixed inset-0 bg-zinc-950/98 backdrop-blur-md z-[999] flex flex-col justify-center px-8 md:hidden animate-fade-in">
+          {/* Botão Fechar */}
+          <button 
+            className="absolute top-6 right-6 text-zinc-300 hover:text-white focus:outline-none"
+            onClick={toggleMenu}
+            aria-label="Close menu"
+          >
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
           
-          {isCustomer && (
-            <Link href="/profile" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Meu Perfil</Link>
-          )}
+          <div className="flex flex-col space-y-6 text-2xl font-bold text-center">
+            <Link href="/" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Início</Link>
+            <Link href="/about" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Sobre Nós</Link>
+            <Link href="/prices" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Serviços</Link>
+            <Link href="/gallery" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Galeria</Link>
+            
+            {isCustomer && (
+              <Link href="/profile" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Meu Perfil</Link>
+            )}
 
-          {isAdmin && (
-            <Link href="/admin" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Painel Admin</Link>
-          )}
+            {isAdmin && (
+              <Link href="/admin" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Painel Admin</Link>
+            )}
 
-          {isBarber && (
-            <Link href="/barber-panel" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Painel do Barbeiro</Link>
-          )}
+            {isBarber && (
+              <Link href="/barber-panel" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Painel do Barbeiro</Link>
+            )}
 
-          {!isLoggedIn ? (
-            <Link href="/login" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Entrar</Link>
-          ) : (
-            <button onClick={() => { handleLogout(); toggleMenu(); }} className="text-left hover:text-red-500 transition-colors">Sair</button>
-          )}
-          
-          {(!isLoggedIn || isCustomer) && (
-            <Link href="/appointment" onClick={toggleMenu} className="bg-amber-500 text-zinc-950 px-4 py-3 rounded-md font-bold text-center hover:bg-amber-400 transition-colors mt-2">
-              Agendar Agora
-            </Link>
-          )}
+            {!isLoggedIn ? (
+              <Link href="/login" onClick={toggleMenu} className="hover:text-amber-500 transition-colors">Entrar</Link>
+            ) : (
+              <button onClick={() => { handleLogout(); toggleMenu(); }} className="text-center hover:text-red-500 transition-colors w-full font-bold">Sair</button>
+            )}
+            
+            {(!isLoggedIn || isCustomer) && (
+              <Link href="/appointment" onClick={toggleMenu} className="bg-amber-500 text-zinc-950 px-6 py-4 rounded-xl font-bold text-center hover:bg-amber-400 transition-all mt-4 inline-block">
+                Agendar Agora
+              </Link>
+            )}
+          </div>
         </div>
       )}
     </nav>

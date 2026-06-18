@@ -48,4 +48,10 @@ public class AppointmentController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<Void> completeAppointment(@PathVariable UUID id) {
+        appointmentService.completeAppointment(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

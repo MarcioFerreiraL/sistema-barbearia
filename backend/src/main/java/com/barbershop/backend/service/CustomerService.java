@@ -6,6 +6,8 @@ import com.barbershop.backend.domain.model.Customer;
 import com.barbershop.backend.domain.model.enums.Role;
 import com.barbershop.backend.service.exception.BusinessRuleException;
 import com.barbershop.backend.service.exception.ResourceNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.barbershop.backend.domain.model.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.barbershop.backend.domain.repository.CustomerRepository;
@@ -34,12 +36,16 @@ public class CustomerService {
     }
 
     public CustomerResponse getCustomerById(UUID id) {
+        checkAccess(id);
         Customer customer = customerRepository.getCustomerById(id);
         return customerToResponse(customer);
     }
 
     public CustomerResponse getCustomerByEmail(String email) {
         Customer customer = customerRepository.getCustomerByEmail(email);
+        if (customer != null) {
+            checkAccess(customer.getId());
+        }
         return customerToResponse(customer);
     }
 
@@ -67,6 +73,7 @@ public class CustomerService {
     }
 
     public CustomerResponse updateCustomer(UUID id, CustomerRequest request) {
+        checkAccess(id);
         Customer existingCustomer = customerRepository.getCustomerById(id);
         if (existingCustomer == null) {
             throw new ResourceNotFoundException("Cliente não encontrado com o ID fornecido.");
@@ -109,6 +116,7 @@ public class CustomerService {
     }
 
     public void deleteCustomer(UUID id) {
+        checkDeleteAccess(id);
         Customer customer = customerRepository.getCustomerById(id);
         if (customer != null) {
             customerRepository.deleteById(id);
@@ -164,5 +172,33 @@ public class CustomerService {
                 customer.getEmail(),
                 customer.getPhoneNumber(),
                 customer.isActive());
+    }
+
+    private void checkAccess(UUID id) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            if (user.getRole() == Role.ROLE_ADMIN || user.getRole() == Role.ROLE_BARBER) {
+                return;
+            }
+            if (user.getRole() == Role.ROLE_CUSTOMER && user.getId().equals(id)) {
+                return;
+            }
+        }
+        throw new BusinessRuleException("Acesso negado. Você não tem permissão para acessar ou alterar estes dados.");
+    }
+
+    private void checkDeleteAccess(UUID id) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            if (user.getRole() == Role.ROLE_ADMIN) {
+                return;
+            }
+            if (user.getRole() == Role.ROLE_CUSTOMER && user.getId().equals(id)) {
+                return;
+            }
+        }
+        throw new BusinessRuleException("Acesso negado. Você não tem permissão para excluir esta conta.");
     }
 }

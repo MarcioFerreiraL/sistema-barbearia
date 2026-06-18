@@ -7,6 +7,8 @@ import com.barbershop.backend.domain.model.enums.Role;
 import com.barbershop.backend.domain.repository.BarberRepository;
 import com.barbershop.backend.service.exception.BusinessRuleException;
 import com.barbershop.backend.service.exception.ResourceNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.barbershop.backend.domain.model.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -56,6 +58,7 @@ public class BarberService {
     }
 
     public BarberResponse createBarber(BarberRequest request) {
+        checkAdminAccess();
         Barber newBarber = requestToBarber(request);
         validateBarberBusinessRules(newBarber);
         newBarber.setPassword(passwordEncoder.encode(newBarber.getPassword()));
@@ -64,6 +67,7 @@ public class BarberService {
     }
 
     public BarberResponse updateBarber(UUID id, BarberRequest request) {
+        checkBarberUpdateAccess(id);
         Barber existingBarber = barberRepository.getBarberById(id);
         if (existingBarber == null) {
             throw new ResourceNotFoundException("Barbeiro não encontrado");
@@ -81,6 +85,7 @@ public class BarberService {
     }
 
     public void deleteBarber(UUID id) {
+        checkAdminAccess();
         Barber barber = barberRepository.getBarberById(id);
         if (barber != null) {
             barberRepository.deleteById(id);
@@ -91,6 +96,7 @@ public class BarberService {
 
     @org.springframework.transaction.annotation.Transactional
     public BarberResponse toggleBarberStatus(UUID id) {
+        checkAdminAccess();
         Barber barber = barberRepository.getBarberById(id);
         if (barber == null) {
             throw new ResourceNotFoundException("Barbeiro não encontrado.");
@@ -150,5 +156,30 @@ public class BarberService {
                 true,
                 Role.ROLE_BARBER
         );
+    }
+
+    private void checkAdminAccess() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            if (user.getRole() == Role.ROLE_ADMIN) {
+                return;
+            }
+        }
+        throw new BusinessRuleException("Acesso negado. Apenas administradores têm permissão para esta ação.");
+    }
+
+    private void checkBarberUpdateAccess(UUID id) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            if (user.getRole() == Role.ROLE_ADMIN) {
+                return;
+            }
+            if (user.getRole() == Role.ROLE_BARBER && user.getId().equals(id)) {
+                return;
+            }
+        }
+        throw new BusinessRuleException("Acesso negado. Você não tem permissão para alterar estes dados.");
     }
 }

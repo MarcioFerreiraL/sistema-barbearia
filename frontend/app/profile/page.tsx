@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getCustomers, getAppointments, updateCustomer } from "../services/api";
+import { getCustomers, getAppointments, updateCustomer, cancelAppointment } from "../services/api";
+import { useToast } from "../contexts/ToastContext";
 
 export default function UserProfile() {
   const router = useRouter();
+  const { showToast } = useToast();
   
   const [customer, setCustomer] = useState<any>(null);
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -14,7 +16,6 @@ export default function UserProfile() {
 
   const [formData, setFormData] = useState({ fullName: "", email: "", phoneNumber: "", password: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [status, setStatus] = useState({ type: "", message: "" });
 
   useEffect(() => {
     async function loadProfile() {
@@ -63,10 +64,10 @@ export default function UserProfile() {
           password: ""
         });
 
-        // Carregar agendamentos e filtrar pelo nome do cliente (já que o DTO retorna customerName)
+        // Carregar agendamentos e filtrar pelo ID do cliente
         const allAppointments = await getAppointments();
         const myAppointments = allAppointments.filter(
-          (app: any) => app.customerName === currentCustomer.fullName
+          (app: any) => app.customerId === currentCustomer.id
         );
 
         // Ordenar os mais recentes primeiro
@@ -96,7 +97,6 @@ export default function UserProfile() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setStatus({ type: "", message: "" });
 
     try {
       const payload = {
@@ -109,9 +109,9 @@ export default function UserProfile() {
       const updated = await updateCustomer(customer.id, payload);
       setCustomer(updated);
       setFormData(prev => ({ ...prev, password: "" }));
-      setStatus({ type: "success", message: "Perfil atualizado com sucesso!" });
+      showToast("Perfil atualizado com sucesso!", "success");
     } catch (err: any) {
-      setStatus({ type: "error", message: err.message || "Erro ao atualizar o perfil." });
+      showToast(err.message || "Erro ao atualizar o perfil.", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -158,13 +158,6 @@ export default function UserProfile() {
             <h2 className="text-2xl font-bold mb-6 text-zinc-50">Dados Pessoais</h2>
             
             <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {status.message && (
-                <div className={`sm:col-span-2 p-4 rounded-xl text-sm font-bold ${
-                  status.type === "error" ? "bg-red-950/40 text-red-400 border border-red-900/50" : "bg-emerald-950/40 text-emerald-400 border border-emerald-900/50"
-                }`}>
-                  {status.message}
-                </div>
-              )}
               
               <div className="sm:col-span-2">
                 <label className="block text-sm font-bold text-zinc-400 mb-2">Nome Completo</label>
@@ -272,10 +265,23 @@ export default function UserProfile() {
               appointments.map((item, i) => {
                 const appointmentDate = new Date(item.startTime);
                 const isPast = appointmentDate < new Date();
+                const isCancelled = item.status === "CANCELLED";
+                const isCompleted = item.status === "COMPLETED";
+
+                let statusLabel = "Agendado";
+                let statusClasses = "bg-emerald-900/30 text-emerald-400 border border-emerald-800";
+
+                if (isCancelled) {
+                  statusLabel = "Cancelado";
+                  statusClasses = "bg-red-900/30 text-red-400 border border-red-800";
+                } else if (isCompleted || isPast) {
+                  statusLabel = "Concluído";
+                  statusClasses = "bg-zinc-800 text-zinc-400 border border-zinc-700";
+                }
                 
                 return (
                   <div key={item.id || i} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-5 bg-zinc-950 border border-zinc-800 rounded-xl hover:border-amber-500/30 transition-colors group relative overflow-hidden">
-                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${isPast ? "bg-zinc-700" : "bg-amber-500"}`}></div>
+                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${isCancelled ? "bg-red-500" : isCompleted || isPast ? "bg-zinc-700" : "bg-amber-500"}`}></div>
                     <div className="pl-3">
                       <p className="font-bold text-zinc-100 text-lg group-hover:text-amber-500 transition-colors">{item.serviceName}</p>
                       <p className="text-sm text-zinc-400 mt-1">
@@ -291,9 +297,28 @@ export default function UserProfile() {
                       </p>
                     </div>
                     <div className="mt-4 sm:mt-0 pl-3 sm:pl-0 flex items-center space-x-4">
-                      <span className={`px-3 py-1 text-xs font-bold rounded-full ${isPast ? "bg-zinc-800 text-zinc-400" : "bg-emerald-900/30 text-emerald-400 border border-emerald-800"}`}>
-                        {isPast ? "Concluído" : "Agendado"}
+                      <span className={`px-3 py-1 text-xs font-bold rounded-full ${statusClasses}`}>
+                        {statusLabel}
                       </span>
+                      {!isCancelled && !isCompleted && !isPast && (
+                        <button
+                          onClick={async () => {
+                            if (confirm("Deseja realmente cancelar este agendamento?")) {
+                              try {
+                                await cancelAppointment(item.id);
+                                showToast("Agendamento cancelado com sucesso!", "success");
+                                // Atualiza o estado localmente sem precisar recarregar a tela inteira
+                                setAppointments(prev => prev.map(appt => appt.id === item.id ? { ...appt, status: "CANCELLED" } : appt));
+                              } catch (err: any) {
+                                showToast(err.message || "Erro ao cancelar o agendamento.", "error");
+                              }
+                            }
+                          }}
+                          className="px-3 py-1.5 text-xs font-bold bg-red-950/40 text-red-400 border border-red-900/50 hover:bg-red-900/30 rounded-lg transition-all"
+                        >
+                          Cancelar
+                        </button>
+                      )}
                     </div>
                   </div>
                 );

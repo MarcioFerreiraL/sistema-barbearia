@@ -14,7 +14,7 @@ export default function Gallery() {
         <h1 className="text-4xl md:text-5xl font-black text-zinc-50 mb-4">
           Nossos <span className="text-amber-500">Trabalhos</span>
         </h1>
-        <p className="text-lg text-zinc-600 max-w-xl mx-auto">
+        <p className="text-lg text-zinc-400 max-w-xl mx-auto">
           Fotos da nossa barbearia.
         </p>
       </div>

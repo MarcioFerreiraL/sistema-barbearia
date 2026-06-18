@@ -18,13 +18,20 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
     headers["Content-Type"] = "application/json";
   }
 
-  const response = await fetch(url, { 
-    ...options, 
-    headers,
-    credentials: "include"
-  });
+  let response;
+  try {
+    response = await fetch(url, { 
+      ...options, 
+      headers,
+      credentials: "include"
+    });
+  } catch (error: any) {
+    console.error(`[NETWORK ERROR] Falha ao conectar a ${url}:`, error);
+    throw error;
+  }
   
   if (response.status === 401 || response.status === 403) {
+    console.error(`[AUTH ERROR] Acesso não autorizado para ${url} (Status ${response.status})`);
     if (typeof window !== "undefined") {
       localStorage.removeItem("token");
       window.location.href = "/login?expired=true";
@@ -34,7 +41,9 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
   
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
-    throw new Error(errorData?.message || `Erro na requisição: ${response.statusText}`);
+    const errorMessage = errorData?.message || `Erro na requisição: ${response.statusText}`;
+    console.error(`[API ERROR] ${response.status} - ${errorMessage} em ${url}`);
+    throw new Error(errorMessage);
   }
 
   // Verifica se tem body antes de tentar fazer parse (para 204 No Content)
@@ -47,16 +56,23 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
 
 // Função para fazer Login e receber o Token
 export async function login(email: string, password: string) {
-  const response = await fetch(`${BASE_URL}/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, password }),
-    credentials: "include"
-  });
+  let response;
+  try {
+    response = await fetch(`${BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+      credentials: "include"
+    });
+  } catch (error: any) {
+    console.error("[NETWORK ERROR] Falha na conexão de Login:", error);
+    throw error;
+  }
 
   if (!response.ok) {
+    console.error(`[LOGIN ERROR] Tentativa de login falhou para: ${email} (Status ${response.status})`);
     throw new Error("E-mail ou palavra-passe incorretos.");
   }
 
@@ -182,5 +198,17 @@ export async function updateAdmin(id: string, data: any) {
   return fetchWithAuth(`${BASE_URL}/admins/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),
+  });
+}
+
+export async function cancelAppointment(id: string) {
+  return fetchWithAuth(`${BASE_URL}/appointments/${id}/cancel`, {
+    method: "PATCH",
+  });
+}
+
+export async function completeAppointment(id: string) {
+  return fetchWithAuth(`${BASE_URL}/appointments/${id}/complete`, {
+    method: "PATCH",
   });
 }

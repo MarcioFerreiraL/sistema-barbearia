@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getServices, getBarbers, getCustomers, getAppointments, getBusinessHours, createAppointment } from "../services/api";
+import { useToast } from "../contexts/ToastContext";
 
 interface ServiceItem {
   id: number;
@@ -23,6 +24,7 @@ interface Customer {
 
 export default function Appointment() {
   const router = useRouter();
+  const { showToast } = useToast();
   
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [barbers, setBarbers] = useState<Barber[]>([]);
@@ -215,11 +217,11 @@ export default function Appointment() {
 
   const handleSubmit = async () => {
     if (!selectedServiceId || !selectedBarberId || !selectedDate || !selectedTime) {
-      alert("Por favor, preencha todos os campos.");
+      showToast("Por favor, preencha todos os campos.", "error");
       return;
     }
     if (!customerId) {
-      alert("Erro ao identificar o cliente. Faça login novamente.");
+      showToast("Erro ao identificar o cliente. Faça login novamente.", "error");
       return;
     }
 
@@ -232,10 +234,10 @@ export default function Appointment() {
         serviceItemId: selectedServiceId,
         startTime,
       });
-      alert("Agendamento confirmado com sucesso!");
+      showToast("Agendamento confirmado com sucesso!", "success");
       router.push("/profile"); // ou outra página de sucesso
     } catch (err: any) {
-      alert(err.message || "Erro ao confirmar agendamento.");
+      showToast(err.message || "Erro ao confirmar agendamento.", "error");
     } finally {
       setIsSubmitting(false);
     }

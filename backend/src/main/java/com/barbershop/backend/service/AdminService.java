@@ -7,6 +7,8 @@ import com.barbershop.backend.domain.model.enums.Role;
 import com.barbershop.backend.domain.repository.AdminRepository;
 import com.barbershop.backend.service.exception.BusinessRuleException;
 import com.barbershop.backend.service.exception.ResourceNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +45,12 @@ public class AdminService {
     }
 
     public AdminResponse createAdmin(AdminRequest request) {
+        if (adminRepository.count() > 0) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || !auth.isAuthenticated() || auth.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+                throw new BusinessRuleException("Apenas administradores podem cadastrar novos administradores.");
+            }
+        }
 
         Admin newAdmin = requestToAdmin(request);
         newAdmin.setPassword(passwordEncoder.encode(newAdmin.getPassword()));

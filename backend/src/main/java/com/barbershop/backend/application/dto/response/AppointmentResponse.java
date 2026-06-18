@@ -6,7 +6,9 @@ import java.util.UUID;
 
 public record AppointmentResponse(
         UUID id,
+        UUID customerId,
         String customerName,
+        UUID barberId,
         String barberName,
         String serviceName,
         LocalDateTime startTime,

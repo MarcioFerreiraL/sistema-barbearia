@@ -2,12 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { login as apiLogin, registerCustomer } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
+import { useToast } from "../contexts/ToastContext";
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
+  const { showToast } = useToast();
   
   // Estados para controlar se estamos a mostrar o formulário de Login ou Registo
   const [isLoginView, setIsLoginView] = useState(true);
@@ -17,9 +20,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   
-  // Estados de feedback (carregamento e erros)
-  const [error, setError] = useState("");
+  // Estados de feedback (carregamento)
   const [isLoading, setIsLoading] = useState(false);
 
   // Lógica para detetar se a sessão expirou
@@ -27,17 +30,16 @@ export default function LoginPage() {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       if (params.get("expired") === "true") {
-        setError("A sua sessão expirou. Por favor, faça login novamente.");
+        showToast("A sua sessão expirou. Por favor, faça login novamente.", "error");
         const cleanUrl = window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
       }
     }
-  }, []);
+  }, [showToast]);
 
   // Lógica de Submissão
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setIsLoading(true);
 
     try {
@@ -47,6 +49,7 @@ export default function LoginPage() {
         
         // Guarda o Token JWT usando o contexto (atualiza a navbar instantaneamente)
         login(data.token);
+        showToast("Login efetuado com sucesso! Bem-vindo.", "success");
         
         // Descobre a role para redirecionar para o local certo
         try {
@@ -70,7 +73,12 @@ export default function LoginPage() {
         }
       } else {
         // --- FAZER REGISTO ---
+        if (!acceptedTerms) {
+          throw new Error("Você precisa de aceitar os Termos de Uso e a Política de Privacidade.");
+        }
+
         await registerCustomer({ fullName, email, password, phoneNumber });
+        showToast("Conta criada com sucesso! A entrar...", "success");
         
         // Se o registo der sucesso, fazemos login automático logo de seguida!
         const data = await apiLogin(email, password);
@@ -78,30 +86,24 @@ export default function LoginPage() {
         router.push("/appointment"); // Registo é sempre cliente
       }
     } catch (err: any) {
-      setError(err.message);
+      showToast(err.message || "Ocorreu um erro. Verifique as suas credenciais.", "error");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center bg-zinc-50 py-12 px-4">
+    <div className="min-h-[85vh] flex items-center justify-center bg-zinc-950 py-12 px-4">
       <div className="bg-zinc-950 p-8 sm:p-10 rounded-2xl shadow-xl w-full max-w-md border border-zinc-800">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-black text-zinc-50">
             {isLoginView ? "Bem-vindo à " : "Crie a sua Conta na "}
-            <span className="text-amber-500">BarberPro</span>
+            Barbearia do <span className="text-amber-500">Zé</span>
           </h1>
           <p className="text-zinc-400 mt-2 text-sm">
             {isLoginView ? "Insira as suas credenciais para aceder" : "Preencha os dados abaixo para se registar"}
           </p>
         </div>
-
-        {error && (
-          <div className="bg-red-500/10 border border-red-500/50 text-red-500 p-4 rounded-xl mb-6 text-sm font-medium text-center flex items-center justify-center gap-2">
-            <span>⚠️</span> {error}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           {!isLoginView && (
@@ -156,6 +158,30 @@ export default function LoginPage() {
             />
           </div>
 
+          {!isLoginView && (
+            <div className="flex items-start gap-3 mt-1">
+              <input
+                type="checkbox"
+                id="accept-terms"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-1 w-4 h-4 rounded border-zinc-800 bg-zinc-900 text-amber-500 focus:ring-amber-500 focus:ring-offset-zinc-950 cursor-pointer accent-amber-500"
+                required
+              />
+              <label htmlFor="accept-terms" className="text-xs text-zinc-400 leading-relaxed cursor-pointer select-none">
+                Li e aceito os{" "}
+                <Link href="/terms-of-use" target="_blank" className="text-amber-500 hover:text-amber-400 font-semibold underline underline-offset-2">
+                  Termos de Uso
+                </Link>{" "}
+                e a{" "}
+                <Link href="/privacy-policy" target="_blank" className="text-amber-500 hover:text-amber-400 font-semibold underline underline-offset-2">
+                  Política de Privacidade
+                </Link>{" "}
+                da Barbearia do Zé.
+              </label>
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={isLoading}
@@ -184,7 +210,6 @@ export default function LoginPage() {
               type="button"
               onClick={() => {
                 setIsLoginView(!isLoginView);
-                setError(""); // limpa os erros ao trocar de ecrã
               }}
               className="text-amber-500 font-bold hover:text-amber-400 transition-colors underline decoration-transparent hover:decoration-amber-400 underline-offset-4"
             >

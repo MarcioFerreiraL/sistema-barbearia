@@ -7,6 +7,8 @@ import com.barbershop.backend.domain.model.enums.Role;
 import com.barbershop.backend.domain.repository.BarberRepository;
 import com.barbershop.backend.service.exception.BusinessRuleException;
 import com.barbershop.backend.service.exception.ResourceNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.barbershop.backend.domain.model.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -56,6 +58,7 @@ public class BarberService {
     }
 
     public BarberResponse createBarber(BarberRequest request) {
+        checkAdminAccess();
         Barber newBarber = requestToBarber(request);
         validateBarberBusinessRules(newBarber);
         newBarber.setPassword(passwordEncoder.encode(newBarber.getPassword()));
@@ -63,21 +66,44 @@ public class BarberService {
         return barberToResponse(newBarber);
     }
 
-    public BarberResponse updateBarber(BarberRequest request) {
-        Barber barber = requestToBarber(request);
-        barberRepository.getBarberById(barber.getId());
-        validateBarberBusinessRules(barber);
-        barberRepository.save(barber);
-        return barberToResponse(barber);
+    public BarberResponse updateBarber(UUID id, BarberRequest request) {
+        checkBarberUpdateAccess(id);
+        Barber existingBarber = barberRepository.getBarberById(id);
+        if (existingBarber == null) {
+            throw new ResourceNotFoundException("Barbeiro não encontrado");
+        }
+        existingBarber.setFullName(request.fullName());
+        existingBarber.setEmail(request.email());
+        existingBarber.setPhoneNumber(request.phoneNumber());
+        if (request.password() != null && !request.password().isEmpty()) {
+            existingBarber.setPassword(passwordEncoder.encode(request.password()));
+        }
+        
+        validateBarberBusinessRules(existingBarber);
+        barberRepository.save(existingBarber);
+        return barberToResponse(existingBarber);
     }
 
     public void deleteBarber(UUID id) {
+        checkAdminAccess();
         Barber barber = barberRepository.getBarberById(id);
         if (barber != null) {
             barberRepository.deleteById(id);
         } else {
             throw new ResourceNotFoundException("Não foi possivel deletar o barbeiro.");
         }
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public BarberResponse toggleBarberStatus(UUID id) {
+        checkAdminAccess();
+        Barber barber = barberRepository.getBarberById(id);
+        if (barber == null) {
+            throw new ResourceNotFoundException("Barbeiro não encontrado.");
+        }
+        barber.setActive(!barber.isActive());
+        barberRepository.save(barber);
+        return barberToResponse(barber);
     }
 
     private void validateBarberBusinessRules(Barber barber) {
@@ -90,7 +116,8 @@ public class BarberService {
         if (barber.getEmail() == null || barber.getEmail().isEmpty()) {
             throw new BusinessRuleException("O e-mail é obrigatório.");
         }
-        if (barberRepository.existsByEmail(barber.getEmail())) {
+        Barber existingEmailBarber = barberRepository.getBarberByEmail(barber.getEmail());
+        if (existingEmailBarber != null && (barber.getId() == null || !existingEmailBarber.getId().equals(barber.getId()))) {
             throw new BusinessRuleException("Este e-mail já está em uso por outro utilizador.");
         }
 
@@ -98,7 +125,8 @@ public class BarberService {
         if (barber.getPhoneNumber() == null || barber.getPhoneNumber().isEmpty()) {
             throw new BusinessRuleException("O número de telefone é obrigatório.");
         }
-        if (barberRepository.existsByPhoneNumber(barber.getPhoneNumber())) {
+        Barber existingPhoneBarber = barberRepository.getBarberByPhoneNumber(barber.getPhoneNumber());
+        if (existingPhoneBarber != null && (barber.getId() == null || !existingPhoneBarber.getId().equals(barber.getId()))) {
             throw new BusinessRuleException("Este número de telefone já se encontra registado no sistema.");
         }
 
@@ -128,5 +156,30 @@ public class BarberService {
                 true,
                 Role.ROLE_BARBER
         );
+    }
+
+    private void checkAdminAccess() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            if (user.getRole() == Role.ROLE_ADMIN) {
+                return;
+            }
+        }
+        throw new BusinessRuleException("Acesso negado. Apenas administradores têm permissão para esta ação.");
+    }
+
+    private void checkBarberUpdateAccess(UUID id) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            if (user.getRole() == Role.ROLE_ADMIN) {
+                return;
+            }
+            if (user.getRole() == Role.ROLE_BARBER && user.getId().equals(id)) {
+                return;
+            }
+        }
+        throw new BusinessRuleException("Acesso negado. Você não tem permissão para alterar estes dados.");
     }
 }

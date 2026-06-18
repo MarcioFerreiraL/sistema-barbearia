@@ -13,6 +13,10 @@ import com.barbershop.backend.domain.repository.CustomerRepository;
 import com.barbershop.backend.domain.repository.ServiceItemRepository;
 import com.barbershop.backend.service.exception.BusinessRuleException;
 import com.barbershop.backend.service.exception.ResourceNotFoundException;
+import com.barbershop.backend.domain.repository.BusinessHoursRepository;
+import com.barbershop.backend.domain.model.User;
+import com.barbershop.backend.domain.model.enums.Role;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,16 +37,25 @@ public class AppointmentService {
     private final CustomerRepository customerRepository;
     private final BarberRepository barberRepository;
     private final ServiceItemRepository serviceItemRepository;
+    private final BusinessHoursRepository businessHoursRepository;
 
-    public AppointmentService(ServiceItemRepository serviceItemRepository, CustomerRepository customerRepository, BarberRepository barberRepository, AppointmentRepository appointmentRepository) {
+    public AppointmentService(ServiceItemRepository serviceItemRepository, CustomerRepository customerRepository, BarberRepository barberRepository, AppointmentRepository appointmentRepository, BusinessHoursRepository businessHoursRepository) {
         this.serviceItemRepository = serviceItemRepository;
         this.customerRepository = customerRepository;
         this.barberRepository = barberRepository;
         this.appointmentRepository = appointmentRepository;
+        this.businessHoursRepository = businessHoursRepository;
     }
 
     @Transactional
     public AppointmentResponse createAppointment(AppointmentRequest request) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            if (user.getRole() == Role.ROLE_CUSTOMER && !user.getId().equals(request.customerId())) {
+                throw new BusinessRuleException("Acesso negado. Você não pode criar agendamentos para outros clientes.");
+            }
+        }
 
         Appointment appointment = requestToAppointment(request);
         businessRules(appointment);
@@ -77,6 +91,8 @@ public class AppointmentService {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Agendamento não encontrado."));
 
+        checkAppointmentAccess(appointment);
+
         // Máquina de Estados: Só cancela se estiver agendado
         if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
             throw new BusinessRuleException("Este agendamento já se encontra cancelado.");
@@ -86,6 +102,31 @@ public class AppointmentService {
         }
 
         appointment.setStatus(AppointmentStatus.CANCELLED);
+        appointmentRepository.save(appointment);
+    }
+
+    @Transactional
+    public void completeAppointment(UUID appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Agendamento não encontrado."));
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            if (user.getRole() != Role.ROLE_ADMIN && 
+               !(user.getRole() == Role.ROLE_BARBER && appointment.getBarber().getId().equals(user.getId()))) {
+                throw new BusinessRuleException("Acesso negado. Apenas o barbeiro designado ou administradores podem concluir o serviço.");
+            }
+        }
+
+        if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
+            throw new BusinessRuleException("Não é possível finalizar um agendamento cancelado.");
+        }
+        if (appointment.getStatus() == AppointmentStatus.COMPLETED) {
+            throw new BusinessRuleException("Este agendamento já se encontra finalizado.");
+        }
+
+        appointment.setStatus(AppointmentStatus.COMPLETED);
         appointmentRepository.save(appointment);
     }
 
@@ -102,15 +143,32 @@ public class AppointmentService {
     }
 
     public List<AppointmentResponse> getAllAppointments() {
-        return appointmentRepository.findAll().stream()
-                .map(this::convertToResponse)
-                .collect(Collectors.toList());
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            List<Appointment> appointments;
+            
+            if (user.getRole() == Role.ROLE_ADMIN) {
+                appointments = appointmentRepository.findAll();
+            } else if (user.getRole() == Role.ROLE_BARBER) {
+                appointments = appointmentRepository.findByBarberId(user.getId());
+            } else {
+                appointments = appointmentRepository.findByCustomerId(user.getId());
+            }
+            
+            return appointments.stream()
+                    .map(this::convertToResponse)
+                    .collect(Collectors.toList());
+        }
+        return List.of();
     }
 
     private AppointmentResponse convertToResponse(Appointment appointment) {
         return new AppointmentResponse(
                 appointment.getId(),
+                appointment.getCustomer().getId(),
                 appointment.getCustomer().getFullName(),
+                appointment.getBarber().getId(),
                 appointment.getBarber().getFullName(),
                 appointment.getServiceItem().getName(),
                 appointment.getStartTime(),
@@ -120,16 +178,10 @@ public class AppointmentService {
     }
 
     public AppointmentResponse convertToResponseById(UUID id) {
-        Appointment appointment = appointmentRepository.getReferenceById(id);
-        return new AppointmentResponse(
-                appointment.getId(),
-                appointment.getCustomer().getFullName(),
-                appointment.getBarber().getFullName(),
-                appointment.getServiceItem().getName(),
-                appointment.getStartTime(),
-                appointment.getEndTime(),
-                appointment.getStatus()
-        );
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Agendamento não encontrado."));
+        checkAppointmentAccess(appointment);
+        return convertToResponse(appointment);
     }
 
     private Appointment requestToAppointment(AppointmentRequest request) {
@@ -162,15 +214,21 @@ public class AppointmentService {
             throw new BusinessRuleException("Não é possível agendar um horário no passado.");
         }
 
-        // Regra: Não funciona aos domingos
-        if (startTime.getDayOfWeek() == DayOfWeek.SUNDAY || startTime.getDayOfWeek() == DayOfWeek.SATURDAY) {
-            throw new BusinessRuleException("A barbearia BarberPro não funciona aos domingos.");
+        // Regra: Horários e Dias Dinâmicos do Banco de Dados
+        int dayOfWeekVal = startTime.getDayOfWeek().getValue(); // 1 = Monday, ..., 7 = Sunday
+        com.barbershop.backend.domain.model.BusinessHours hours = businessHoursRepository.findById(dayOfWeekVal)
+                .orElseThrow(() -> new BusinessRuleException("Configuração de funcionamento não encontrada para o dia da semana."));
+
+        if (!hours.isOpen()) {
+            throw new BusinessRuleException("A barbearia não funciona aos " + hours.getDayName() + "s.");
         }
 
-        // Regra: Horário comercial
-        int hour = startTime.getHour();
-        if (hour < 8 || hour >= 18) {
-            throw new BusinessRuleException("O horário selecionado está fora do horário de funcionamento (09:00 às 20:00).");
+        LocalTime appointmentTime = startTime.toLocalTime();
+        LocalTime openTime = LocalTime.parse(hours.getOpenTime());
+        LocalTime closeTime = LocalTime.parse(hours.getCloseTime());
+
+        if (appointmentTime.isBefore(openTime) || appointmentTime.isAfter(closeTime.minusMinutes(appointment.getServiceItem().getDurationInMinutes()))) {
+            throw new BusinessRuleException("O horário selecionado está fora do horário de funcionamento configurado (" + hours.getOpenTime() + " às " + hours.getCloseTime() + ").");
         }
 
         // --- 2. BUSCA E VALIDAÇÃO DE REGISTROS INATIVOS ---
@@ -198,5 +256,20 @@ public class AppointmentService {
         return appointment;
     }
 
-
+    private void checkAppointmentAccess(Appointment appointment) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            if (user.getRole() == Role.ROLE_ADMIN) {
+                return;
+            }
+            if (user.getRole() == Role.ROLE_BARBER && appointment.getBarber().getId().equals(user.getId())) {
+                return;
+            }
+            if (user.getRole() == Role.ROLE_CUSTOMER && appointment.getCustomer().getId().equals(user.getId())) {
+                return;
+            }
+        }
+        throw new BusinessRuleException("Acesso negado. Você não tem permissão para acessar este agendamento.");
+    }
 }

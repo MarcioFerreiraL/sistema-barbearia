@@ -23,22 +23,22 @@ export default function Home() {
       </section>
 
       {/* SEÇÃO DE DESTAQUES (Cards de Informação) */}
-      <section className="py-20 px-4 bg-zinc-50">
+      <section className="py-20 px-4 bg-zinc-950">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           
-          <div className="p-8 bg-white rounded-xl shadow-sm border border-zinc-200 hover:shadow-md transition-shadow">
-            <h3 className="text-xl font-bold mb-3 text-zinc-900">Barbeiros profissionais</h3>
-            <p className="text-zinc-600">Nosso time é composto de barbeiros profissionais com certificados de cursos de alta qualidade e com muita experiência.</p>
+          <div className="p-8 bg-zinc-900 rounded-xl shadow-lg border border-zinc-800 hover:border-amber-500/50 transition-colors">
+            <h3 className="text-xl font-bold mb-3 text-zinc-100">Barbeiros profissionais</h3>
+            <p className="text-zinc-400">Nosso time é composto de barbeiros profissionais com certificados de cursos de alta qualidade e com muita experiência.</p>
           </div>
           
-          <div className="p-8 bg-white rounded-xl shadow-sm border border-zinc-200 hover:shadow-md transition-shadow">
-            <h3 className="text-xl font-bold mb-3 text-zinc-900">Produtos</h3>
-            <p className="text-zinc-600">Nós usamos os melhores produtos do mercado para melhor lhe atender.</p>
+          <div className="p-8 bg-zinc-900 rounded-xl shadow-lg border border-zinc-800 hover:border-amber-500/50 transition-colors">
+            <h3 className="text-xl font-bold mb-3 text-zinc-100">Produtos</h3>
+            <p className="text-zinc-400">Nós usamos os melhores produtos do mercado para melhor lhe atender.</p>
           </div>
           
-          <div className="p-8 bg-white rounded-xl shadow-sm border border-zinc-200 hover:shadow-md transition-shadow">
-            <h3 className="text-xl font-bold mb-3 text-zinc-900">Agendamento Fácil</h3>
-            <p className="text-zinc-600">Nosso sistema é feito para que você agende o seu corte facilmente.</p>
+          <div className="p-8 bg-zinc-900 rounded-xl shadow-lg border border-zinc-800 hover:border-amber-500/50 transition-colors">
+            <h3 className="text-xl font-bold mb-3 text-zinc-100">Agendamento Fácil</h3>
+            <p className="text-zinc-400">Nosso sistema é feito para que você agende o seu corte facilmente.</p>
           </div>
 
         </div>

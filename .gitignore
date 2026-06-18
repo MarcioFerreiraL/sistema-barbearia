@@ -1,0 +1,102 @@
+# ==============================================================================
+# Barbearia do Zé - Repositorio Git Ignore
+# ==============================================================================
+
+# Node / Next.js (Frontend)
+# ------------------------------------------------------------------------------
+node_modules/
+/frontend/node_modules/
+.next/
+/frontend/.next/
+out/
+/frontend/out/
+build/
+/frontend/build/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+/frontend/coverage/
+next-env.d.ts
+*.tsbuildinfo
+
+# Java / Maven (Backend)
+# ------------------------------------------------------------------------------
+target/
+/backend/target/
+build/
+/backend/build/
+.mvn/wrapper/maven-wrapper.jar
+/backend/.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
+HELP.md
+
+# Logs e Arquivos Temporários
+# ------------------------------------------------------------------------------
+*.log
+*.log.*
+*.gz
+*.tmp
+*.bak
+/backend/*.log
+/backend/*.log.*
+/backend/*.gz
+
+# Configurações de Ambiente (Segurança - Senhas e Tokens)
+# ------------------------------------------------------------------------------
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+/frontend/.env*
+
+# IDEs e Editores
+# ------------------------------------------------------------------------------
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+/backend/.idea/
+
+# VS Code
+.vscode/
+/frontend/.vscode/
+/backend/.vscode/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Eclipse / STS
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+/backend/.classpath
+/backend/.project
+/backend/.settings/
+
+# Arquivos de Sistema Operacional
+# ------------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

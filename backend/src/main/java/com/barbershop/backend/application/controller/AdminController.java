@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/admins/")
+@RequestMapping("/api/admins")
 public class AdminController {
     private final AdminService adminService;
     public AdminController(AdminService adminService) {
@@ -38,7 +38,7 @@ public class AdminController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<AdminResponse> updateAdmin(@PathVariable UUID id, @RequestBody AdminRequest admin) {
-        AdminResponse updatedAdmin = adminService.updateAdmin(admin);
+        AdminResponse updatedAdmin = adminService.updateAdmin(id, admin);
         return new ResponseEntity<>(updatedAdmin, HttpStatus.OK);
     }
 

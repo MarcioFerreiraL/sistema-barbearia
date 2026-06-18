@@ -15,7 +15,7 @@ import java.util.Date;
 @Service
 public class TokenService {
 
-    @Value("{api.security.token.secret}")
+    @Value("${api.security.token.secret}")
     private String tokenSecret;
 
     public String generateToken(User user) {
@@ -25,6 +25,8 @@ public class TokenService {
             return JWT.create()
                     .withIssuer("barbershop-api") // Quem emitiu
                     .withSubject(user.getEmail()) // Quem é o dono do token
+                    .withClaim("id", user.getId().toString())
+                    .withClaim("role", user.getRole().name())
                     .withExpiresAt(genExpirationDate()) // Expira em 2 horas
                     .sign(algorithm);
         } catch (JWTVerificationException exception) {
@@ -38,7 +40,7 @@ public class TokenService {
             return JWT.require(algorithm)
                     .withIssuer("barbershop-api")
                     .build()
-                    .verify(tokenSecret)
+                    .verify(token)
                     .getSubject();
         } catch (JWTVerificationException exception) {
            return "";

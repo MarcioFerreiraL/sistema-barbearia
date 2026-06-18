@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function About() {
   return (
-    <div className="w-full bg-white">
+    <div className="w-full bg-zinc-950">
       
       {/* Cabeçalho da Página */}
       <div className="bg-zinc-950 text-white py-20 px-4 text-center">
@@ -19,23 +19,23 @@ export default function About() {
         
         {/* Texto e Informações */}
         <div>
-          <h2 className="text-3xl font-bold text-zinc-900 mb-6">Nossa História</h2>
-          <p className="text-zinc-600 mb-4 leading-relaxed text-lg">
-            Fundado desde 2015. Com o objetivo de ser uma referência regional, a BarberPro foi criada com o intuito de oferecer uma experiência única para nossos clientes.
+          <h2 className="text-3xl font-bold text-zinc-100 mb-6">Nossa História</h2>
+          <p className="text-lg text-zinc-300 leading-relaxed max-w-3xl mx-auto">
+            Fundado desde 2015. Com o objetivo de ser uma referência regional, a Barbearia do Zé foi criada com o intuito de oferecer uma experiência única para nossos clientes.
           </p>
-          <p className="text-zinc-600 mb-8 leading-relaxed text-lg">
+          <p className="text-zinc-400 mb-8 leading-relaxed text-lg">
             Trabalhamos com os melhores equipamentos e produtos do mercados. Temos os melhores barbeiros profissionais e nosso ambiente é aconchegante.
           </p>
           
           {/* Blocos de Estatísticas */}
           <div className="flex gap-4">
-            <div className="bg-zinc-50 p-6 rounded-xl border border-zinc-200 w-full text-center shadow-sm">
+            <div className="bg-zinc-900 p-6 rounded-xl border border-zinc-800 w-full text-center shadow-lg">
               <span className="block text-4xl font-black text-amber-500 mb-1">10 anos</span>
-              <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">De Anos de Experiências</span>
+              <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">De Anos de Experiências</span>
             </div>
-            <div className="bg-zinc-50 p-6 rounded-xl border border-zinc-200 w-full text-center shadow-sm">
+            <div className="bg-zinc-900 p-6 rounded-xl border border-zinc-800 w-full text-center shadow-lg">
               <span className="block text-4xl font-black text-amber-500 mb-1">+5mil</span>
-              <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Clientes Felizes</span>
+              <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Clientes Felizes</span>
             </div>
           </div>
         </div>

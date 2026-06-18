@@ -6,6 +6,8 @@ import com.barbershop.backend.domain.model.Customer;
 import com.barbershop.backend.domain.model.enums.Role;
 import com.barbershop.backend.service.exception.BusinessRuleException;
 import com.barbershop.backend.service.exception.ResourceNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.barbershop.backend.domain.model.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.barbershop.backend.domain.repository.CustomerRepository;
@@ -19,7 +21,7 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public CustomerService(CustomerRepository customerRepository,  PasswordEncoder passwordEncoder) {
+    public CustomerService(CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -34,12 +36,16 @@ public class CustomerService {
     }
 
     public CustomerResponse getCustomerById(UUID id) {
+        checkAccess(id);
         Customer customer = customerRepository.getCustomerById(id);
         return customerToResponse(customer);
     }
 
     public CustomerResponse getCustomerByEmail(String email) {
         Customer customer = customerRepository.getCustomerByEmail(email);
+        if (customer != null) {
+            checkAccess(customer.getId());
+        }
         return customerToResponse(customer);
     }
 
@@ -66,15 +72,51 @@ public class CustomerService {
         return customerToResponse(savedCustomer);
     }
 
-    public CustomerResponse updateCustomer(CustomerRequest request) {
-        Customer customer = requestToCustomer(request);
-        customerRepository.getCustomerById(customer.getId());
-        validateCustomerBusinessRules(customer);
-        customerRepository.save(customer);
-        return customerToResponse(customer);
+    public CustomerResponse updateCustomer(UUID id, CustomerRequest request) {
+        checkAccess(id);
+        Customer existingCustomer = customerRepository.getCustomerById(id);
+        if (existingCustomer == null) {
+            throw new ResourceNotFoundException("Cliente não encontrado com o ID fornecido.");
+        }
+
+        if (request.fullName() == null || request.fullName().trim().isEmpty()) {
+            throw new BusinessRuleException("O nome completo é obrigatório.");
+        }
+
+        if (request.email() == null || request.email().trim().isEmpty()) {
+            throw new BusinessRuleException("O e-mail é obrigatório.");
+        }
+        if (!existingCustomer.getEmail().equalsIgnoreCase(request.email()) &&
+                customerRepository.existsByEmail(request.email())) {
+            throw new BusinessRuleException("Este e-mail já está em uso por outro utilizador.");
+        }
+
+        if (request.phoneNumber() == null || request.phoneNumber().trim().isEmpty()) {
+            throw new BusinessRuleException("O número de telefone é obrigatório.");
+        }
+        if (!existingCustomer.getPhoneNumber().equals(request.phoneNumber()) &&
+                customerRepository.existsByPhoneNumber(request.phoneNumber())) {
+            throw new BusinessRuleException("Este número de telefone já se encontra registado no sistema.");
+        }
+
+        if (request.password() != null && !request.password().trim().isEmpty()) {
+            if (request.password().length() < 6) {
+                throw new BusinessRuleException(
+                        "A palavra-passe deve ter pelo menos 6 caracteres por motivos de segurança.");
+            }
+            existingCustomer.setPassword(passwordEncoder.encode(request.password()));
+        }
+
+        existingCustomer.setFullName(request.fullName());
+        existingCustomer.setEmail(request.email());
+        existingCustomer.setPhoneNumber(request.phoneNumber());
+
+        Customer savedCustomer = customerRepository.save(existingCustomer);
+        return customerToResponse(savedCustomer);
     }
 
     public void deleteCustomer(UUID id) {
+        checkDeleteAccess(id);
         Customer customer = customerRepository.getCustomerById(id);
         if (customer != null) {
             customerRepository.deleteById(id);
@@ -90,8 +132,7 @@ public class CustomerService {
                 request.password(),
                 request.phoneNumber(),
                 true,
-                Role.ROLE_CUSTOMER
-        );
+                Role.ROLE_CUSTOMER);
     }
 
     private void validateCustomerBusinessRules(Customer customer) {
@@ -118,7 +159,8 @@ public class CustomerService {
 
         // Regra 4: Segurança mínima da palavra-passe
         if (customer.getPassword() == null || customer.getPassword().length() < 6) {
-            throw new BusinessRuleException("A palavra-passe deve ter pelo menos 6 caracteres por motivos de segurança.");
+            throw new BusinessRuleException(
+                    "A palavra-passe deve ter pelo menos 6 caracteres por motivos de segurança.");
         }
 
     }
@@ -129,7 +171,34 @@ public class CustomerService {
                 customer.getFullName(),
                 customer.getEmail(),
                 customer.getPhoneNumber(),
-                customer.isActive()
-        );
+                customer.isActive());
+    }
+
+    private void checkAccess(UUID id) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            if (user.getRole() == Role.ROLE_ADMIN || user.getRole() == Role.ROLE_BARBER) {
+                return;
+            }
+            if (user.getRole() == Role.ROLE_CUSTOMER && user.getId().equals(id)) {
+                return;
+            }
+        }
+        throw new BusinessRuleException("Acesso negado. Você não tem permissão para acessar ou alterar estes dados.");
+    }
+
+    private void checkDeleteAccess(UUID id) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            if (user.getRole() == Role.ROLE_ADMIN) {
+                return;
+            }
+            if (user.getRole() == Role.ROLE_CUSTOMER && user.getId().equals(id)) {
+                return;
+            }
+        }
+        throw new BusinessRuleException("Acesso negado. Você não tem permissão para excluir esta conta.");
     }
 }

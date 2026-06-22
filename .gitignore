@@ -100,3 +100,8 @@ HELP.md
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Arquivos de Rascunho e Testes Locais na Raiz
+/scratch.js
+/scratch2.js
+/test_e2e.js

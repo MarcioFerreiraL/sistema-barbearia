@@ -1,42 +1,66 @@
 @startuml
 left to right direction
 
-actor Cliente
-actor Barbeiro
-actor Administrador
+actor "Cliente" as Cliente
+actor "Barbeiro" as Barbeiro
+actor "Administrador" as Admin
 
-package "BarberShop - Sistema de Agendamento" {
-    usecase (Realizar Cadastro) as UC1
-    usecase (Fazer Login) as UC2
-    usecase (Visualizar Catálogo e Profissionais) as UC3
-    usecase (Consultar Disponibilidade) as UC4
-    usecase (Agendar Horário) as UC5
-    usecase (Cancelar Agendamento) as UC6
-    usecase (Visualizar Histórico) as UC7
-    usecase (Atualizar Dados do Perfil) as UC8
-    usecase (Visualizar Agenda Diária) as UC9
-    usecase (Alterar Status do Atendimento) as UC10
-    usecase (Gerenciar Serviços e Preços) as UC11
-    usecase (Gerenciar Equipe) as UC12
+package "BarberShop - Sistema de Gestão e Agendamento" {
+    ' Use cases comuns e de autenticação
+    usecase "Fazer Login" as UC_Login
+    usecase "Fazer Logout" as UC_Logout
+    usecase "Atualizar Dados do Perfil" as UC_Perfil
+    
+    ' Cliente
+    usecase "Realizar Cadastro" as UC_Cadastro
+    usecase "Visualizar Catálogo e Profissionais" as UC_Catalogo
+    usecase "Consultar Disponibilidade" as UC_Disponibilidade
+    usecase "Agendar Horário" as UC_Agendar
+    usecase "Cancelar Agendamento" as UC_Cancelar
+    usecase "Visualizar Histórico de Agendamentos" as UC_Historico
+    
+    ' Barbeiro
+    usecase "Visualizar Agenda Diária" as UC_Agenda_Diaria
+    usecase "Concluir Atendimento" as UC_Concluir
+    
+    ' Administrador
+    usecase "Gerenciar Clientes" as UC_Gerenciar_Clientes
+    usecase "Gerenciar Equipe / Barbeiros" as UC_Gerenciar_Equipe
+    usecase "Gerenciar Serviços e Preços" as UC_Gerenciar_Servicos
+    usecase "Gerenciar Horário de Funcionamento" as UC_Gerenciar_Funcionamento
+    usecase "Gerenciar Agendamentos" as UC_Gerenciar_Agendamentos
+    usecase "Gerenciar Administradores" as UC_Gerenciar_Admins
 }
 
-Cliente --> UC1
-Cliente --> UC3
-Cliente --> UC4
-Cliente --> UC5
-Cliente --> UC6
-Cliente --> UC7
-Cliente --> UC8
+' Relacionamentos Cliente
+Cliente --> UC_Cadastro
+Cliente --> UC_Login
+Cliente --> UC_Logout
+Cliente --> UC_Catalogo
+Cliente --> UC_Disponibilidade
+Cliente --> UC_Agendar
+Cliente --> UC_Cancelar
+Cliente --> UC_Historico
+Cliente --> UC_Perfil
 
-Barbeiro --> UC2
-Barbeiro --> UC5
-Barbeiro --> UC6
-Barbeiro --> UC7
-Barbeiro --> UC8
-Barbeiro --> UC9
-Barbeiro --> UC10
+' Relacionamentos Barbeiro
+Barbeiro --> UC_Login
+Barbeiro --> UC_Logout
+Barbeiro --> UC_Perfil
+Barbeiro --> UC_Agenda_Diaria
+Barbeiro --> UC_Concluir
+Barbeiro --> UC_Cancelar
+Barbeiro --> UC_Historico
 
-Administrador --> UC11
-Administrador --> UC12
+' Relacionamentos Administrador
+Admin --> UC_Login
+Admin --> UC_Logout
+Admin --> UC_Perfil
+Admin --> UC_Gerenciar_Clientes
+Admin --> UC_Gerenciar_Equipe
+Admin --> UC_Gerenciar_Servicos
+Admin --> UC_Gerenciar_Funcionamento
+Admin --> UC_Gerenciar_Agendamentos
+Admin --> UC_Gerenciar_Admins
 
 @enduml

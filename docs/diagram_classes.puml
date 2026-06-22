@@ -15,14 +15,18 @@ abstract class User {
 
 class Customer {
   + Customer()
+  + Customer(String, String, String, String, boolean, Role)
 }
 
 class Barber {
   + Barber()
+  + Barber(String, String, String, String, boolean, Role)
 }
 
 class Admin {
   + Admin()
+  + Admin(String, String, String, String, boolean, Role)
+  + Admin(String, String, String, String)
 }
 
 class ServiceItem {
@@ -30,10 +34,12 @@ class ServiceItem {
   - String name
   - String description
   - BigDecimal price
-  - Integer durationInMinutes
+  - int durationInMinutes
   - boolean active
   - LocalDateTime createdAt
   - LocalDateTime updateAt
+  + ServiceItem()
+  + ServiceItem(String, String, BigDecimal, Integer, boolean)
 }
 
 class Appointment {
@@ -44,8 +50,21 @@ class Appointment {
   - LocalDateTime startTime
   - LocalDateTime endTime
   - AppointmentStatus status
+  - Long version
   - LocalDateTime createdAt
   - LocalDateTime updateAt
+  + Appointment()
+  + Appointment(Customer, Barber, ServiceItem, LocalDateTime)
+}
+
+class BusinessHours {
+  - Integer dayOfWeek
+  - String dayName
+  - boolean open
+  - String openTime
+  - String closeTime
+  + BusinessHours()
+  + BusinessHours(Integer, String, boolean, String, String)
 }
 
 enum Role {

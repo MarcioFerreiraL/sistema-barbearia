@@ -19,15 +19,27 @@ A plataforma permite que clientes realizem cadastros, visualizem o catálogo, es
 
 [Clique aqui para ver o protótipo de baixa fidelidade](https://www.figma.com/proto/CwY0O0aQ68XZcSvtAhbghI/Prot%C3%B3tipo---Barbearia?node-id=3-2&t=eWMBRIBa3ZeJAf1a-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=3%3A2)
 
-## Documentação
+## 📚 Documentação do Projeto
 
-### Diagrama de casos de uso
+Para facilitar a compreensão do funcionamento do sistema, o repositório conta com uma documentação técnica completa:
 
+*   🏛️ **[Arquitetura do Sistema](docs/architecture.md)**: Visão detalhada da organização física e lógica das camadas do back-end, estrutura do front-end e fluxo de autenticação e dados.
+*   🔌 **[Referência da API REST](docs/api_reference.md)**: Lista completa dos endpoints REST, parâmetros esperados, modelos de dados e controle de acesso (RBAC).
+*   🗄️ **[Esquema do Banco de Dados](docs/database_schema.md)**: Mapeamento de tabelas, chaves primárias e estrangeiras, tipos de dados e explicação da herança relacional (`tb_user`).
+
+### 📊 Diagramas do Sistema
+
+#### Diagrama de Casos de Uso
+O diagrama mapeia as interações dos atores (Cliente, Barbeiro, Administrador) com o sistema.
+- 📝 **Código-fonte**: [diagram_use_case.puml](docs/diagram_use_case.puml)
+- 🖼️ **Imagem**:
 ![diagrama de casos de uso](docs/diagram_use_case.png)
 
-### Diagrama de classes
-
-![diagrama de casos de uso](docs/diagram_classes.png)
+#### Diagrama de Classes
+O diagrama detalha a estrutura de objetos e entidades de domínio do banco de dados relacional.
+- 📝 **Código-fonte**: [diagram_classes.puml](docs/diagram_classes.puml)
+- 🖼️ **Imagem**:
+![diagrama de classes](docs/diagram_classes.png)
 ## 💻 Tecnologias Utilizadas
 
 **Front-end:**

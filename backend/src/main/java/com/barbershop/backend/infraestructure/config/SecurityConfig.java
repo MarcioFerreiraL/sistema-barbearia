@@ -33,12 +33,15 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/redoc.html").permitAll()
+
+                        // Publicos
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/logout").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/customers").permitAll()
                         
                         // Admins
-                        .requestMatchers(HttpMethod.POST, "/api/admins").permitAll() // Validado programaticamente no Service
+                        .requestMatchers(HttpMethod.POST, "/api/admins").hasRole("ADMIN") // Validado programaticamente no Service
                         .requestMatchers("/api/admins/**").hasRole("ADMIN")
                         
                         // Barbeiros

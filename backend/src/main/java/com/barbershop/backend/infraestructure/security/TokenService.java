@@ -18,16 +18,25 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String tokenSecret;
 
+    @Value("${api.security.token.issuer}")
+    private String tokenIssuer;
+
+    @Value("${api.security.token.expiration-hours}")
+    private long expirationHours;
+
+    @Value("${api.security.token.timezone-offset}")
+    private String timezoneOffset;
+
     public String generateToken(User user) {
 
         try {
             Algorithm algorithm = Algorithm.HMAC256(tokenSecret);
             return JWT.create()
-                    .withIssuer("barbershop-api") // Quem emitiu
+                    .withIssuer(tokenIssuer) // Quem emitiu
                     .withSubject(user.getEmail()) // Quem é o dono do token
                     .withClaim("id", user.getId().toString())
                     .withClaim("role", user.getRole().name())
-                    .withExpiresAt(genExpirationDate()) // Expira em 2 horas
+                    .withExpiresAt(genExpirationDate()) // Expira de acordo com o configurado
                     .sign(algorithm);
         } catch (JWTVerificationException exception) {
             throw new RuntimeException("Erro ao gerar o token JWT", exception);
@@ -38,7 +47,7 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(tokenSecret);
             return JWT.require(algorithm)
-                    .withIssuer("barbershop-api")
+                    .withIssuer(tokenIssuer)
                     .build()
                     .verify(token)
                     .getSubject();
@@ -48,7 +57,7 @@ public class TokenService {
     }
 
     private Instant genExpirationDate() {
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+        return LocalDateTime.now().plusHours(expirationHours).toInstant(ZoneOffset.of(timezoneOffset));
     }
 
 }

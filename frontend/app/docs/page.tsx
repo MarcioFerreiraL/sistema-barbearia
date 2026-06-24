@@ -6,10 +6,10 @@ export default function DocsPage() {
   return (
     <div className="min-h-screen bg-white">
       <RedocStandalone
-        specUrl="http://localhost:8080/v3/api-docs"
+        specUrl={`${process.env.NEXT_PUBLIC_API_DOCS}`}
         options={{
           nativeScrollbars: true,
-          theme: { 
+          theme: {
             colors: { primary: { main: "#1f2937" } },
             typography: { fontFamily: "inherit" }
           }

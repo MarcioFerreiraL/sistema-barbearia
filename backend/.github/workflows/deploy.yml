@@ -17,7 +17,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /home/${{ secrets.VPS_USER }}/barbershop
+            cd /home/${{ secrets.VPS_USER }}/sistema-barbearia/backend
 
             # Atualiza o código
             git pull origin master

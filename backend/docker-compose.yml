@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: barbershop-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - barbershop-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    container_name: barbershop-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_DDL_AUTO: ${DB_DDL_AUTO:-update}
+      MASTER_PASS: ${MASTER_PASS}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      TOKEN_ISSUER: ${TOKEN_ISSUER:-barbershop-api}
+      TOKEN_EXPIRATION_HOURS: ${TOKEN_EXPIRATION_HOURS:-2}
+      TOKEN_TIMEZONE_OFFSET: ${TOKEN_TIMEZONE_OFFSET:--03:00}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - barbershop-net
+
+volumes:
+  postgres_data:
+
+networks:
+  barbershop-net:
+    driver: bridge

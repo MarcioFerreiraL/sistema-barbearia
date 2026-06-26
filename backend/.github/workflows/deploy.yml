@@ -20,7 +20,7 @@ jobs:
             cd /home/${{ secrets.VPS_USER }}/barbershop
 
             # Atualiza o código
-            git pull origin main
+            git pull origin master
 
             # Rebuild e reinicia os containers
             docker compose down

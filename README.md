@@ -13,7 +13,7 @@ A plataforma permite que clientes realizem cadastros, visualizem o catálogo, es
 - **Painel do Cliente:** Área restrita para visualização do histórico e cancelamento de agendamentos. Dados do perfil obtidos diretamente do token JWT.
 - **Painel do Profissional/Admin:** Visualização da agenda diária e alteração do status dos atendimentos.
 - **Segurança:** Autenticação de usuários via token JWT (Bearer Token) e Controle de Acesso Baseado em Funções (RBAC).
-- **Documentação da API:** Documentação interativa gerada automaticamente via OpenAPI/Swagger (SpringDoc) e depois melhorada com Redoc. [Clique aqui para ver a documentação da API](https://barbeariadoze.duckdns.org).
+- **Documentação da API:** Documentação interativa gerada automaticamente via OpenAPI/Swagger (SpringDoc) e depois melhorada com Redoc.
 - **Deploy com Docker:** Backend conteinerizado com Docker Compose (PostgreSQL + Spring Boot).
 
 ## Protótipo de baixa fidelidade (Figma)
@@ -25,7 +25,7 @@ A plataforma permite que clientes realizem cadastros, visualizem o catálogo, es
 Para facilitar a compreensão do funcionamento do sistema, o repositório conta com uma documentação técnica completa:
 
 - 🏛️ **[Arquitetura do Sistema](docs/architecture.md)**: Visão detalhada da organização física e lógica das camadas do back-end, estrutura do front-end e fluxo de autenticação e dados.
-- 🔌 **[Referência da API REST](docs/api_reference.md)**: Lista completa dos endpoints REST, parâmetros esperados, modelos de dados e controle de acesso (RBAC).
+- 🔌 **[Referência da API REST](docs/api_reference.md)**: Lista completa dos endpoints REST, parâmetros esperados, modelos de dados e controle de acesso (RBAC). [Clique aqui para ver a documentação da API](https://barbeariadoze.duckdns.org).
 - 🗄️ **[Esquema do Banco de Dados](docs/database_schema.md)**: Mapeamento de tabelas, chaves primárias e estrangeiras, tipos de dados e explicação da herança relacional (`tb_user`).
 
 ### 📊 Diagramas do Sistema

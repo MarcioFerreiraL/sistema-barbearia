@@ -1,5 +1,4 @@
-
-# BarberShop - Sistema de Gestão e Agendamento para Barbearias
+# Barbearia do Zé - Sistema de Gestão e Agendamento
 
 ## 📖 Contexto do Projeto
 
@@ -11,9 +10,11 @@ A plataforma permite que clientes realizem cadastros, visualizem o catálogo, es
 
 - **Vitrine Digital:** Catálogo de serviços com preços e duração estimada.
 - **Agendamento Inteligente:** Interface em etapa única para escolha de serviço, profissional e horário, com validação de concorrência e cálculo de disponibilidade.
-- **Painel do Cliente:** Área restrita para visualização do histórico e cancelamento de agendamentos via ID.
+- **Painel do Cliente:** Área restrita para visualização do histórico e cancelamento de agendamentos. Dados do perfil obtidos diretamente do token JWT.
 - **Painel do Profissional/Admin:** Visualização da agenda diária e alteração do status dos atendimentos.
-- **Segurança (Bônus):** Autenticação de usuários via token JWT e Controle de Acesso Baseado em Funções (RBAC).
+- **Segurança:** Autenticação de usuários via token JWT (Bearer Token) e Controle de Acesso Baseado em Funções (RBAC).
+- **Documentação da API:** Documentação interativa gerada automaticamente via OpenAPI/Swagger (SpringDoc) e depois melhorada com Redoc. [Clique aqui para ver a documentação da API](https://204.216.160.34/redoc.html).
+- **Deploy com Docker:** Backend conteinerizado com Docker Compose (PostgreSQL + Spring Boot).
 
 ## Protótipo de baixa fidelidade (Figma)
 
@@ -23,67 +24,176 @@ A plataforma permite que clientes realizem cadastros, visualizem o catálogo, es
 
 Para facilitar a compreensão do funcionamento do sistema, o repositório conta com uma documentação técnica completa:
 
-*   🏛️ **[Arquitetura do Sistema](docs/architecture.md)**: Visão detalhada da organização física e lógica das camadas do back-end, estrutura do front-end e fluxo de autenticação e dados.
-*   🔌 **[Referência da API REST](docs/api_reference.md)**: Lista completa dos endpoints REST, parâmetros esperados, modelos de dados e controle de acesso (RBAC).
-*   🗄️ **[Esquema do Banco de Dados](docs/database_schema.md)**: Mapeamento de tabelas, chaves primárias e estrangeiras, tipos de dados e explicação da herança relacional (`tb_user`).
+- 🏛️ **[Arquitetura do Sistema](docs/architecture.md)**: Visão detalhada da organização física e lógica das camadas do back-end, estrutura do front-end e fluxo de autenticação e dados.
+- 🔌 **[Referência da API REST](docs/api_reference.md)**: Lista completa dos endpoints REST, parâmetros esperados, modelos de dados e controle de acesso (RBAC).
+- 🗄️ **[Esquema do Banco de Dados](docs/database_schema.md)**: Mapeamento de tabelas, chaves primárias e estrangeiras, tipos de dados e explicação da herança relacional (`tb_user`).
 
 ### 📊 Diagramas do Sistema
 
 #### Diagrama de Casos de Uso
+
 O diagrama mapeia as interações dos atores (Cliente, Barbeiro, Administrador) com o sistema.
+
 - 📝 **Código-fonte**: [diagram_use_case.puml](docs/diagram_use_case.puml)
 - 🖼️ **Imagem**:
-![diagrama de casos de uso](docs/diagram_use_case.png)
+  ![diagrama de casos de uso](docs/diagram_use_case.png)
 
 #### Diagrama de Classes
+
 O diagrama detalha a estrutura de objetos e entidades de domínio do banco de dados relacional.
+
 - 📝 **Código-fonte**: [diagram_classes.puml](docs/diagram_classes.puml)
 - 🖼️ **Imagem**:
-![diagrama de classes](docs/diagram_classes.png)
+  ![diagrama de classes](docs/diagram_classes.png)
+
 ## 💻 Tecnologias Utilizadas
 
 **Front-end:**
-- Next.js
-- React.js
-- Tailwind CSS
+
+- Next.js 16
+- React 19
+- Tailwind CSS 4
+- TypeScript 5
 
 **Back-end & API REST:**
-- Java 
-- Spring Boot 4 (Spring Web, Spring Data JPA, Spring Security)
-- Autenticação JSON Web Tokens (JWT)
+
+- Java 21
+- Spring Boot 4 (Spring Web MVC, Spring Data JPA, Spring Security, Spring Validation)
+- Autenticação JSON Web Tokens (JWT) via [Auth0 java-jwt](https://github.com/auth0/java-jwt)
+- Documentação OpenAPI via [SpringDoc](https://springdoc.org/)
 
 **Banco de Dados:**
-- PostgreSQL
+
+- PostgreSQL 16
+
+**Infraestrutura:**
+
+- Docker & Docker Compose (Backend + PostgreSQL)
+- Vercel (Deploy do Frontend)
 
 ## 📁 Estrutura do Repositório
 
-O projeto adota a arquitetura de repositório único para facilitar a avaliação e o versionamento:
+O projeto adota a arquitetura de repositório único (monorepo) para facilitar a avaliação e o versionamento:
 
-- `/frontend` – Contém toda a aplicação Next.js, páginas e componentes de interface.
-- `/backend` – Contém a API RESTful desenvolvida em Spring Boot e suas camadas lógicas.
-- `/docs` – Armazena artefatos de documentação, incluindo links do Figma, Diagramas de Casos de Uso e Diagramas de Classes.
+```
+├── .env                  # Variáveis de ambiente (backend + frontend) — NÃO versionado
+├── backend/
+│   ├── .env              # Cópia das variáveis de ambiente para o backend — NÃO versionado
+│   ├── Dockerfile        # Build multi-stage do backend (Maven + JRE Alpine)
+│   ├── docker-compose.yml  # Orquestração PostgreSQL + Backend
+│   ├── pom.xml           # Dependências Maven do Spring Boot
+│   └── src/              # Código-fonte Java (Controllers, Services, Models, Security)
+├── frontend/
+│   ├── .env.local        # Variáveis de ambiente do Next.js — NÃO versionado
+│   ├── app/              # Páginas, componentes, contextos e serviços (App Router)
+│   │   ├── services/api.ts   # Camada centralizada de integração com a API
+│   │   ├── contexts/         # AuthContext, ToastContext
+│   │   └── components/       # Componentes reutilizáveis (Navbar, Footer, Toast)
+│   ├── lib/auth.ts       # Utilitários de decodificação JWT
+│   └── package.json      # Dependências npm
+└── docs/                 # Documentação técnica, diagramas UML e esquemas
+```
 
 ## ⚙️ Instruções de Instalação e Execução
 
 ### Pré-requisitos
 
 - Node.js (v18+)
-- Java JDK (21 ou superior) e Maven
-- PostgreSQL instalado e rodando localmente (porta 5432)
+- Java JDK 21 (ou superior) e Maven
+- PostgreSQL instalado e rodando (porta 5432)
+- Docker e Docker Compose (opcional, para deploy conteinerizado)
 
-### 1. Rodando o Front-end
+### 1. Configuração das Variáveis de Ambiente
 
-* Navegue até o diretório do front-end: cd frontend
-* Instale as dependências: npm install
-* Inicie o servidor de desenvolvimento: npm run dev
-* Acesse no navegador: http://localhost:3000
+Todas as configurações sensíveis (senhas, chaves JWT, URLs) são gerenciadas por variáveis de ambiente. Os arquivos `.env` **não são versionados** por segurança.
 
-### 2. Rodando o Back-end
+#### Arquivo `.env` (raiz do projeto)
 
-*    Navegue até o diretório do back-end: cd backend
+Crie o arquivo `.env` na raiz do projeto com as seguintes variáveis:
 
-*    Configure as credenciais do seu banco de dados local no arquivo src/main/resources/application.properties.
+```env
+# Backend (Spring Boot)
+DB_URL=jdbc:postgresql://localhost:5432/nome_do_banco
+DB_USER=seu_usuario
+DB_PASS=sua_senha
+MASTER_PASS=chave_secreta_jwt
+DB_DDL_AUTO=update
+CORS_ORIGINS=http://localhost:3000
+TOKEN_ISSUER=nome_do_issuer
+TOKEN_EXPIRATION_HOURS=2
+TOKEN_TIMEZONE_OFFSET=-03:00
 
-*    Compile e rode o projeto com Maven: mvn spring-boot:run
+# Frontend (Next.js)
+NEXT_PUBLIC_API_URL=http://localhost:8080/api
+NEXT_PUBLIC_API_DOCS=http://localhost:8080/v3/api-docs
+```
 
-*    A API estará disponível para receber requisições em: http://localhost:8080
+#### Arquivo `frontend/.env.local`
+
+Crie o arquivo `.env.local` dentro de `/frontend` com as variáveis do Next.js:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8080/api
+NEXT_PUBLIC_API_DOCS=http://localhost:8080/v3/api-docs
+```
+
+> **Nota:** Para deploy em produção, substitua `localhost` pelo endereço IP ou domínio do servidor backend.
+
+### 2. Rodando o Front-end
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Acesse no navegador: `http://localhost:3000`
+
+### 3. Rodando o Back-end
+
+#### Opção A: Execução Local com Maven
+
+```bash
+cd backend
+mvn spring-boot:run
+```
+
+A API estará disponível em: `http://localhost:8080`
+
+#### Opção B: Execução com Docker Compose
+
+```bash
+cd backend
+docker compose up -d
+```
+
+O Docker Compose irá provisionar automaticamente o PostgreSQL e o backend Spring Boot.
+
+### 4. Documentação da API (Swagger/OpenAPI)
+
+Após iniciar o backend, a documentação interativa estará disponível em:
+
+- **Swagger UI**: `http://localhost:8080/swagger-ui.html`
+- **OpenAPI JSON**: `http://localhost:8080/v3/api-docs`
+- **Redoc**: `http://localhost:8080/docs`
+
+## 🔒 Segurança e Autenticação
+
+O sistema utiliza **JWT (JSON Web Tokens)** para autenticação stateless:
+
+1. O cliente faz login via `POST /api/auth/login` com e-mail e senha.
+2. O servidor retorna um token JWT assinado contendo o `id`, `email` e `role` do usuário.
+3. O frontend armazena o token no `localStorage` e o envia no cabeçalho `Authorization: Bearer <token>` em todas as requisições autenticadas.
+4. O filtro `SecurityFilter` do Spring Security intercepta cada requisição, valida o token e aplica as regras de RBAC.
+
+### Controle de Acesso (RBAC)
+
+| Papel           | Descrição                                                                                          |
+| :-------------- | :------------------------------------------------------------------------------------------------- |
+| `ROLE_ADMIN`    | Acesso total ao sistema. Gerencia barbeiros, serviços, horários e visualiza todos os agendamentos. |
+| `ROLE_BARBER`   | Visualiza e gerencia a própria agenda. Pode listar clientes.                                       |
+| `ROLE_CUSTOMER` | Realiza agendamentos, visualiza e cancela seus próprios compromissos e edita seu perfil.           |
+
+## 📄 Licença
+
+Este projeto está licenciado sob a **PolyForm Noncommercial License 1.0.0**. Consulte o arquivo [PolyForm-Noncommercial-1.0.0.md](PolyForm-Noncommercial-1.0.0.md) para mais detalhes.

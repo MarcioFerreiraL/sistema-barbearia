@@ -1,6 +1,6 @@
-# Arquitetura do Sistema - BarberShop
+# Arquitetura do Sistema - Barbearia do Zé
 
-Este documento descreve a arquitetura e os padrões de projeto adotados no **BarberShop**, um sistema completo (Full-Stack) para agendamentos e gestão de barbearias.
+Este documento descreve a arquitetura e os padrões de projeto adotados no **Barbearia do Zé**, um sistema completo (Full-Stack) para agendamentos e gestão de barbearias.
 
 ---
 
@@ -8,13 +8,13 @@ Este documento descreve a arquitetura e os padrões de projeto adotados no **Bar
 
 O sistema adota uma arquitetura cliente-servidor desacoplada:
 
-1. **Front-end**: Uma aplicação baseada em **Next.js** (React) focada em usabilidade, com suporte mobile-first e interface rica.
-2. **Back-end**: Uma API RESTful desenvolvida com **Spring Boot 3** e **Java 21**, responsável pelo processamento de regras de negócio, segurança e persistência de dados.
-3. **Banco de Dados**: Um banco relacional SQL (**PostgreSQL**) para garantir integridade e atomicidade nas transações.
+1. **Front-end**: Uma aplicação baseada em **Next.js 16** (React 19) focada em usabilidade, com suporte mobile-first e interface rica.
+2. **Back-end**: Uma API RESTful desenvolvida com **Spring Boot 4** e **Java 21**, responsável pelo processamento de regras de negócio, segurança e persistência de dados.
+3. **Banco de Dados**: Um banco relacional SQL (**PostgreSQL 16**) para garantir integridade e atomicidade nas transações.
 
 ```mermaid
 graph TD
-    Client[Cliente / Navegador] <-->|HTTP / JSON + JWT Cookie| Backend[API Spring Boot]
+    Client[Cliente / Navegador] <-->|HTTP / JSON + Bearer Token| Backend[API Spring Boot]
     Backend <-->|JPA / Hibernate| Database[(PostgreSQL)]
 ```
 
@@ -31,6 +31,7 @@ graph TD
     Repository --> Database[(Banco de Dados)]
     
     Security[Camada Transversal: Security / JWT] -.-> Controller
+    Config[Camada Transversal: Config / CORS / Env] -.-> Security
 ```
 
 ### 1. Camada de Apresentação (`com.barbershop.backend.application`)
@@ -46,31 +47,77 @@ graph TD
 - **Repositories (`repository/`)**: Interfaces que herdam de `JpaRepository` ou `ListCrudRepository`, fornecendo acesso abstraído ao banco de dados com suporte a consultas dinâmicas (ex: detecção de sobreposição de horários via consulta personalizada JPA).
 
 ### 4. Camada de Infraestrutura (`com.barbershop.backend.infraestructure`)
-- **Segurança (`security/`)**: Configuração do Spring Security. Contém o filtro de interceptação de token JWT, gerenciador de autenticação, criptografia de senhas usando `BCryptPasswordEncoder` e geração e validação de tokens via classe `TokenService`.
+- **Segurança (`security/`)**: Configuração do Spring Security. Contém o filtro de interceptação de token JWT (`SecurityFilter`), gerenciador de autenticação, criptografia de senhas usando `BCryptPasswordEncoder` e geração e validação de tokens via classe `TokenService`.
+- **Configuração (`config/`)**: Classes de configuração do Spring que gerenciam CORS (`CorsConfig`), regras de segurança HTTP (`SecurityConfig`) e demais beans. Todas as configurações sensíveis são lidas de variáveis de ambiente via `@Value`.
+
+### 5. Configuração por Variáveis de Ambiente
+
+O backend utiliza variáveis de ambiente para externalizar toda a configuração sensível. O mapeamento é feito no `application.properties` usando a sintaxe `${VAR:default}`:
+
+| Variável | Descrição | Valor Padrão |
+| :--- | :--- | :--- |
+| `DB_URL` | URL JDBC de conexão ao PostgreSQL | — |
+| `DB_USER` | Usuário do banco de dados | — |
+| `DB_PASS` | Senha do banco de dados | — |
+| `MASTER_PASS` | Chave secreta para assinatura JWT | — |
+| `DB_DDL_AUTO` | Estratégia DDL do Hibernate | `update` |
+| `CORS_ORIGINS` | Origens permitidas (separadas por vírgula) | `http://localhost:3000` |
+| `TOKEN_ISSUER` | Emissor do token JWT | `barbershop-api` |
+| `TOKEN_EXPIRATION_HOURS` | Tempo de expiração do token (horas) | `2` |
+| `TOKEN_TIMEZONE_OFFSET` | Fuso horário para cálculo de expiração | `-03:00` |
 
 ---
 
 ## 🌐 Arquitetura do Front-end
 
-O front-end utiliza o **Next.js** estruturado de maneira modular:
+O front-end utiliza o **Next.js 16** com App Router, estruturado de maneira modular:
 
-- **Paginação**: Estruturada no diretório de páginas do Next.js.
-- **Componentização**: Elementos de UI reutilizáveis (botões, modais, formulários de agendamento e grids de horários) desacoplados da lógica de visualização geral.
-- **Gerenciamento de Estado**: Contextos globais em React (`Context API`) para controlar o estado de autenticação do usuário autenticado e persistência de sessão.
-- **Estilização**: Uso intensivo de classes utilitárias do **Tailwind CSS** para produzir uma interface com design fluido, harmonioso, responsivo e adaptado para telas móveis.
+- **Paginação**: Estruturada no diretório `app/` usando o sistema de roteamento do Next.js App Router.
+- **Componentização**: Elementos de UI reutilizáveis (Navbar, Footer, Toast) desacoplados da lógica de visualização geral, localizados em `app/components/`.
+- **Camada de Serviço (`app/services/api.ts`)**: Centraliza todas as chamadas HTTP para o backend. Implementa autenticação automática via Bearer Token e interceptação de erros 401/403 com redirecionamento para login.
+- **Gerenciamento de Estado**: Contextos globais em React (`Context API`) para controlar o estado de autenticação (`AuthContext`) e notificações visuais (`ToastContext`).
+- **Utilitário de Autenticação (`lib/auth.ts`)**: Biblioteca centralizada para decodificação do token JWT e extração de informações do usuário (`id`, `email`, `role`, `exp`).
+- **Estilização**: Uso intensivo de classes utilitárias do **Tailwind CSS 4** para produzir uma interface com design fluido, harmonioso, responsivo e adaptado para telas móveis.
+
+### Variáveis de Ambiente do Frontend
+
+| Variável | Descrição |
+| :--- | :--- |
+| `NEXT_PUBLIC_API_URL` | URL base da API backend (ex: `http://localhost:8080/api`) |
+| `NEXT_PUBLIC_API_DOCS` | URL do endpoint OpenAPI/Swagger (ex: `http://localhost:8080/v3/api-docs`) |
+
+> Configuradas no arquivo `frontend/.env.local` (não versionado).
 
 ---
 
-## 🔒 Fluxo de Segurança (JWT & Cookies HttpOnly)
+## 🔒 Fluxo de Segurança (JWT Bearer Token)
 
-Para proteger a integridade do sistema e evitar ataques comuns de Web (XSS e CSRF), a segurança é estruturada da seguinte forma:
+A segurança do sistema é implementada com tokens JWT stateless e autenticação via cabeçalho `Authorization`:
 
-1. **Autenticação**: O cliente faz login fornecendo e-mail e senha no endpoint `/api/auth/login`.
-2. **Emissão de Token**: O servidor autentica o usuário e gera um token JWT assinado digitalmente.
-3. **Armazenamento**: O token JWT é anexado ao cabeçalho da resposta na forma de um **Cookie HttpOnly e SameSite=Lax**.
-   - *HttpOnly* impede que scripts JavaScript do lado do cliente acessem o token (proteção contra XSS).
-   - *SameSite=Lax* garante que o cookie seja enviado nas requisições do mesmo site e navegações seguras de terceiros.
-4. **Autorização (RBAC)**: A cada requisição subsequente, o cookie é enviado automaticamente. O filtro `SecurityFilter` lê o token, autentica o usuário no contexto do Spring Security e valida a permissão baseada em seu papel (`ROLE_ADMIN`, `ROLE_BARBER` ou `ROLE_CUSTOMER`).
+1. **Autenticação**: O cliente faz login fornecendo e-mail e senha no endpoint `POST /api/auth/login`.
+2. **Emissão de Token**: O servidor autentica o usuário e gera um token JWT assinado digitalmente contendo o `id`, `email` e `role` do usuário no payload.
+3. **Armazenamento**: O token JWT é armazenado no `localStorage` do navegador pelo frontend.
+4. **Autorização (RBAC)**: Em toda requisição subsequente, o frontend envia o token no cabeçalho `Authorization: Bearer <token>`. O filtro `SecurityFilter` lê o token, autentica o usuário no contexto do Spring Security e valida a permissão baseada em seu papel (`ROLE_ADMIN`, `ROLE_BARBER` ou `ROLE_CUSTOMER`).
+5. **Expiração**: Quando o token expira ou é inválido, o backend retorna 401/403 e o frontend remove o token do `localStorage` e redireciona automaticamente para a página de login.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Usuário
+    participant FE as Frontend (Next.js)
+    participant API as Backend (Spring Boot)
+
+    User->>FE: Preenche email e senha
+    FE->>API: POST /api/auth/login { email, password }
+    API->>API: Valida credenciais (BCrypt)
+    API-->>FE: 200 OK { token: "eyJ..." }
+    FE->>FE: Salva token no localStorage
+
+    User->>FE: Acessa página protegida
+    FE->>API: GET /api/appointments (Authorization: Bearer eyJ...)
+    API->>API: SecurityFilter valida JWT e verifica RBAC
+    API-->>FE: 200 OK (dados)
+```
 
 ---
 
@@ -108,3 +155,14 @@ sequenceDiagram
     Service-->>API: Retorna AppointmentResponse (DTO)
     API-->>Cliente: 201 Created (JSON com detalhes do agendamento)
 ```
+
+---
+
+## 🐳 Deploy com Docker
+
+O backend inclui suporte completo a Docker para deploy em produção:
+
+- **`Dockerfile`**: Build multi-stage (Maven build → JRE Alpine runtime) para imagens leves.
+- **`docker-compose.yml`**: Orquestra o PostgreSQL 16 e o backend Spring Boot com health checks.
+
+As variáveis de ambiente do Docker Compose são lidas do arquivo `.env` na raiz do projeto.

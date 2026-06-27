@@ -10,7 +10,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getCustomers, getAppointments, updateCustomer, cancelAppointment } from "../services/api";
+import { getCustomerById, getAppointments, updateCustomer, cancelAppointment } from "../services/api";
 import { useToast } from "../contexts/ToastContext";
 import { getUserInfoFromToken } from "../../lib/auth";
 
@@ -56,13 +56,12 @@ export default function UserProfile() {
           return;
         }
 
-        // Carregar clientes do backend para obter dados completos cadastrais do usuário atual
-        const customers = await getCustomers();
-        const currentCustomer = customers.find((c: any) => c.email === userEmail);
-
-        if (!currentCustomer) {
-          throw new Error("Perfil não encontrado no sistema.");
+        // Usar o ID do token para buscar os dados do cliente diretamente
+        if (!userInfo.id) {
+          throw new Error("ID do cliente não encontrado no token.");
         }
+
+        const currentCustomer = await getCustomerById(userInfo.id);
 
         setCustomer(currentCustomer);
         setFormData({

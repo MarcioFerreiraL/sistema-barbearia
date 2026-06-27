@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getServices, getBarbers, getCustomers, getAppointments, getBusinessHours, createAppointment } from "../services/api";
+import { getServices, getBarbers, getAppointments, getBusinessHours, createAppointment } from "../services/api";
 import { useToast } from "../contexts/ToastContext";
+import { getUserInfoFromToken } from "../../lib/auth";
 
 interface ServiceItem {
   id: number;
@@ -17,10 +18,6 @@ interface Barber {
   fullName: string;
 }
 
-interface Customer {
-  id: string;
-  email: string;
-}
 
 export default function Appointment() {
   const router = useRouter();
@@ -95,29 +92,27 @@ export default function Appointment() {
           return;
         }
 
-        const payloadBase64 = token.split(".")[1];
-        const payload = JSON.parse(atob(payloadBase64));
-        const userEmail = payload.sub;
-        
-        let role = userEmail && userEmail.toLowerCase().includes("admin") ? "ADMIN" : "CLIENT";
-        if (payload.role) {
-          const rawRole = payload.role.replace("ROLE_", "");
-          role = rawRole === "CUSTOMER" ? "CLIENT" : rawRole;
-        }
+        const userInfo = getUserInfoFromToken(token);
 
-        if (role === "ADMIN") {
+        if (userInfo.role === "ADMIN") {
           router.push("/admin");
           return;
         }
-        if (role === "BARBER") {
+        if (userInfo.role === "BARBER") {
           router.push("/barber-panel");
           return;
         }
 
-        const [fetchedServices, fetchedBarbers, fetchedCustomers, fetchedAppointments, fetchedHours] = await Promise.all([
+        if (!userInfo.id) {
+          setError("Perfil de cliente não encontrado. Entre em contato com o suporte.");
+          return;
+        }
+
+        setCustomerId(userInfo.id);
+
+        const [fetchedServices, fetchedBarbers, fetchedAppointments, fetchedHours] = await Promise.all([
           getServices(),
           getBarbers(),
-          getCustomers(),
           getAppointments(),
           getBusinessHours(),
         ]);
@@ -126,13 +121,6 @@ export default function Appointment() {
         setBarbers(fetchedBarbers);
         setAppointments(fetchedAppointments);
         setBusinessHours(fetchedHours);
-        
-        const customer = fetchedCustomers.find((c: Customer) => c.email === userEmail);
-        if (customer) {
-          setCustomerId(customer.id);
-        } else {
-          setError("Perfil de cliente não encontrado. Entre em contato com o suporte.");
-        }
       } catch (err: any) {
         if (err.message === "Unauthorized" || !localStorage.getItem("token")) {
           return;

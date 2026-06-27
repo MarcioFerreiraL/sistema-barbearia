@@ -175,6 +175,14 @@ export async function getCustomers(): Promise<any[]> {
 }
 
 /**
+ * Recupera os dados de um cliente específico pelo seu ID.
+ * Acessível por qualquer usuário autenticado (o backend valida a permissão).
+ */
+export async function getCustomerById(id: string): Promise<any> {
+  return fetchWithAuth(`${BASE_URL}/customers/${id}`);
+}
+
+/**
  * Recupera os agendamentos da barbearia (Filtrado automaticamente no backend por perfil).
  */
 export async function getAppointments(): Promise<any[]> {

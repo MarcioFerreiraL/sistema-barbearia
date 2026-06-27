@@ -8,6 +8,7 @@
 export type Role = "CLIENT" | "ADMIN" | "BARBER" | null;
 
 export interface UserInfo {
+  id: string | null;
   email: string | null;
   role: Role;
   exp: number | null;
@@ -51,9 +52,10 @@ export function getUserInfoFromToken(token: string): UserInfo {
   const payload = parseJwt(token);
   
   if (!payload) {
-    return { email: null, role: null, exp: null };
+    return { id: null, email: null, role: null, exp: null };
   }
 
+  const id = payload.id || null;
   const email = payload.sub || null;
   const exp = payload.exp || null;
   let role: Role = "CLIENT";
@@ -71,5 +73,5 @@ export function getUserInfoFromToken(token: string): UserInfo {
     role = "ADMIN";
   }
 
-  return { email, role, exp };
+  return { id, email, role, exp };
 }

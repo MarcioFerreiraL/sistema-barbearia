@@ -13,7 +13,7 @@ A plataforma permite que clientes realizem cadastros, visualizem o catálogo, es
 - **Painel do Cliente:** Área restrita para visualização do histórico e cancelamento de agendamentos. Dados do perfil obtidos diretamente do token JWT.
 - **Painel do Profissional/Admin:** Visualização da agenda diária e alteração do status dos atendimentos.
 - **Segurança:** Autenticação de usuários via token JWT (Bearer Token) e Controle de Acesso Baseado em Funções (RBAC).
-- **Documentação da API:** Documentação interativa gerada automaticamente via OpenAPI/Swagger (SpringDoc) e depois melhorada com Redoc. [Clique aqui para ver a documentação da API](https://204.216.160.34/redoc.html).
+- **Documentação da API:** Documentação interativa gerada automaticamente via OpenAPI/Swagger (SpringDoc) e depois melhorada com Redoc. [Clique aqui para ver a documentação da API](https://barbeariadoze.duckdns.org).
 - **Deploy com Docker:** Backend conteinerizado com Docker Compose (PostgreSQL + Spring Boot).
 
 ## Protótipo de baixa fidelidade (Figma)

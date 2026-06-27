@@ -6,7 +6,7 @@
  * e decodificação condicional de payloads em JSON.
  */
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
 
 /**
  * Recupera o token JWT armazenado no localStorage do navegador.
@@ -333,4 +333,26 @@ export async function createService(serviceData: any): Promise<any> {
     method: "POST",
     body: JSON.stringify(serviceData),
   });
+}
+
+/**
+ * Cadastra o administrador inicial no sistema (Sem autenticação).
+ * 
+ * @param adminData Dados cadastrais do administrador
+ */
+export async function setupAdmin(adminData: any): Promise<any> {
+  const response = await fetch(`${BASE_URL}/admins`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(adminData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    throw new Error(errorData?.message || "Erro ao configurar administrador.");
+  }
+
+  return response.json();
 }

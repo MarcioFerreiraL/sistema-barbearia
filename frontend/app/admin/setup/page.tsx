@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { setupAdmin } from "../../services/api";
 
 export default function AdminSetupPage() {
   const [formData, setFormData] = useState({
@@ -21,19 +22,9 @@ export default function AdminSetupPage() {
     setStatus({ type: "", message: "" });
 
     try {
-      const res = await fetch("http://localhost:8080/api/admins", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
-      
-      if (res.ok) {
-        setStatus({ type: "success", message: "Conta de Administrador criada com sucesso! Redirecionando para login..." });
-        setTimeout(() => router.push("/login"), 3000);
-      } else {
-        const err = await res.json().catch(() => null);
-        setStatus({ type: "error", message: "Erro: " + (err?.message || res.statusText) });
-      }
+      await setupAdmin(formData);
+      setStatus({ type: "success", message: "Conta de Administrador criada com sucesso! Redirecionando para login..." });
+      setTimeout(() => router.push("/login"), 3000);
     } catch (e: any) {
       setStatus({ type: "error", message: "Erro de conexão: " + e.message });
     } finally {

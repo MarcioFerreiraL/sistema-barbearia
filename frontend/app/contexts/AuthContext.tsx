@@ -4,18 +4,22 @@
  * Contexto de Autenticação Global
  * 
  * Gerencia o estado de sessão de login do usuário (Cliente, Barbeiro ou Administrador)
- * de forma unificada no frontend, aplicando proteção de rotas e limpeza de cache local.
+ * de forma unificada no frontend. A autenticação é baseada em cookie httpOnly,
+ * com validação via endpoint /api/auth/me.
  */
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { logout as apiLogout } from "../services/api";
-import { getUserInfoFromToken, Role } from "../../lib/auth";
+import { logout as apiLogout, getMe } from "../services/api";
+
+type Role = "CLIENT" | "ADMIN" | "BARBER" | null;
 
 interface AuthContextType {
   isLoggedIn: boolean;
   role: Role;
-  login: (token: string) => void;
+  userId: string | null;
+  email: string | null;
+  login: () => Promise<void>;
   logout: (shouldRedirect?: boolean) => void;
 }
 
@@ -23,13 +27,17 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
   role: null,
-  login: () => {},
+  userId: null,
+  email: null,
+  login: async () => {},
   logout: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState<Role>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -49,79 +57,76 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   /**
-   * Remove a credencial local, notifica o backend e redireciona para a tela de login.
+   * Remove a credencial (cookie limpo pelo backend) e redireciona para a tela de login.
    * 
    * @param shouldRedirect Determina se deve redirecionar à força para /login
    */
   const logout = async (shouldRedirect: boolean = true) => {
-    await apiLogout(); // Limpa no servidor/cookies
+    await apiLogout(); // Limpa o cookie no servidor
     setIsLoggedIn(false);
     setRole(null);
+    setUserId(null);
+    setEmail(null);
     if (shouldRedirect) {
       router.push("/login");
     }
   };
 
   /**
-   * Valida o token JWT armazenado localmente e atualiza o estado do contexto.
-   * Acionado ao carregar a página ou detectar mudanças no localStorage.
+   * Valida a sessão do usuário chamando /api/auth/me.
+   * Se o cookie httpOnly for válido, o backend retorna as informações do usuário.
+   * Caso contrário, limpa o estado local.
    */
-  const checkToken = () => {
+  const checkSession = useCallback(async () => {
     if (typeof window === "undefined") return;
     
-    const token = localStorage.getItem("token");
-    if (token) {
-      const userInfo = getUserInfoFromToken(token);
+    try {
+      const userInfo = await getMe();
       
-      // Se não conseguiu ler a role ou o token for inválido, força deslogar
-      if (!userInfo.role) {
-        console.error("[AUTH] Falha ao extrair perfil do token local.");
-        logout(isProtectedRoute(pathname));
-        return;
+      if (userInfo && userInfo.role) {
+        setIsLoggedIn(true);
+        setRole(userInfo.role as Role);
+        setUserId(userInfo.id);
+        setEmail(userInfo.email);
+      } else {
+        // Cookie inválido ou expirado
+        setIsLoggedIn(false);
+        setRole(null);
+        setUserId(null);
+        setEmail(null);
+        
+        // Se estiver em rota privada e sem sessão válida, ejeta para o login
+        if (isProtectedRoute(pathname)) {
+          router.push("/login");
+        }
       }
-
-      // Valida o tempo de expiração do JWT
-      if (userInfo.exp && userInfo.exp * 1000 < Date.now()) {
-        console.warn("[AUTH] Token expirado temporalmente. Redirecionando.");
-        logout(isProtectedRoute(pathname));
-        return;
-      }
-
-      // Sessão válida
-      setIsLoggedIn(true);
-      setRole(userInfo.role);
-    } else {
-      // Nenhum token encontrado
+    } catch {
       setIsLoggedIn(false);
       setRole(null);
+      setUserId(null);
+      setEmail(null);
       
-      // Se estiver em rota privada e sem token, ejeta para o login
       if (isProtectedRoute(pathname)) {
         router.push("/login");
       }
     }
-  };
+  }, [pathname, router]);
 
   // Verifica o status de autenticação sempre que a rota mudar
   useEffect(() => {
-    checkToken();
-    
-    // Escuta eventos de storage para sincronizar o logout entre diferentes abas abertas
-    window.addEventListener("storage", checkToken);
-    return () => window.removeEventListener("storage", checkToken);
-  }, [pathname]);
+    checkSession();
+  }, [checkSession]);
 
   /**
-   * Registra o token no navegador e recarrega as validações.
-   * Chamado após sucesso na autenticação do formulário.
+   * Chamado após login bem-sucedido (cookie já definido pelo backend).
+   * Busca as informações do usuário via /api/auth/me.
    */
-  const loginUser = (token: string) => {
-    localStorage.setItem("token", token);
-    checkToken();
+  const loginUser = async () => {
+    await checkSession();
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, role, login: loginUser, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, role, userId, email, login: loginUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

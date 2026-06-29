@@ -126,6 +126,12 @@ public class AppointmentService {
             throw new BusinessRuleException("Este agendamento já se encontra finalizado.");
         }
 
+        // Regra de Negócio: Não pode concluir um agendamento antes do horário de início
+        if (LocalDateTime.now().isBefore(appointment.getStartTime())) {
+            throw new BusinessRuleException("Não é possível concluir um agendamento antes do horário marcado (" + 
+                    appointment.getStartTime().toLocalTime() + "). Aguarde o início do serviço.");
+        }
+
         appointment.setStatus(AppointmentStatus.COMPLETED);
         appointmentRepository.save(appointment);
     }

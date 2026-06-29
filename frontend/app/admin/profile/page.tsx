@@ -3,9 +3,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getAdmins, updateAdmin } from "../../services/api";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function AdminProfilePage() {
   const router = useRouter();
+  const { isLoggedIn, email } = useAuth();
   
   const [admin, setAdmin] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -17,22 +19,11 @@ export default function AdminProfilePage() {
 
   useEffect(() => {
     async function loadProfile() {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        router.push("/login");
-        return;
-      }
+      if (!isLoggedIn || !email) return;
 
       try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        const userEmail = payload.sub;
-
-        if (!userEmail) {
-          throw new Error("Token inválido.");
-        }
-
         const admins = await getAdmins();
-        const currentAdmin = admins.find((a: any) => a.email === userEmail);
+        const currentAdmin = admins.find((a: any) => a.email === email);
 
         if (!currentAdmin) {
           throw new Error("Perfil de administrador não encontrado no sistema.");
@@ -47,9 +38,6 @@ export default function AdminProfilePage() {
         });
 
       } catch (err: any) {
-        if (err.message === "Unauthorized" || !localStorage.getItem("token")) {
-          return;
-        }
         setError(err.message || "Erro ao carregar o seu perfil.");
       } finally {
         setIsLoading(false);
@@ -57,7 +45,7 @@ export default function AdminProfilePage() {
     }
 
     loadProfile();
-  }, [router]);
+  }, [isLoggedIn, email]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -120,7 +108,7 @@ export default function AdminProfilePage() {
 
         {status.message && (
           <div className={`p-4 rounded-xl mb-6 text-sm font-medium ${
-            status.type === "error" ? "bg-red-50 text-red-600 border border-red-200" : "bg-emerald-50 text-emerald-600 border border-emerald-200"
+            status.type === "error" ? "bg-red-550 text-red-600 border border-red-200" : "bg-emerald-50 text-emerald-600 border border-emerald-200"
           }`}>
             {status.message}
           </div>

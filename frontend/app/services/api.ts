@@ -2,27 +2,15 @@
  * Serviço de Integração com a API Backend
  * 
  * Centraliza todas as chamadas HTTP para os endpoints REST do Spring Boot.
- * Implementa controle de autenticação automática, tratamento de erros de rede
- * e decodificação condicional de payloads em JSON.
+ * Implementa controle de autenticação automática via cookie httpOnly,
+ * tratamento de erros de rede e decodificação condicional de payloads em JSON.
  */
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
 
 /**
- * Recupera o token JWT armazenado no localStorage do navegador.
- * Realiza verificação de ambiente (SSR vs CSR) para evitar erros no Next.js.
- * 
- * @returns Token JWT ou null se não estiver logado
- */
-function getToken(): string | null {
-  if (typeof window !== "undefined") {
-    return localStorage.getItem("token");
-  }
-  return null;
-}
-
-/**
- * Função Wrapper para requisições Fetch contendo autenticação JWT automática.
+ * Função Wrapper para requisições Fetch contendo autenticação via cookie httpOnly.
+ * O cookie é enviado automaticamente com `credentials: "include"`.
  * Intercepta erros 401/403 para redirecionar o usuário para o login.
  * 
  * @param url Endpoint absoluto da requisição
@@ -30,11 +18,8 @@ function getToken(): string | null {
  * @returns Promessa com o conteúdo decodificado da resposta
  */
 async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<any> {
-  const token = getToken();
-  
-  // Mescla o token de autorização e outros cabeçalhos fornecidos
+  // Mescla cabeçalhos fornecidos
   const headers: Record<string, string> = {
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...((options.headers as Record<string, string>) || {}),
   };
 
@@ -48,7 +33,7 @@ async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<an
     response = await fetch(url, { 
       ...options, 
       headers,
-      credentials: "include" // Permite o envio de cookies se necessário
+      credentials: "include" // Envia o cookie httpOnly automaticamente
     });
   } catch (error: any) {
     console.error(`[NETWORK ERROR] Falha ao conectar a ${url}:`, error);
@@ -59,7 +44,6 @@ async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<an
   if (response.status === 401 || response.status === 403) {
     console.error(`[AUTH ERROR] Acesso não autorizado para ${url} (Status ${response.status})`);
     if (typeof window !== "undefined") {
-      localStorage.removeItem("token");
       // Redireciona o usuário alertando sobre a expiração
       window.location.href = "/login?expired=true";
     }
@@ -84,10 +68,11 @@ async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<an
 
 /**
  * Autentica um usuário (Cliente, Barbeiro ou Administrador).
+ * O backend define o cookie httpOnly automaticamente na resposta.
  * 
  * @param email E-mail de cadastro
  * @param password Senha em texto limpo
- * @returns Promessa contendo o token JWT gerado pelo backend
+ * @returns Promessa contendo o token JWT gerado pelo backend (para uso imediato, se necessário)
  */
 export async function login(email: string, password: string): Promise<{ token: string }> {
   let response: Response;
@@ -98,7 +83,7 @@ export async function login(email: string, password: string): Promise<{ token: s
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email, password }),
-      credentials: "include"
+      credentials: "include" // Recebe e armazena o cookie httpOnly definido pelo backend
     });
   } catch (error: any) {
     console.error("[NETWORK ERROR] Falha na conexão de Login:", error);
@@ -114,7 +99,7 @@ export async function login(email: string, password: string): Promise<{ token: s
 }
 
 /**
- * Efetua o logout do usuário notificando o backend e limpando as credenciais locais.
+ * Efetua o logout do usuário notificando o backend para limpar o cookie httpOnly.
  */
 export async function logout(): Promise<void> {
   try {
@@ -125,8 +110,23 @@ export async function logout(): Promise<void> {
   } catch (e) {
     console.error("[API] Erro ao invalidar sessão no backend:", e);
   }
-  if (typeof window !== "undefined") {
-    localStorage.removeItem("token");
+}
+
+/**
+ * Recupera as informações do usuário autenticado a partir do cookie de sessão.
+ * Substitui a decodificação local do JWT para compatibilidade com cookies httpOnly.
+ * 
+ * @returns Objeto com id, email e role do usuário autenticado, ou null se não autenticado
+ */
+export async function getMe(): Promise<{ id: string; email: string; role: string } | null> {
+  try {
+    const response = await fetch(`${BASE_URL}/auth/me`, {
+      credentials: "include"
+    });
+    if (!response.ok) return null;
+    return response.json();
+  } catch {
+    return null;
   }
 }
 

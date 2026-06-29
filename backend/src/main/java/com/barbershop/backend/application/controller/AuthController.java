@@ -2,6 +2,7 @@ package com.barbershop.backend.application.controller;
 
 import com.barbershop.backend.application.dto.request.AuthenticationRequest;
 import com.barbershop.backend.application.dto.response.AuthenticationResponse;
+import com.barbershop.backend.application.dto.response.UserInfoResponse;
 import com.barbershop.backend.domain.model.User;
 import com.barbershop.backend.infraestructure.security.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,6 +53,24 @@ public class AuthController {
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString());
 
         return ResponseEntity.ok(new AuthenticationResponse(token));
+    }
+
+    @Operation(summary = "Obter informações do usuário autenticado", description = "Retorna id, e-mail e role do usuário a partir do cookie de sessão.")
+    @ApiResponse(responseCode = "200", description = "Informações retornadas com sucesso.")
+    @ApiResponse(responseCode = "401", description = "Usuário não autenticado.")
+    @GetMapping("/me")
+    public ResponseEntity<UserInfoResponse> me() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof User user) {
+            String role = user.getRole().name().replace("ROLE_", "");
+            if (role.equals("CUSTOMER")) role = "CLIENT";
+            return ResponseEntity.ok(new UserInfoResponse(
+                    user.getId().toString(),
+                    user.getEmail(),
+                    role
+            ));
+        }
+        return ResponseEntity.status(401).build();
     }
 
     @Operation(summary = "Realizar logout", description = "Remove o token de autenticação limpando o cookie 'token'.")

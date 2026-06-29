@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getServices, getBarbers, getAppointments, getBusinessHours, createAppointment } from "../services/api";
 import { useToast } from "../contexts/ToastContext";
-import { getUserInfoFromToken } from "../../lib/auth";
+import { useAuth } from "../contexts/AuthContext";
 
 interface ServiceItem {
   id: number;
@@ -22,10 +22,10 @@ interface Barber {
 export default function Appointment() {
   const router = useRouter();
   const { showToast } = useToast();
+  const { isLoggedIn, role, userId } = useAuth();
   
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [barbers, setBarbers] = useState<Barber[]>([]);
-  const [customerId, setCustomerId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -85,30 +85,23 @@ export default function Appointment() {
 
   useEffect(() => {
     async function fetchData() {
+      // Aguarda o AuthContext validar a sessão
+      if (!isLoggedIn) return;
+
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          router.push("/login");
-          return;
-        }
-
-        const userInfo = getUserInfoFromToken(token);
-
-        if (userInfo.role === "ADMIN") {
+        if (role === "ADMIN") {
           router.push("/admin");
           return;
         }
-        if (userInfo.role === "BARBER") {
+        if (role === "BARBER") {
           router.push("/barber-panel");
           return;
         }
 
-        if (!userInfo.id) {
+        if (!userId) {
           setError("Perfil de cliente não encontrado. Entre em contato com o suporte.");
           return;
         }
-
-        setCustomerId(userInfo.id);
 
         const [fetchedServices, fetchedBarbers, fetchedAppointments, fetchedHours] = await Promise.all([
           getServices(),
@@ -122,9 +115,6 @@ export default function Appointment() {
         setAppointments(fetchedAppointments);
         setBusinessHours(fetchedHours);
       } catch (err: any) {
-        if (err.message === "Unauthorized" || !localStorage.getItem("token")) {
-          return;
-        }
         setError("Erro ao carregar dados. Verifique a sua conexão ou faça login novamente.");
       } finally {
         setIsLoading(false);
@@ -132,7 +122,7 @@ export default function Appointment() {
     }
 
     fetchData();
-  }, [router]);
+  }, [router, isLoggedIn, role, userId]);
 
   const getFilteredTimes = () => {
     const today = new Date();
@@ -160,12 +150,13 @@ export default function Appointment() {
     }
 
     // 2. Filtra horários que já estão ocupados para o barbeiro selecionado neste dia
+    // Ignora agendamentos cancelados e concluídos (horários livres)
     if (selectedBarberId && selectedDate && appointments.length > 0) {
       const selectedBarber = barbers.find(b => b.id === selectedBarberId);
       if (selectedBarber) {
         const bookedTimes = appointments
           .filter((appt: any) => {
-            if (appt.status === "CANCELLED") return false;
+            if (appt.status === "CANCELLED" || appt.status === "COMPLETED") return false;
             if (appt.barberName !== selectedBarber.fullName) return false;
             const apptDate = appt.startTime.split("T")[0];
             return apptDate === selectedDate;
@@ -208,7 +199,7 @@ export default function Appointment() {
       showToast("Por favor, preencha todos os campos.", "error");
       return;
     }
-    if (!customerId) {
+    if (!userId) {
       showToast("Erro ao identificar o cliente. Faça login novamente.", "error");
       return;
     }
@@ -217,7 +208,7 @@ export default function Appointment() {
     try {
       const startTime = `${selectedDate}T${selectedTime}:00`;
       await createAppointment({
-        customerId,
+        customerId: userId,
         barberId: selectedBarberId,
         serviceItemId: selectedServiceId,
         startTime,

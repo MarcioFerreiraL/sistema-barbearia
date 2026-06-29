@@ -13,10 +13,9 @@ export default function BarberLayout({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const token = localStorage.getItem("token");
-      if (!token) {
+      if (!isLoggedIn) {
         router.push("/login");
-      } else if (isLoggedIn && role && role !== "BARBER") {
+      } else if (role && role !== "BARBER") {
         if (role === "ADMIN") {
           router.push("/admin");
         } else {

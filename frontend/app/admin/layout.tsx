@@ -14,11 +14,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     if (pathname !== "/admin/setup") {
       const timer = setTimeout(() => {
-        const token = localStorage.getItem("token");
-        if (!token) {
+        if (!isLoggedIn) {
           router.push("/login");
-        } else if (isLoggedIn && role && role !== "ADMIN") {
-          // If they have a token, are logged in, but are NOT an admin
+        } else if (role && role !== "ADMIN") {
+          // Se estiver logado mas não for administrador
           if (role === "BARBER") {
             router.push("/barber-panel");
           } else {

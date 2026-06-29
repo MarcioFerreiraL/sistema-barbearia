@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { getBarbers, updateBarber } from "../../services/api";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function BarberProfilePage() {
+  const { isLoggedIn, email } = useAuth();
   const [barber, setBarber] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -13,13 +15,9 @@ export default function BarberProfilePage() {
 
   useEffect(() => {
     const loadProfile = async () => {
+      if (!isLoggedIn || !email) return;
+
       try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        const email = payload.sub;
-
         const barbersRes = await getBarbers();
         const currentBarber = barbersRes.find((b: any) => b.email === email);
         
@@ -40,7 +38,7 @@ export default function BarberProfilePage() {
     };
 
     loadProfile();
-  }, []);
+  }, [isLoggedIn, email]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

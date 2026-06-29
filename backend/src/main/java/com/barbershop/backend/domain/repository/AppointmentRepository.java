@@ -13,7 +13,8 @@ import java.util.UUID;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, UUID> {
     // Verifica se o barbeiro já está ocupado naquele intervalo de tempo
-    @Query("SELECT COUNT(a) > 0 FROM Appointment a WHERE a.barber = :barber AND a.status != 'CANCELLED' AND " +
+    // Ignora agendamentos cancelados e concluídos (o barbeiro já está livre nesses casos)
+    @Query("SELECT COUNT(a) > 0 FROM Appointment a WHERE a.barber = :barber AND a.status NOT IN ('CANCELLED', 'COMPLETED') AND " +
             "(a.startTime < :endTime AND a.endTime > :startTime)")
     boolean existsOverlappingAppointment(@Param("barber") Barber barber,
                                          @Param("startTime") LocalDateTime startTime,

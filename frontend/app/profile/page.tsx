@@ -12,11 +12,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getCustomerById, getAppointments, updateCustomer, cancelAppointment } from "../services/api";
 import { useToast } from "../contexts/ToastContext";
-import { getUserInfoFromToken } from "../../lib/auth";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function UserProfile() {
   const router = useRouter();
   const { showToast } = useToast();
+  const { isLoggedIn, role, userId } = useAuth();
   
   // Estados para dados locais
   const [customer, setCustomer] = useState<any>(null);
@@ -31,37 +32,25 @@ export default function UserProfile() {
   // Carrega as informações do usuário e histórico de agendamentos
   useEffect(() => {
     async function loadProfile() {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        router.push("/login");
-        return;
-      }
+      if (!isLoggedIn) return;
 
       try {
-        // Decodifica as informações e roles de forma centralizada (Clean Code: DRY)
-        const userInfo = getUserInfoFromToken(token);
-        const userEmail = userInfo.email;
-        
-        if (!userInfo.role || !userEmail) {
-          throw new Error("Token inválido.");
-        }
-
         // Se o usuário não for cliente, redireciona para a tela correta (segurança adicional)
-        if (userInfo.role === "ADMIN") {
+        if (role === "ADMIN") {
           router.push("/admin");
           return;
         }
-        if (userInfo.role === "BARBER") {
+        if (role === "BARBER") {
           router.push("/barber-panel");
           return;
         }
 
-        // Usar o ID do token para buscar os dados do cliente diretamente
-        if (!userInfo.id) {
-          throw new Error("ID do cliente não encontrado no token.");
+        // Usar o ID do contexto para buscar os dados do cliente diretamente
+        if (!userId) {
+          throw new Error("ID do cliente não encontrado.");
         }
 
-        const currentCustomer = await getCustomerById(userInfo.id);
+        const currentCustomer = await getCustomerById(userId);
 
         setCustomer(currentCustomer);
         setFormData({
@@ -85,10 +74,6 @@ export default function UserProfile() {
         setAppointments(myAppointments);
 
       } catch (err: any) {
-        // Evita exibir erro na tela caso seja um redirecionamento por unauthorized resolvido pelo interceptador da API
-        if (err.message === "Unauthorized" || !localStorage.getItem("token")) {
-          return;
-        }
         setError(err.message || "Erro ao carregar o seu perfil.");
       } finally {
         setIsLoading(false);
@@ -96,7 +81,7 @@ export default function UserProfile() {
     }
 
     loadProfile();
-  }, [router]);
+  }, [router, isLoggedIn, role, userId]);
 
   /**
    * Monitora a digitação nos inputs do formulário.
@@ -123,7 +108,7 @@ export default function UserProfile() {
       const updated = await updateCustomer(customer.id, payload);
       setCustomer(updated);
       setFormData(prev => ({ ...prev, password: "" })); // Limpa campo de senha pós-sucesso
-      showToast("Perfil atualizado com sucesso!", "success");
+      showToast("Perfil updated com sucesso!", "success");
     } catch (err: any) {
       showToast(err.message || "Erro ao atualizar o perfil.", "error");
     } finally {

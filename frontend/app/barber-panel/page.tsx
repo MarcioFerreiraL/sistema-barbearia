@@ -11,29 +11,21 @@
 import { useState, useEffect } from "react";
 import { getAppointments, getBarbers, cancelAppointment, completeAppointment } from "../services/api";
 import { useToast } from "../contexts/ToastContext";
-import { getUserInfoFromToken } from "../../lib/auth";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function BarberDashboardPage() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [barber, setBarber] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { showToast } = useToast();
+  const { isLoggedIn, email } = useAuth();
 
   // Carrega os dados do barbeiro logado e os seus agendamentos no ciclo de vida
   useEffect(() => {
     const loadData = async () => {
+      if (!isLoggedIn || !email) return;
+
       try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
-        // Recupera dados do token de forma limpa via utilitário (Clean Code: DRY)
-        const userInfo = getUserInfoFromToken(token);
-        const email = userInfo.email;
-
-        if (!email) {
-          throw new Error("Token sem identificador de e-mail.");
-        }
-
         // Busca concorrente de barbeiros e agendamentos para reduzir latência
         const [barbersRes, apptsRes] = await Promise.all([
           getBarbers(),
@@ -57,7 +49,7 @@ export default function BarberDashboardPage() {
     };
 
     loadData();
-  }, []);
+  }, [isLoggedIn, email]);
 
   // Renderização em estado de Loading
   if (isLoading) {

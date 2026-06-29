@@ -32,30 +32,20 @@ public class AuthController {
         this.tokenService = tokenService;
     }
 
-    @Operation(summary = "Realizar login", description = "Autentica o usuário no sistema e retorna um token JWT, definindo também o cookie HTTP-only 'token'.")
+    @Operation(summary = "Realizar login", description = "Autentica o usuário no sistema e retorna um token JWT.")
     @ApiResponse(responseCode = "200", description = "Login realizado com sucesso.")
     @ApiResponse(responseCode = "401", description = "Credenciais inválidas.")
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(
-            @RequestBody AuthenticationRequest authenticationRequest,
-            jakarta.servlet.http.HttpServletResponse response) {
+            @RequestBody AuthenticationRequest authenticationRequest) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(authenticationRequest.email(), authenticationRequest.password());
         var auth = authenticationManager.authenticate(usernamePassword);
         var token = tokenService.generateToken((User) auth.getPrincipal());
 
-        org.springframework.http.ResponseCookie cookie = org.springframework.http.ResponseCookie.from("token", token)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(7200)
-                .sameSite("None")
-                .build();
-        response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString());
-
         return ResponseEntity.ok(new AuthenticationResponse(token));
     }
 
-    @Operation(summary = "Obter informações do usuário autenticado", description = "Retorna id, e-mail e role do usuário a partir do cookie de sessão.")
+    @Operation(summary = "Obter informações do usuário autenticado", description = "Retorna id, e-mail e role do usuário autenticado.")
     @ApiResponse(responseCode = "200", description = "Informações retornadas com sucesso.")
     @ApiResponse(responseCode = "401", description = "Usuário não autenticado.")
     @GetMapping("/me")
@@ -73,18 +63,10 @@ public class AuthController {
         return ResponseEntity.status(401).build();
     }
 
-    @Operation(summary = "Realizar logout", description = "Remove o token de autenticação limpando o cookie 'token'.")
+    @Operation(summary = "Realizar logout", description = "Efetua a saída do usuário.")
     @ApiResponse(responseCode = "200", description = "Logout realizado com sucesso.")
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(jakarta.servlet.http.HttpServletResponse response) {
-        org.springframework.http.ResponseCookie cookie = org.springframework.http.ResponseCookie.from("token", "")
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(0)
-                .sameSite("None")
-                .build();
-        response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString());
+    public ResponseEntity<Void> logout() {
         return ResponseEntity.ok().build();
     }
 }

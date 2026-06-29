@@ -28,12 +28,19 @@ async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<an
     headers["Content-Type"] = "application/json";
   }
 
+  // Adiciona o token de autorização do localStorage, se disponível
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token");
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+  }
+
   let response: Response;
   try {
     response = await fetch(url, { 
       ...options, 
-      headers,
-      credentials: "include" // Envia o cookie httpOnly automaticamente
+      headers
     });
   } catch (error: any) {
     console.error(`[NETWORK ERROR] Falha ao conectar a ${url}:`, error);
@@ -44,6 +51,8 @@ async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<an
   if (response.status === 401 || response.status === 403) {
     console.error(`[AUTH ERROR] Acesso não autorizado para ${url} (Status ${response.status})`);
     if (typeof window !== "undefined") {
+      // Remove o token inválido do localStorage
+      localStorage.removeItem("token");
       // Redireciona o usuário alertando sobre a expiração
       window.location.href = "/login?expired=true";
     }
@@ -68,11 +77,11 @@ async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<an
 
 /**
  * Autentica um usuário (Cliente, Barbeiro ou Administrador).
- * O backend define o cookie httpOnly automaticamente na resposta.
+ * O token retornado é salvo no localStorage.
  * 
  * @param email E-mail de cadastro
  * @param password Senha em texto limpo
- * @returns Promessa contendo o token JWT gerado pelo backend (para uso imediato, se necessário)
+ * @returns Promessa contendo o token JWT gerado pelo backend
  */
 export async function login(email: string, password: string): Promise<{ token: string }> {
   let response: Response;
@@ -82,8 +91,7 @@ export async function login(email: string, password: string): Promise<{ token: s
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password }),
-      credentials: "include" // Recebe e armazena o cookie httpOnly definido pelo backend
+      body: JSON.stringify({ email, password })
     });
   } catch (error: any) {
     console.error("[NETWORK ERROR] Falha na conexão de Login:", error);
@@ -95,17 +103,23 @@ export async function login(email: string, password: string): Promise<{ token: s
     throw new Error("E-mail ou palavra-passe incorretos.");
   }
 
-  return response.json();
+  const data = await response.json();
+  if (typeof window !== "undefined" && data.token) {
+    localStorage.setItem("token", data.token);
+  }
+  return data;
 }
 
 /**
- * Efetua o logout do usuário notificando o backend para limpar o cookie httpOnly.
+ * Efetua o logout do usuário notificando o backend e removendo o token local.
  */
 export async function logout(): Promise<void> {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("token");
+  }
   try {
     await fetch(`${BASE_URL}/auth/logout`, {
-      method: "POST",
-      credentials: "include"
+      method: "POST"
     });
   } catch (e) {
     console.error("[API] Erro ao invalidar sessão no backend:", e);
@@ -113,15 +127,19 @@ export async function logout(): Promise<void> {
 }
 
 /**
- * Recupera as informações do usuário autenticado a partir do cookie de sessão.
- * Substitui a decodificação local do JWT para compatibilidade com cookies httpOnly.
+ * Recupera as informações do usuário autenticado enviando o token no header Authorization.
  * 
  * @returns Objeto com id, email e role do usuário autenticado, ou null se não autenticado
  */
 export async function getMe(): Promise<{ id: string; email: string; role: string } | null> {
   try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) return null;
+
     const response = await fetch(`${BASE_URL}/auth/me`, {
-      credentials: "include"
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
     });
     if (!response.ok) return null;
     return response.json();

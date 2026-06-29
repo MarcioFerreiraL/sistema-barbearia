@@ -45,10 +45,10 @@ public class AuthController {
 
         org.springframework.http.ResponseCookie cookie = org.springframework.http.ResponseCookie.from("token", token)
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .maxAge(7200)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString());
 
@@ -79,10 +79,10 @@ public class AuthController {
     public ResponseEntity<Void> logout(jakarta.servlet.http.HttpServletResponse response) {
         org.springframework.http.ResponseCookie cookie = org.springframework.http.ResponseCookie.from("token", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .maxAge(0)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString());
         return ResponseEntity.ok().build();

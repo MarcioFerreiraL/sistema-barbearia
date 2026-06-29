@@ -33,16 +33,16 @@ export default function BarberLayout({ children }: { children: React.ReactNode }
 
   if (!isLoggedIn || role !== "BARBER") {
     return (
-      <div className="flex justify-center items-center h-screen bg-zinc-50">
+      <div className="flex justify-center items-center h-screen bg-zinc-950">
         <p className="text-zinc-500 font-medium animate-pulse">Verificando permissões...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col md:flex-row">
       {/* Sidebar de Navegação do Barbeiro */}
-      <aside className="w-full md:w-64 bg-zinc-950 text-zinc-300 flex-shrink-0 shadow-2xl">
+      <aside className="w-full md:w-64 bg-zinc-950 text-zinc-300 flex-shrink-0 border-r border-zinc-900 shadow-2xl">
         <div className="p-6">
           <h2 className="text-xl font-black text-zinc-50 uppercase tracking-wider mb-1">
             Painel <span className="text-amber-500">Barbeiro</span>
@@ -70,7 +70,7 @@ export default function BarberLayout({ children }: { children: React.ReactNode }
       </aside>
 
       {/* Conteúdo Principal */}
-      <main className="flex-1 p-6 md:p-10">
+      <main className="flex-1 p-6 md:p-10 bg-zinc-950">
         <div className="max-w-5xl mx-auto">
           {children}
         </div>

@@ -58,9 +58,9 @@ O diagrama detalha a estrutura de objetos e entidades de domínio do banco de da
 **Back-end & API REST:**
 
 - Java 21
-- Spring Boot 4 (Spring Web MVC, Spring Data JPA, Spring Security, Spring Validation)
-- Autenticação JSON Web Tokens (JWT) via [Auth0 java-jwt](https://github.com/auth0/java-jwt)
-- Documentação OpenAPI via [SpringDoc](https://springdoc.org/)
+- Spring Boot 4
+- Autenticação JSON Web Tokens (JWT)
+- Documentação OpenAPI e Redoc
 
 **Banco de Dados:**
 
@@ -68,8 +68,8 @@ O diagrama detalha a estrutura de objetos e entidades de domínio do banco de da
 
 **Infraestrutura:**
 
-- Docker & Docker Compose (Backend + PostgreSQL)
-- Vercel (Deploy do Frontend)
+- Docker & Docker Compose (Backend + PostgreSQL) em uma VPS da Oracle Free Tier com DNS da Duckdns e certificado SSL do nginx
+- Vercel (Frontend)
 
 ## 📁 Estrutura do Repositório
 

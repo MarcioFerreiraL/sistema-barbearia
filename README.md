@@ -20,12 +20,20 @@ A plataforma permite que clientes realizem cadastros, visualizem o catálogo, es
 
 [Clique aqui para ver o protótipo de baixa fidelidade](https://www.figma.com/proto/CwY0O0aQ68XZcSvtAhbghI/Prot%C3%B3tipo---Barbearia?node-id=3-2&t=eWMBRIBa3ZeJAf1a-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=3%3A2)
 
+## 🖼️ Telas
+
+Demo do front-end: [sistema-barbearia-black.vercel.app](https://sistema-barbearia-black.vercel.app) · Estudo de caso: [marciodev.com/projetos/barbearia](https://marciodev.com/projetos/barbearia)
+
+| Computador | Celular |
+| :---: | :---: |
+| <img src="docs/telas/desktop.webp" width="560" alt="Página inicial da Barbearia do Zé no computador" /> | <img src="docs/telas/mobile.webp" width="200" alt="Página inicial da Barbearia do Zé no celular" /> |
+
 ## 📚 Documentação do Projeto
 
 Para facilitar a compreensão do funcionamento do sistema, o repositório conta com uma documentação técnica completa:
 
 - 🏛️ **[Arquitetura do Sistema](docs/architecture.md)**: Visão detalhada da organização física e lógica das camadas do back-end, estrutura do front-end e fluxo de autenticação e dados.
-- 🔌 **[Referência da API REST](docs/api_reference.md)**: Lista completa dos endpoints REST, parâmetros esperados, modelos de dados e controle de acesso (RBAC). [Clique aqui para ver a documentação da API](https://barbeariadoze.duckdns.org).
+- 🔌 **[Referência da API REST](docs/api_reference.md)**: Lista completa dos endpoints REST, parâmetros esperados, modelos de dados e controle de acesso (RBAC).
 - 🗄️ **[Esquema do Banco de Dados](docs/database_schema.md)**: Mapeamento de tabelas, chaves primárias e estrangeiras, tipos de dados e explicação da herança relacional (`tb_user`).
 
 ### 📊 Diagramas do Sistema

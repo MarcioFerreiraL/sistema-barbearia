@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - master
+    # Só o backend vai para a VPS; mudanças no frontend (a demo estática) não reinstalam nada lá.
+    paths:
+      - "backend/**"
 
 jobs:
   build-and-push:

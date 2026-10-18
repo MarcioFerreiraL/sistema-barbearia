@@ -43,3 +43,6 @@ next-env.d.ts
 # testes de ponta a ponta
 /test-results/
 /playwright-report/
+
+# cache local do wrangler dev
+/.wrangler/

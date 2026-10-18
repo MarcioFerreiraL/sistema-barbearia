@@ -1,91 +1,24 @@
 "use client";
 
-import { useAuth } from "../contexts/AuthContext";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import PanelLayout from "../components/PanelLayout";
+
+const itens = [
+  { href: "/admin", label: "Painel" },
+  { href: "/admin/barbers", label: "Barbeiros" },
+  { href: "/admin/services", label: "Serviços e preços" },
+  { href: "/admin/customers", label: "Clientes" },
+  { href: "/admin/hours", label: "Horário de funcionamento" },
+  { href: "/admin/profile", label: "Meus dados" },
+];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { role, isLoggedIn } = useAuth();
-  const router = useRouter();
   const pathname = usePathname();
-
-  useEffect(() => {
-    if (pathname !== "/admin/setup") {
-      const timer = setTimeout(() => {
-        if (!isLoggedIn) {
-          router.push("/login");
-        } else if (role && role !== "ADMIN") {
-          // Se estiver logado mas não for administrador
-          if (role === "BARBER") {
-            router.push("/barber-panel");
-          } else {
-            router.push("/appointment");
-          }
-        }
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoggedIn, role, router, pathname]);
-
-  const navItems = [
-    { name: "Dashboard / Relatórios", path: "/admin" },
-    { name: "Gerir Barbeiros", path: "/admin/barbers" },
-    { name: "Gerir Serviços", path: "/admin/services" },
-    { name: "Gerir Clientes", path: "/admin/customers" }, // Nova aba adicionada
-    { name: "Horários de Funcionamento", path: "/admin/hours" },
-    { name: "Meu Perfil", path: "/admin/profile" },
-  ];
-
-  if (pathname === "/admin/setup") {
-    return <>{children}</>;
-  }
-
-  if (!isLoggedIn || role !== "ADMIN") {
-    return (
-      <div className="flex justify-center items-center h-screen bg-zinc-950">
-        <p className="text-zinc-500 font-medium animate-pulse">Verificando permissões...</p>
-      </div>
-    );
-  }
-
+  // A configuração do primeiro administrador fica fora do painel.
+  if (pathname === "/admin/setup") return <>{children}</>;
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col md:flex-row">
-      {/* Sidebar de Navegação do Admin */}
-      <aside className="w-full md:w-64 bg-zinc-950 text-zinc-300 flex-shrink-0 border-r border-zinc-900 shadow-2xl">
-        <div className="p-6">
-          <h2 className="text-xl font-black text-zinc-50 uppercase tracking-wider mb-1">
-            Painel <span className="text-amber-500">Admin</span>
-          </h2>
-          <p className="text-xs text-zinc-500 font-medium mb-8">Controle total do sistema</p>
-          <nav className="space-y-2">
-            {navItems.map((item) => {
-              const isActive = pathname === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  href={item.path}
-                  className={`block px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    isActive
-                      ? "bg-amber-500 text-zinc-950 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
-                      : "hover:bg-zinc-900 hover:text-amber-400"
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-      </aside>
-
-      {/* Conteúdo Principal */}
-      <main className="flex-1 p-6 md:p-10 bg-zinc-950">
-        <div className="max-w-5xl mx-auto">
-          {children}
-        </div>
-      </main>
-    </div>
+    <PanelLayout papel="ADMIN" titulo="Administração" itens={itens}>
+      {children}
+    </PanelLayout>
   );
 }

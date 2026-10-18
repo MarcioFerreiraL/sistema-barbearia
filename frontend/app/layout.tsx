@@ -1,32 +1,38 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Alfa_Slab_One, Atkinson_Hyperlegible } from "next/font/google";
 import Navbar from "./components/ui/navbar";
 import Footer from "./components/ui/footer";
+import DemoBar from "./components/ui/DemoBar";
 import "./globals.css";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ToastProvider } from "./contexts/ToastContext";
 
+const alfa = Alfa_Slab_One({ weight: "400", subsets: ["latin"], variable: "--font-alfa", display: "swap" });
+const atkinson = Atkinson_Hyperlegible({ weight: ["400", "700"], subsets: ["latin"], variable: "--font-atkinson", display: "swap" });
+
 export const metadata: Metadata = {
-  title: "Barbearia do Zé | Barbearia Premium",
-  description: "Sistema de Agendamento para Barbearia",
+  title: { default: "Mandacaru Barbearia", template: "%s | Mandacaru Barbearia" },
+  description: "Corte, barba e acabamento em Surubim. Marque seu horário pelo celular.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export const viewport: Viewport = {
+  themeColor: "#1d2a4d",
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR">
-      <body className="bg-zinc-950 text-zinc-100 font-sans antialiased flex flex-col min-h-screen">
+    <html lang="pt-BR" className={`${alfa.variable} ${atkinson.variable}`}>
+      <body className="flex min-h-screen flex-col antialiased">
         <AuthProvider>
           <ToastProvider>
-            {/* Usando o nosso novo componente de Navegação */}
+            <a href="#conteudo" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-papel focus:px-4 focus:py-2">
+              Pular para o conteúdo
+            </a>
+            <DemoBar />
             <Navbar />
-
-            {/* Conteúdo das outras páginas */}
-            <main className="flex-grow">
+            <main id="conteudo" className="flex-grow">
               {children}
             </main>
-
-            {/* RODAPÉ */}
             <Footer />
           </ToastProvider>
         </AuthProvider>

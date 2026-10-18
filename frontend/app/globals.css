@@ -1,50 +1,174 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Mandacaru Barbearia: parede caiada, tinta anil e letreiro pintado à mão.
+ * O único gesto forte é o letreiro (Alfa Slab One com sombra açafrão); o resto é quieto.
+ */
+@theme {
+  --color-cal: #eef3ef;
+  --color-papel: #ffffff;
+  --color-anil: #1d2a4d;
+  --color-anil-claro: #2c3d6b;
+  --color-letreiro: #b5262b;
+  --color-letreiro-escuro: #8f1d22;
+  --color-acafrao: #e2a529;
+  --color-linha: #c9d3ce;
+  --color-apagado: #4e5a70;
+  --color-quadro: #16203b;
+
+  --font-letreiro: var(--font-alfa), "Rockwell", "Roboto Slab", serif;
+  --font-sans: var(--font-atkinson), "Segoe UI", system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    background: var(--color-cal);
+    color: var(--color-anil);
+    font-family: var(--font-sans);
+    line-height: 1.55;
+  }
+
+  /* Sem isto o fieldset cresce até a largura do conteúdo (a fileira de dias) e estoura a página. */
+  fieldset {
+    min-width: 0;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-anil);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--color-acafrao);
+    color: var(--color-anil);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Letras de placa pintada: sombra chapada deslocada, sem desfoque. */
+  .letreiro {
+    font-family: var(--font-letreiro);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    line-height: 0.95;
+    text-shadow: 0.06em 0.06em 0 var(--color-acafrao);
+  }
+
+  .titulo {
+    font-family: var(--font-letreiro);
+    font-weight: 400;
+    line-height: 1.1;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background-color 150ms, color 150ms, border-color 150ms;
+  }
+
+  .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .btn-primario {
+    background: var(--color-letreiro);
+    color: #fff;
+  }
+
+  .btn-primario:not(:disabled):hover {
+    background: var(--color-letreiro-escuro);
+  }
+
+  .btn-secundario {
+    background: var(--color-papel);
+    color: var(--color-anil);
+    border: 1.5px solid var(--color-anil);
+  }
+
+  .btn-secundario:not(:disabled):hover {
+    background: var(--color-cal);
+  }
+
+  .btn-discreto {
+    color: var(--color-anil);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    padding-inline: 0.25rem;
+  }
+
+  .btn-perigo {
+    background: var(--color-papel);
+    color: var(--color-letreiro-escuro);
+    border: 1.5px solid currentColor;
+  }
+
+  .btn-perigo:not(:disabled):hover {
+    background: #fbeeee;
+  }
+
+  .campo {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.75rem;
+    border: 1.5px solid var(--color-linha);
+    border-radius: 0.5rem;
+    background: var(--color-papel);
+    color: var(--color-anil);
+  }
+
+  .campo:focus-visible {
+    border-color: var(--color-anil);
+    outline-offset: 0;
+  }
+
+  .rotulo {
+    display: block;
+    margin-bottom: 0.375rem;
+    font-weight: 700;
+    font-size: 0.9375rem;
+  }
+
+  .folha {
+    background: var(--color-papel);
+    border: 1px solid var(--color-linha);
+    border-radius: 0.75rem;
+  }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideIn {
+@keyframes entra {
   from {
-    transform: translateY(1rem);
+    transform: translateY(0.75rem);
     opacity: 0;
   }
   to {
-    transform: translateY(0);
+    transform: none;
     opacity: 1;
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.2s ease-out forwards;
+.animate-entra {
+  animation: entra 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.animate-slide-in {
-  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -1,51 +1,37 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
-export default function About() {
+export const metadata: Metadata = { title: "A barbearia" };
+
+export default function ABarbearia() {
   return (
-    <div className="w-full bg-zinc-950">
-      
-      {/* Cabeçalho da Página */}
-      <div className="bg-zinc-950 text-white py-20 px-4 text-center">
-        <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight">
-          Sobre <span className="text-amber-500">Nós</span>
-        </h1>
-        <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
-          Mais do que um corte de cabelo. Uma experiência única.
+    <div className="mx-auto max-w-3xl px-4 py-12 md:py-16">
+      <h1 className="titulo text-4xl sm:text-5xl">A barbearia</h1>
+      <div className="mt-8 space-y-5 text-lg leading-relaxed">
+        <p>
+          A Mandacaru começou com uma cadeira e um espelho numa garagem do Centro de Surubim. Hoje são três cadeiras, a mesma
+          tabela de preços pintada na parede e o mesmo jeito de atender: sem pressa no corte e sem espera na porta.
+        </p>
+        <p>
+          O agendamento pelo celular veio para acabar com a fila de sábado. Você escolhe o serviço, o barbeiro e o horário,
+          e o barbeiro já vê o horário na agenda dele.
         </p>
       </div>
 
-      {/* Conteúdo Principal */}
-      <div className="max-w-6xl mx-auto py-20 px-4 grid md:grid-cols-2 gap-12 items-center">
-        
-        {/* Texto e Informações */}
-        <div>
-          <h2 className="text-3xl font-bold text-zinc-100 mb-6">Nossa História</h2>
-          <p className="text-lg text-zinc-300 leading-relaxed max-w-3xl mx-auto">
-            Fundado desde 2015. Com o objetivo de ser uma referência regional, a Barbearia do Zé foi criada com o intuito de oferecer uma experiência única para nossos clientes.
-          </p>
-          <p className="text-zinc-400 mb-8 leading-relaxed text-lg">
-            Trabalhamos com os melhores equipamentos e produtos do mercados. Temos os melhores barbeiros profissionais e nosso ambiente é aconchegante.
-          </p>
-          
-          {/* Blocos de Estatísticas */}
-          <div className="flex gap-4">
-            <div className="bg-zinc-900 p-6 rounded-xl border border-zinc-800 w-full text-center shadow-lg">
-              <span className="block text-4xl font-black text-amber-500 mb-1">10 anos</span>
-              <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">De Anos de Experiências</span>
-            </div>
-            <div className="bg-zinc-900 p-6 rounded-xl border border-zinc-800 w-full text-center shadow-lg">
-              <span className="block text-4xl font-black text-amber-500 mb-1">+5mil</span>
-              <span className="text-xs font-bold text-zinc-400 uppercase tracking-widest">Clientes Felizes</span>
-            </div>
+      <dl className="mt-10 grid gap-4 sm:grid-cols-3">
+        {[
+          ["Três cadeiras", "Josué, Rafael e Tiago, cada um com a sua agenda."],
+          ["Toalha quente", "Na barba e no combo, sempre."],
+          ["Sem fila", "Quem marcou é atendido na hora marcada."],
+        ].map(([t, d]) => (
+          <div key={t} className="folha p-5">
+            <dt className="text-lg font-bold">{t}</dt>
+            <dd className="mt-1 text-apagado">{d}</dd>
           </div>
-        </div>
+        ))}
+      </dl>
 
-        {/* Imagem Ilustrativa (Foto de barbearia do Unsplash) */}
-        <div className="relative h-[500px] rounded-2xl overflow-hidden shadow-2xl">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=2074')] bg-cover bg-center"></div>
-        </div>
-        
-      </div>
+      <Link href="/appointment" className="btn btn-primario mt-10 text-lg">Marcar horário</Link>
     </div>
   );
 }

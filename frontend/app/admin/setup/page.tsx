@@ -1,79 +1,58 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { setupAdmin } from "../../services/api";
+import { useToast } from "../../contexts/ToastContext";
 
-export default function AdminSetupPage() {
-  const [formData, setFormData] = useState({
-    fullName: "", email: "", password: "", phoneNumber: ""
-  });
-  const [status, setStatus] = useState({ type: "", message: "" });
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+/** Cadastro de outro administrador (a API exige uma sessão de administrador). */
+export default function NovoAdministrador() {
+  const { showToast } = useToast();
+  const [d, setD] = useState({ fullName: "", email: "", phoneNumber: "", password: "" });
+  const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState("");
+  const campo = (k: keyof typeof d) => (e: React.ChangeEvent<HTMLInputElement>) => setD({ ...d, [k]: e.target.value });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function enviar(e: React.FormEvent) {
     e.preventDefault();
-    setIsLoading(true);
-    setStatus({ type: "", message: "" });
-
+    setErro("");
+    setEnviando(true);
     try {
-      await setupAdmin(formData);
-      setStatus({ type: "success", message: "Conta de Administrador criada com sucesso! Redirecionando para login..." });
-      setTimeout(() => router.push("/login"), 3000);
-    } catch (e: any) {
-      setStatus({ type: "error", message: "Erro de conexão: " + e.message });
+      await setupAdmin(d);
+      showToast(`${d.fullName} já pode entrar como administrador.`, "success");
+      setD({ fullName: "", email: "", phoneNumber: "", password: "" });
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "Não foi possível cadastrar.");
     } finally {
-      setIsLoading(false);
+      setEnviando(false);
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen bg-zinc-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-zinc-950 p-8 rounded-2xl shadow-xl border border-zinc-800">
-        <h1 className="text-2xl font-black text-zinc-50 mb-2">Configurar <span className="text-amber-500">Administrador</span></h1>
-        <p className="text-zinc-400 text-sm mb-6">Crie a conta de acesso total ao sistema. Esta página deve ser desativada após o uso.</p>
-        
-        {status.message && (
-          <div className={`p-4 rounded-xl mb-6 text-sm font-medium flex items-center gap-2 ${
-            status.type === "error" ? "bg-red-500/10 text-red-500 border border-red-500/50" : "bg-emerald-500/10 text-emerald-500 border border-emerald-500/50"
-          }`}>
-            <span>{status.type === "error" ? "⚠️" : "✅"}</span>
-            {status.message}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Nome Completo</label>
-            <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required
-              className="w-full bg-zinc-900 border border-zinc-800 text-zinc-50 p-3 rounded-xl focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors" />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">E-mail</label>
-            <input type="email" name="email" value={formData.email} onChange={handleChange} required
-              className="w-full bg-zinc-900 border border-zinc-800 text-zinc-50 p-3 rounded-xl focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors" />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Senha</label>
-            <input type="password" name="password" value={formData.password} onChange={handleChange} required minLength={6}
-              className="w-full bg-zinc-900 border border-zinc-800 text-zinc-50 p-3 rounded-xl focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors" />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Telefone</label>
-            <input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} required
-              className="w-full bg-zinc-900 border border-zinc-800 text-zinc-50 p-3 rounded-xl focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors" />
-          </div>
-          
-          <button type="submit" disabled={isLoading} className="w-full bg-amber-500 text-zinc-950 font-bold p-4 rounded-xl hover:bg-amber-400 disabled:opacity-50 transition-all shadow-[0_0_15px_rgba(245,158,11,0.15)] mt-4">
-            {isLoading ? "Processando..." : "Criar Administrador"}
-          </button>
-        </form>
-      </div>
+    <div className="mx-auto max-w-md px-4 py-12">
+      <Link href="/admin/profile" className="btn-discreto font-bold">Voltar ao painel</Link>
+      <h1 className="titulo mt-4 text-4xl">Cadastrar administrador</h1>
+      <p className="mt-2 text-apagado">A pessoa terá acesso a tudo: equipe, preços, clientes e horários.</p>
+      <form onSubmit={enviar} className="mt-8 space-y-5">
+        <div>
+          <label htmlFor="ad-nome" className="rotulo">Nome completo</label>
+          <input id="ad-nome" className="campo" required value={d.fullName} onChange={campo("fullName")} />
+        </div>
+        <div>
+          <label htmlFor="ad-email" className="rotulo">E-mail</label>
+          <input id="ad-email" type="email" className="campo" required value={d.email} onChange={campo("email")} />
+        </div>
+        <div>
+          <label htmlFor="ad-fone" className="rotulo">Celular</label>
+          <input id="ad-fone" type="tel" className="campo" value={d.phoneNumber} onChange={campo("phoneNumber")} />
+        </div>
+        <div>
+          <label htmlFor="ad-senha" className="rotulo">Senha inicial</label>
+          <input id="ad-senha" type="password" autoComplete="new-password" minLength={6} className="campo" required value={d.password} onChange={campo("password")} />
+        </div>
+        {erro && <p role="alert" className="rounded-lg border-l-4 border-letreiro bg-papel p-3 font-bold text-letreiro-escuro">{erro}</p>}
+        <button type="submit" className="btn btn-primario w-full" disabled={enviando}>{enviando ? "Cadastrando…" : "Cadastrar administrador"}</button>
+      </form>
     </div>
   );
 }

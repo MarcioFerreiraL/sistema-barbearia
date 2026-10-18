@@ -1,6 +1,6 @@
-# Referência da API REST - Barbearia do Zé
+# Referência da API REST - Mandacaru Barbearia
 
-Esta é a documentação dos endpoints HTTP expostos pela API RESTful da **Barbearia do Zé**. Todas as rotas (exceto as públicas) exigem um token JWT válido enviado no cabeçalho `Authorization: Bearer <token>`.
+Esta é a documentação dos endpoints HTTP expostos pela API RESTful da **Mandacaru Barbearia**. Todas as rotas (exceto as públicas) exigem um token JWT válido enviado no cabeçalho `Authorization: Bearer <token>`.
 
 ---
 

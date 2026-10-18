@@ -1,8 +1,8 @@
-# Barbearia do Zé - Sistema de Gestão e Agendamento
+# Mandacaru Barbearia: sistema de agendamento
 
 ## 📖 Contexto do Projeto
 
-Este projeto consiste no desenvolvimento de uma aplicação web completa (Full-Stack) voltada para a gestão e automação de agendamentos de uma barbearia profissional. O objetivo principal é digitalizar o processo de reservas, eliminando falhas como sobreposição de horários e ineficiências de comunicação, além de fornecer um painel de controle para a equipe gerenciar suas rotinas.
+Este projeto consiste no desenvolvimento de uma aplicação web completa (frontend, API REST e banco de dados) voltada para a gestão e automação de agendamentos de uma barbearia profissional. O objetivo principal é digitalizar o processo de reservas, eliminando falhas como sobreposição de horários e ineficiências de comunicação, além de fornecer um painel de controle para a equipe gerenciar suas rotinas.
 
 A plataforma permite que clientes realizem cadastros, visualizem o catálogo, escolham profissionais e selecionem horários disponíveis de forma dinâmica. O sistema atende aos requisitos de engenharia de software integrando um front-end moderno, uma API RESTful robusta e um banco de dados relacional para persistência transacional.
 
@@ -22,11 +22,13 @@ A plataforma permite que clientes realizem cadastros, visualizem o catálogo, es
 
 ## 🖼️ Telas
 
-Demo do front-end: [sistema-barbearia-black.vercel.app](https://sistema-barbearia-black.vercel.app) · Estudo de caso: [marciodev.com/projetos/barbearia](https://marciodev.com/projetos/barbearia)
+**Demo:** [barbearia.marciodev.com](https://barbearia.marciodev.com). Estudo de caso: [marciodev.com/projetos/barbearia](https://marciodev.com/projetos/barbearia)
+
+A demo roda inteira no navegador: um backend de demonstração (`frontend/app/services/demo`) substitui a API, segue as mesmas regras do `AppointmentService` (horário no passado, dia fechado, expediente, conflito de agenda, permissões por perfil) e guarda os dados no `localStorage` de quem testa. Na tela de entrada há um botão para cada perfil (cliente, barbeiro e dona da barbearia), e a faixa do topo restaura os dados de exemplo. A marca Mandacaru, o endereço e as pessoas são fictícios.
 
 | Computador | Celular |
 | :---: | :---: |
-| <img src="docs/telas/desktop.webp" width="560" alt="Página inicial da Barbearia do Zé no computador" /> | <img src="docs/telas/mobile.webp" width="200" alt="Página inicial da Barbearia do Zé no celular" /> |
+| <img src="docs/telas/desktop.webp" width="560" alt="Página inicial da Mandacaru Barbearia no computador" /> | <img src="docs/telas/mobile.webp" width="200" alt="Página inicial da Mandacaru Barbearia no celular" /> |
 
 ## 📚 Documentação do Projeto
 
@@ -156,6 +158,15 @@ npm run dev
 ```
 
 Acesse no navegador: `http://localhost:3000`
+
+Para rodar a demo sem backend (dados de exemplo no navegador):
+
+```bash
+cd frontend
+NEXT_PUBLIC_DEMO=1 npm run dev
+```
+
+Testes do frontend: `npm test` (regras do backend da demo, com Vitest) e `npm run build:demo && npm run test:e2e` (fluxos de cada perfil no celular e no computador, com Playwright e axe).
 
 ### 3. Rodando o Back-end
 

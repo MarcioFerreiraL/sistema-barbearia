@@ -1,49 +1,108 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import PriceBoard from "./components/PriceBoard";
+import { getBarbers, getBusinessHours } from "./services/api";
+import type { BusinessHours, Person } from "./services/types";
+import { statusFuncionamento, diaDaSemana } from "../lib/horario";
+import { iniciais } from "../lib/formato";
 
 export default function Home() {
+  const [horas, setHoras] = useState<BusinessHours[]>([]);
+  const [barbeiros, setBarbeiros] = useState<Person[] | null>(null);
+  const [agora, setAgora] = useState<Date | null>(null);
+
+  useEffect(() => {
+    getBusinessHours()
+      .then((h) => {
+        setHoras(h);
+        setAgora(new Date());
+      })
+      .catch(() => setHoras([]));
+    getBarbers().then((b) => setBarbeiros(b.filter((x) => x.active))).catch(() => setBarbeiros([]));
+  }, []);
+
+  const status = agora && horas.length ? statusFuncionamento(horas, agora) : null;
+  const hoje = agora ? diaDaSemana(agora) : 0;
+
   return (
-    <div className="w-full">
-      
-      {/* SEÇÃO HERO (Destaque Principal) */}
-      <section className="relative bg-zinc-900 text-white py-32 px-4 flex flex-col items-center text-center overflow-hidden">
-        {/* Imagem de Fundo Escurecida (Puxada do Unsplash para visual profissional) */}
-        <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=2070')] bg-cover bg-center"></div>
-        
-        <div className="relative z-10 max-w-3xl">
-          <h1 className="text-5xl md:text-7xl font-black mb-6 uppercase tracking-tight">
-            Eleve seu <span className="text-amber-500">Estilo</span>
-          </h1>
-          <p className="text-lg md:text-xl text-zinc-300 mb-10 max-w-2xl mx-auto font-light">
-            Cortes de cabelo da mais alta qualidade. 
+    <>
+      <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-10 pb-16 lg:grid-cols-[1.1fr_1fr] md:pt-16 md:pb-20">
+        <div className="rounded-[1.75rem] border-4 border-anil bg-papel p-2">
+          <div className="rounded-[1.25rem] border-2 border-anil px-3 py-8 text-center sm:px-10 sm:py-12">
+            <p className="text-lg font-bold">Barbearia</p>
+            <h1 className="letreiro mt-2 text-[clamp(2.5rem,11vw,6.5rem)] text-letreiro">Mandacaru</h1>
+            <p className="mt-4 text-lg font-bold">Surubim, Pernambuco</p>
+          </div>
+        </div>
+
+        <div>
+          <p className="max-w-md text-xl leading-relaxed sm:text-2xl">
+            Corte, barba e acabamento sem fila. Escolha o barbeiro, marque pelo celular e chegue na hora.
           </p>
-          <Link href="/appointment" className="inline-block bg-amber-500 text-zinc-950 text-lg font-bold px-8 py-4 rounded-md hover:bg-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.4)] transition-all">
-            Agende o seu corte
-          </Link>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/appointment" className="btn btn-primario px-6 text-lg">
+              Marcar horário
+            </Link>
+            <Link href="#precos" className="btn btn-secundario px-6 text-lg">
+              Ver preços
+            </Link>
+          </div>
+          <p className="mt-6 flex items-center gap-2 font-bold" aria-live="polite">
+            {status && (
+              <>
+                <span aria-hidden="true" className={`size-3 rounded-full ${status.aberto ? "bg-letreiro" : "border-2 border-apagado"}`} />
+                {status.texto}
+              </>
+            )}
+          </p>
         </div>
       </section>
 
-      {/* SEÇÃO DE DESTAQUES (Cards de Informação) */}
-      <section className="py-20 px-4 bg-zinc-950">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          
-          <div className="p-8 bg-zinc-900 rounded-xl shadow-lg border border-zinc-800 hover:border-amber-500/50 transition-colors">
-            <h3 className="text-xl font-bold mb-3 text-zinc-100">Barbeiros profissionais</h3>
-            <p className="text-zinc-400">Nosso time é composto de barbeiros profissionais com certificados de cursos de alta qualidade e com muita experiência.</p>
-          </div>
-          
-          <div className="p-8 bg-zinc-900 rounded-xl shadow-lg border border-zinc-800 hover:border-amber-500/50 transition-colors">
-            <h3 className="text-xl font-bold mb-3 text-zinc-100">Produtos</h3>
-            <p className="text-zinc-400">Nós usamos os melhores produtos do mercado para melhor lhe atender.</p>
-          </div>
-          
-          <div className="p-8 bg-zinc-900 rounded-xl shadow-lg border border-zinc-800 hover:border-amber-500/50 transition-colors">
-            <h3 className="text-xl font-bold mb-3 text-zinc-100">Agendamento Fácil</h3>
-            <p className="text-zinc-400">Nosso sistema é feito para que você agende o seu corte facilmente.</p>
+      <div className="mx-auto max-w-4xl px-4 pb-20">
+        <PriceBoard id="precos" />
+      </div>
+
+      <section className="border-t border-linha bg-papel">
+        <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 md:grid-cols-2">
+          <div>
+            <h2 className="titulo text-3xl">Quem corta</h2>
+            {barbeiros === null && <p className="mt-4 text-apagado">Carregando a equipe…</p>}
+            {barbeiros?.length === 0 && <p className="mt-4 text-apagado">Você escolhe o barbeiro na hora de marcar.</p>}
+            {barbeiros && barbeiros.length > 0 && (
+              <ul className="mt-6 space-y-4">
+                {barbeiros.map((b) => (
+                  <li key={b.id} className="flex items-center gap-4">
+                    <span aria-hidden="true" className="grid size-12 place-items-center rounded-full bg-anil font-bold text-cal">
+                      {iniciais(b.fullName)}
+                    </span>
+                    <span className="text-lg font-bold">{b.fullName}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
+          <div>
+            <h2 className="titulo text-3xl">Horário de funcionamento</h2>
+            <table className="mt-6 w-full max-w-sm text-lg">
+              <caption className="sr-only">Horário de funcionamento por dia da semana</caption>
+              <tbody>
+                {horas.map((h) => (
+                  <tr key={h.dayOfWeek} className={`border-b border-linha ${h.dayOfWeek === hoje ? "font-bold" : ""}`}>
+                    <th scope="row" className="py-2 text-left font-[inherit]">
+                      {h.dayName}
+                      {h.dayOfWeek === hoje && <span className="sr-only"> (hoje)</span>}
+                    </th>
+                    <td className="py-2 text-right">{h.open ? `${h.openTime} às ${h.closeTime}` : "Fechado"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
-
-    </div>
+    </>
   );
 }

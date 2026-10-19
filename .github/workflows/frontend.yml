@@ -1,0 +1,31 @@
+name: Frontend
+
+on:
+  push:
+    branches: [master]
+    paths: ["frontend/**", ".github/workflows/frontend.yml"]
+  pull_request:
+    paths: ["frontend/**", ".github/workflows/frontend.yml"]
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - name: Testes de unidade (regras do backend da demo)
+        run: npm test
+      - name: Build estático da demo
+        run: npm run build:demo
+      - run: npx playwright install --with-deps chromium
+      - name: Testes de ponta a ponta (celular e computador, com axe)
+        run: npm run test:e2e

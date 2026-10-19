@@ -1,0 +1,14 @@
+// Demo pública: Worker só com arquivos estáticos (Cloudflare Workers Static Assets).
+// O build roda `npm run build:demo` (Next.js com output: "export") antes do deploy.
+{
+  "name": "barbearia-demo",
+  "compatibility_date": "2026-10-18",
+  "assets": {
+    "directory": "./out",
+    // Rotas inexistentes recebem out/404.html com status 404.
+    "not_found_handling": "404-page",
+    // /login serve login.html.
+    "html_handling": "auto-trailing-slash"
+  },
+  "routes": [{ "pattern": "barbearia.marciodev.com", "custom_domain": true }]
+}

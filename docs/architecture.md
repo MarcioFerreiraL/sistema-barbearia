@@ -1,6 +1,6 @@
-# Arquitetura do Sistema - Barbearia do Zé
+# Arquitetura do Sistema - Mandacaru Barbearia
 
-Este documento descreve a arquitetura e os padrões de projeto adotados no **Barbearia do Zé**, um sistema completo (Full-Stack) para agendamentos e gestão de barbearias.
+Este documento descreve a arquitetura e os padrões de projeto adotados no **Mandacaru Barbearia**, um sistema completo (frontend, API e banco de dados) para agendamentos e gestão de barbearias.
 
 ---
 

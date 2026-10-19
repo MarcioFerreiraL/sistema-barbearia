@@ -1,162 +1,80 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getBusinessHours, updateBusinessHours } from "../../services/api";
+import type { BusinessHours } from "../../services/types";
+import { useToast } from "../../contexts/ToastContext";
+import { Carregando, Falha } from "../../components/ui/kit";
 
-interface BusinessHours {
-  dayOfWeek: number;
-  dayName: string;
-  open: boolean;
-  openTime: string;
-  closeTime: string;
-}
+function Dia({ inicial, onSalvo }: { inicial: BusinessHours; onSalvo: (h: BusinessHours) => void }) {
+  const { showToast } = useToast();
+  const [h, setH] = useState(inicial);
+  const [enviando, setEnviando] = useState(false);
+  const mudou = h.open !== inicial.open || h.openTime !== inicial.openTime || h.closeTime !== inicial.closeTime;
+  const id = `dia-${h.dayOfWeek}`;
 
-export default function ManageHoursPage() {
-  const [hours, setHours] = useState<BusinessHours[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [savingDay, setSavingDay] = useState<number | null>(null);
-  const [status, setStatus] = useState({ type: "", message: "" });
-
-  const fetchHours = async () => {
+  async function salvar() {
+    setEnviando(true);
     try {
-      const data = await getBusinessHours();
-      setHours(data);
-    } catch (e) {
-      console.error("Erro ao carregar horários:", e);
-      setStatus({ type: "error", message: "Erro ao carregar os horários de funcionamento." });
+      const novo = await updateBusinessHours(h.dayOfWeek, { open: h.open, openTime: h.openTime, closeTime: h.closeTime });
+      onSalvo(novo);
+      showToast(`${h.dayName} salvo.`, "success");
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Não foi possível salvar.", "error");
     } finally {
-      setIsLoading(false);
+      setEnviando(false);
     }
-  };
-
-  useEffect(() => {
-    fetchHours();
-  }, []);
-
-  const handleToggleOpen = (dayOfWeek: number) => {
-    setHours(hours.map(h => h.dayOfWeek === dayOfWeek ? { ...h, open: !h.open } : h));
-  };
-
-  const handleTimeChange = (dayOfWeek: number, field: "openTime" | "closeTime", value: string) => {
-    setHours(hours.map(h => h.dayOfWeek === dayOfWeek ? { ...h, [field]: value } : h));
-  };
-
-  const handleSave = async (dayOfWeek: number) => {
-    const dayConfig = hours.find(h => h.dayOfWeek === dayOfWeek);
-    if (!dayConfig) return;
-
-    setSavingDay(dayOfWeek);
-    setStatus({ type: "", message: "" });
-
-    try {
-      await updateBusinessHours(dayOfWeek, dayConfig);
-      setStatus({ type: "success", message: `Horário de ${dayConfig.dayName} atualizado com sucesso!` });
-      setTimeout(() => setStatus({ type: "", message: "" }), 3000);
-    } catch (e: any) {
-      setStatus({ type: "error", message: `Erro ao salvar ${dayConfig.dayName}: ` + e.message });
-    } finally {
-      setSavingDay(null);
-    }
-  };
+  }
 
   return (
-    <div className="space-y-6 text-zinc-100">
-      <div className="flex justify-between items-center border-b border-zinc-800 pb-4">
-        <div>
-          <h1 className="text-3xl font-black text-zinc-50 font-serif">Horários de <span className="text-amber-500">Funcionamento</span></h1>
-          <p className="text-zinc-400 text-sm mt-1">Configure os dias de abertura, encerramento e os horários de atendimento da barbearia.</p>
-        </div>
-      </div>
-
-      {status.message && (
-        <div className={`p-4 rounded-xl text-sm font-bold flex items-center gap-2 border ${
-          status.type === "error" 
-            ? "bg-red-950/40 text-red-400 border-red-900/50" 
-            : "bg-emerald-950/40 text-emerald-400 border-emerald-900/50"
-        }`}>
-          <span>{status.type === "error" ? "⚠️" : "✅"}</span>
-          {status.message}
-        </div>
-      )}
-
-      {isLoading ? (
-        <div className="bg-zinc-900 p-8 rounded-2xl border border-zinc-800 text-center">
-          <p className="text-zinc-500 animate-pulse font-medium">Carregando configurações...</p>
+    <li className="flex flex-wrap items-center gap-x-6 gap-y-3 py-4" data-dia={h.dayOfWeek}>
+      <p id={id} className="w-36 text-lg font-bold">{h.dayName}</p>
+      <label className="flex items-center gap-2">
+        <input type="checkbox" className="size-5 accent-anil" checked={h.open} onChange={(e) => setH({ ...h, open: e.target.checked })} aria-describedby={id} />
+        Abre
+      </label>
+      {h.open ? (
+        <div className="flex items-center gap-2">
+          <label className="sr-only" htmlFor={`${id}-abre`}>Abre às</label>
+          <input id={`${id}-abre`} type="time" step="1800" className="campo w-32" value={h.openTime} onChange={(e) => setH({ ...h, openTime: e.target.value })} />
+          <span aria-hidden="true">às</span>
+          <label className="sr-only" htmlFor={`${id}-fecha`}>Fecha às</label>
+          <input id={`${id}-fecha`} type="time" step="1800" className="campo w-32" value={h.closeTime} onChange={(e) => setH({ ...h, closeTime: e.target.value })} />
         </div>
       ) : (
-        <div className="bg-zinc-900 rounded-2xl shadow-xl border border-zinc-800 overflow-hidden divide-y divide-zinc-800">
-          {hours.map((day) => (
-            <div key={day.dayOfWeek} className={`p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 transition-colors ${day.open ? 'bg-zinc-900' : 'bg-zinc-950/40'}`}>
-              {/* Info e Status */}
-              <div className="flex items-center gap-4 min-w-[200px]">
-                <div className="flex-1">
-                  <h3 className="font-bold text-zinc-150 text-base">{day.dayName}</h3>
-                  <span className={`inline-block text-[10px] font-black px-2.5 py-0.5 rounded-full mt-1.5 border ${
-                    day.open 
-                      ? "bg-emerald-950/30 text-emerald-400 border-emerald-800/40" 
-                      : "bg-zinc-950 text-zinc-500 border-zinc-800"
-                  }`}>
-                    {day.open ? "Aberto" : "Fechado"}
-                  </span>
-                </div>
-
-                {/* Toggle Switch */}
-                <button
-                  type="button"
-                  onClick={() => handleToggleOpen(day.dayOfWeek)}
-                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    day.open ? "bg-amber-500" : "bg-zinc-800"
-                  }`}
-                  aria-label={`Toggle open status for ${day.dayName}`}
-                >
-                  <span
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-zinc-950 shadow ring-0 transition duration-200 ease-in-out ${
-                      day.open ? "translate-x-5" : "translate-x-0"
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* Inputs de Horário */}
-              <div className="flex items-center gap-4 flex-1 max-w-md">
-                <div className="flex-1">
-                  <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1.5">Abertura</label>
-                  <input
-                    type="time"
-                    value={day.openTime}
-                    onChange={(e) => handleTimeChange(day.dayOfWeek, "openTime", e.target.value)}
-                    disabled={!day.open}
-                    className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 p-2.5 rounded-xl text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 disabled:bg-zinc-900/50 disabled:text-zinc-650 disabled:cursor-not-allowed transition-all"
-                  />
-                </div>
-                <span className="text-zinc-600 font-bold self-end mb-2">até</span>
-                <div className="flex-1">
-                  <label className="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1.5">Fecho</label>
-                  <input
-                    type="time"
-                    value={day.closeTime}
-                    onChange={(e) => handleTimeChange(day.dayOfWeek, "closeTime", e.target.value)}
-                    disabled={!day.open}
-                    className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 p-2.5 rounded-xl text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 disabled:bg-zinc-900/50 disabled:text-zinc-650 disabled:cursor-not-allowed transition-all"
-                  />
-                </div>
-              </div>
-
-              {/* Ação */}
-              <div className="flex items-center justify-end">
-                <button
-                  type="button"
-                  onClick={() => handleSave(day.dayOfWeek)}
-                  disabled={savingDay === day.dayOfWeek}
-                  className="bg-amber-500 text-zinc-950 font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-xl hover:bg-amber-400 disabled:opacity-50 transition-all min-w-[100px] text-center cursor-pointer shadow-[0_0_10px_rgba(245,158,11,0.15)]"
-                >
-                  {savingDay === day.dayOfWeek ? "Salvando..." : "Salvar"}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+        <p className="text-apagado">Fechado</p>
       )}
+      {mudou && (
+        <button type="button" className="btn btn-primario ml-auto" disabled={enviando} onClick={salvar}>
+          {enviando ? "Salvando…" : "Salvar"}
+        </button>
+      )}
+    </li>
+  );
+}
+
+export default function Horarios() {
+  const [horas, setHoras] = useState<BusinessHours[] | null>(null);
+  const [erro, setErro] = useState("");
+
+  useEffect(() => {
+    getBusinessHours()
+      .then(setHoras)
+      .catch((err) => setErro(err instanceof Error ? err.message : "Não foi possível carregar os horários."));
+  }, []);
+
+  if (erro) return <Falha texto={erro} />;
+  if (!horas) return <Carregando />;
+
+  return (
+    <div>
+      <h1 className="titulo text-4xl">Horário de funcionamento</h1>
+      <p className="mt-2 max-w-xl text-apagado">Vale para o agendamento: ninguém marca fora destes horários, e o atendimento precisa terminar antes de fechar.</p>
+      <ul className="folha mt-6 divide-y divide-linha px-5">
+        {horas.map((h) => (
+          <Dia key={`${h.dayOfWeek}-${h.open}-${h.openTime}-${h.closeTime}`} inicial={h} onSalvo={(novo) => setHoras((lista) => lista!.map((x) => (x.dayOfWeek === novo.dayOfWeek ? novo : x)))} />
+        ))}
+      </ul>
     </div>
   );
 }

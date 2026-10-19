@@ -19,6 +19,8 @@ interface AuthContextType {
   role: Role;
   userId: string | null;
   email: string | null;
+  /** true depois da primeira verificação da sessão (antes disso, isLoggedIn ainda não vale). */
+  checked: boolean;
   login: () => Promise<void>;
   logout: (shouldRedirect?: boolean) => void;
 }
@@ -29,6 +31,7 @@ const AuthContext = createContext<AuthContextType>({
   role: null,
   userId: null,
   email: null,
+  checked: false,
   login: async () => {},
   logout: () => {},
 });
@@ -38,6 +41,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [role, setRole] = useState<Role>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
+  const [checked, setChecked] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -109,6 +113,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (isProtectedRoute(pathname)) {
         router.push("/login");
       }
+    } finally {
+      setChecked(true);
     }
   }, [pathname, router]);
 
@@ -126,7 +132,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, role, userId, email, login: loginUser, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, role, userId, email, checked, login: loginUser, logout }}>
       {children}
     </AuthContext.Provider>
   );
